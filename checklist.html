@@ -6,67 +6,109 @@
 <title>Checklist จป.วิชาชีพ — APET</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--red:#C0392B;--red-light:#FADBD8;--green:#27AE60;--green-light:#D5F5E3;--orange:#E67E22;--orange-light:#FDEBD0;--blue:#2980B9;--blue-light:#D6EAF8;--purple:#7C5CBF;--gray-50:#F8F9FA;--gray-100:#F1F3F4;--gray-200:#E8EAED;--gray-300:#DADCE0;--gray-500:#9AA0A6;--gray-700:#5F6368;--gray-900:#202124}
+:root{--red:#C0392B;--red-light:#FADBD8;--green:#27AE60;--green-light:#D5F5E3;--orange:#E67E22;--orange-light:#FDEBD0;--blue:#2980B9;--blue-light:#D6EAF8;--purple:#7C5CBF;--purple-light:#EAD7FF;--gray-50:#F8F9FA;--gray-100:#F1F3F4;--gray-200:#E8EAED;--gray-300:#DADCE0;--gray-500:#9AA0A6;--gray-700:#5F6368;--gray-900:#202124}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:var(--gray-900);min-height:100vh}
-.site-header{background:#7C5CBF;position:sticky;top:0;z-index:100}
-.header-inner{max-width:900px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.site-header{background:#7C5CBF;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(124,92,191,.4)}
+.header-inner{max-width:960px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
 .header-logo{background:rgba(255,255,255,.2);border-radius:6px;padding:4px 10px;font-weight:700;font-size:17px;color:#fff;border:1px solid rgba(255,255,255,.3)}
 .header-title{color:#fff;font-size:15px;font-weight:600}
 .header-sub{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
 .header-right{margin-left:auto}
 .btn-header{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;text-decoration:none;display:inline-block}
-.page{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+.page{max-width:960px;margin:0 auto;padding:24px 16px 100px}
+
+/* Phase tabs */
+.phase-tabs{display:flex;background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;margin-bottom:20px}
+.phase-tab{flex:1;padding:14px 8px;text-align:center;font-size:13px;font-weight:500;color:var(--gray-500);cursor:pointer;border-right:1px solid var(--gray-200);transition:all .2s;user-select:none}
+.phase-tab:last-child{border-right:none}
+.phase-tab.active{background:var(--purple-light);color:var(--purple);font-weight:700}
+.phase-tab.saved{color:var(--green);font-weight:600}
+.phase-tab.saved::before{content:'✓ '}
+.phase-num{display:block;font-size:22px;font-weight:700;margin-bottom:3px}
+.phase-tab.active .phase-num{color:var(--purple)}
+.phase-tab.saved .phase-num{color:var(--green)}
+
+/* Permit banner */
 .permit-banner{background:#1A252F;border-radius:10px;padding:16px 20px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .permit-id{font-family:monospace;font-size:16px;font-weight:700;color:#fff}
 .permit-meta{font-size:13px;color:rgba(255,255,255,.75)}
+.permit-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;width:100%}
+.permit-info-item{background:rgba(255,255,255,.1);border-radius:6px;padding:8px 12px}
+.pil{font-size:10px;color:rgba(255,255,255,.6);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.piv{font-size:13px;color:#fff;font-weight:500}
+
+/* Overtime alert */
+.overtime-alert{background:var(--orange-light);border:2px solid var(--orange);border-radius:8px;padding:14px 16px;margin-bottom:16px;display:none}
+.overtime-alert.show{display:block}
+.ota-title{font-weight:700;color:var(--orange);margin-bottom:4px;font-size:14px}
+.ota-detail{font-size:13px;color:var(--gray-700)}
+
+/* Card */
 .card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
 .card-header{border-bottom:1px solid var(--gray-200);padding:14px 20px;display:flex;align-items:center;gap:10px;background:var(--gray-50)}
-.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .card-title{font-weight:600;font-size:14px}.card-sub{font-size:12px;color:var(--gray-500);margin-top:1px}
 .card-body{padding:0}
-.checklist{display:flex;flex-direction:column}
-.check-row{display:grid;grid-template-columns:1fr 90px 90px 90px;border-bottom:1px solid var(--gray-100);align-items:stretch;min-height:44px}
-.check-row:last-child{border-bottom:none}
-.check-row.header-row{background:var(--gray-50);min-height:36px}
-.check-label{padding:10px 14px;font-size:13px;display:flex;align-items:center;border-right:1px solid var(--gray-100)}
-.check-cell{display:flex;align-items:center;justify-content:center;border-right:1px solid var(--gray-100);padding:5px}
-.check-cell:last-child{border-right:none}
-.check-cell.hdr{font-size:11px;font-weight:600;color:var(--gray-700);text-align:center;padding:8px 4px;line-height:1.3}
-.radio-group{display:flex;gap:3px}
-.rb{width:32px;height:26px;border:1.5px solid var(--gray-300);border-radius:4px;background:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.rb.ok{border-color:var(--green);color:var(--green)}.rb.ok.active{background:var(--green);color:#fff}
-.rb.ng{border-color:var(--red);color:var(--red)}.rb.ng.active{background:var(--red);color:#fff}
+
+/* Checklist table */
+.check-table{width:100%;border-collapse:collapse}
+.check-table th{background:var(--gray-50);padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--gray-200)}
+.check-table td{padding:9px 14px;border-bottom:1px solid var(--gray-100);font-size:13px;vertical-align:middle}
+.check-table tr:last-child td{border-bottom:none}
+.check-table tr:hover td{background:var(--gray-50)}
+.radio-group{display:flex;gap:4px;justify-content:center}
+.rb{width:34px;height:28px;border:1.5px solid var(--gray-300);border-radius:5px;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.rb.ok{border-color:var(--green);color:var(--green)}.rb.ok.active{background:var(--green);color:#fff;border-color:var(--green)}
+.rb.ng{border-color:var(--red);color:var(--red)}.rb.ng.active{background:var(--red);color:#fff;border-color:var(--red)}
 .rb.na{border-color:var(--gray-300);color:var(--gray-500)}.rb.na.active{background:var(--gray-300);color:var(--gray-700)}
-.section-divider{background:var(--purple);color:#fff;padding:10px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
-.sig-container{border:1.5px solid var(--gray-300);border-radius:6px;overflow:hidden;background:#FAFAFA}
-canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:130px}
-.sig-ctrl{display:flex;gap:8px;padding:6px 10px;background:var(--gray-50);border-top:1px solid var(--gray-200)}
-.btn-clear{font-size:12px;color:var(--gray-700);background:#fff;border:1px solid var(--gray-300);border-radius:4px;padding:3px 10px;cursor:pointer;font-family:inherit}
+
+/* Form */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form-group{display:flex;flex-direction:column;gap:5px}
 label.form-label{font-size:13px;font-weight:500;color:var(--gray-700)}
-input[type=text],textarea{border:1.5px solid var(--gray-300);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;width:100%;transition:border-color .15s}
-input:focus,textarea:focus{border-color:var(--purple)}
+input[type=text],input[type=time],select,textarea{border:1.5px solid var(--gray-300);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;width:100%;transition:border-color .15s;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,92,191,.1)}
 textarea{resize:vertical;min-height:60px}
-.cond-section{display:none}.cond-section.show{display:block}
-.action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--gray-200);padding:12px 20px;display:flex;gap:10px;justify-content:flex-end;box-shadow:0 -4px 12px rgba(0,0,0,.08);z-index:100}
-.btn{padding:11px 24px;border-radius:6px;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer;border:none;transition:all .15s}
-.btn-purple{background:var(--purple);color:#fff}
-.btn-secondary{background:#fff;color:var(--gray-700);border:1.5px solid var(--gray-300)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;transition:transform .3s;opacity:0}
-#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-#toast.success{background:var(--green)}
-#toast.error{background:var(--red)}
-#success-screen{display:none;padding:60px 20px;text-align:center}
-#loading{text-align:center;padding:80px 20px;color:var(--gray-500)}
-#main-content{display:none}
+
+/* Training */
 .training-options{display:flex;gap:10px;margin-top:8px}
 .training-btn{flex:1;padding:10px;border:2px solid var(--gray-300);border-radius:8px;text-align:center;cursor:pointer;font-size:13px;font-family:inherit;background:#fff;transition:all .15s}
 .training-btn.pass{border-color:var(--green);color:var(--green)}.training-btn.pass.active{background:var(--green);color:#fff}
 .training-btn.fail{border-color:var(--red);color:var(--red)}.training-btn.fail.active{background:var(--red);color:#fff}
-@media(max-width:600px){.check-row{grid-template-columns:1fr 70px 70px 70px}.form-grid{grid-template-columns:1fr}}
+
+/* Overtime decision */
+.overtime-decision{background:var(--orange-light);border:1.5px solid #FBBF7E;border-radius:8px;padding:16px}
+.ot-option{display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+.ot-option:last-child{border-bottom:none}
+.ot-option input{margin-top:3px;accent-color:var(--orange);flex-shrink:0}
+
+/* Signature */
+.sig-container{border:1.5px solid var(--gray-300);border-radius:6px;overflow:hidden;background:#FAFAFA}
+canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:130px}
+.sig-ctrl{display:flex;gap:8px;padding:6px 10px;background:var(--gray-50);border-top:1px solid var(--gray-200)}
+.btn-clear{font-size:12px;color:var(--gray-700);background:#fff;border:1px solid var(--gray-300);border-radius:4px;padding:3px 10px;cursor:pointer;font-family:inherit}
+
+/* Cond sections */
+.cond-section{display:none}.cond-section.show{display:block}
+
+/* Action bar */
+.action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--gray-200);padding:12px 20px;display:flex;gap:10px;justify-content:space-between;align-items:center;box-shadow:0 -4px 12px rgba(0,0,0,.08);z-index:100}
+.phase-indicator{font-size:13px;color:var(--gray-700)}
+.btn{padding:11px 24px;border-radius:6px;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:7px}
+.btn-purple{background:var(--purple);color:#fff}.btn-purple:hover{background:#5a3fa0}
+.btn-secondary{background:#fff;color:var(--gray-700);border:1.5px solid var(--gray-300)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;transition:transform .3s;opacity:0}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+#toast.success{background:var(--green)}.t-error{background:var(--red)}
+
+#success-screen{display:none;padding:60px 20px;text-align:center}
+#loading{text-align:center;padding:80px 20px;color:var(--gray-500)}
+#main-content{display:none}
+
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}.permit-info-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -74,141 +116,210 @@ textarea{resize:vertical;min-height:60px}
   <div class="header-inner">
     <div class="header-logo">APET</div>
     <div>
-      <div class="header-title">Checklist จป.วิชาชีพ</div>
-      <div class="header-sub">การตรวจสอบก่อน/ระหว่าง/หลังปฏิบัติงาน</div>
+      <div class="header-title" id="headerTitle">Checklist จป.วิชาชีพ</div>
+      <div class="header-sub">การตรวจสอบก่อน / ระหว่าง / หลังปฏิบัติงาน</div>
     </div>
     <div class="header-right"><a href="dashboard.html" class="btn-header">📊 Dashboard</a></div>
   </div>
 </div>
+
 <div class="page">
   <div id="loading">🔄 กำลังโหลดข้อมูล...</div>
   <div id="main-content">
 
+    <!-- Permit Banner -->
     <div class="permit-banner">
-      <div>
-        <div class="permit-id" id="bannerPermitId">—</div>
-        <div class="permit-meta" id="bannerMeta">—</div>
+      <div style="width:100%">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div class="permit-id" id="bannerPermitId">—</div>
+          <div class="permit-meta" id="bannerCompany">—</div>
+        </div>
+        <div class="permit-info-grid" id="permitInfoGrid"></div>
       </div>
     </div>
 
-    <!-- Training Status -->
-    <div class="card">
-      <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">🎓</div><div><div class="card-title">สถานะการอบรมกฎระเบียบ</div></div></div>
-      <div class="card-body" style="padding:16px">
-        <label class="form-label">ผู้รับเหมาผ่านการอบรมกฎระเบียบความปลอดภัย</label>
-        <div class="training-options">
-          <button class="training-btn pass" id="trainPass" onclick="setTraining('pass')">✅ ผ่านการอบรมแล้ว</button>
-          <button class="training-btn fail" id="trainFail" onclick="setTraining('fail')">❌ ยังไม่ผ่านการอบรม</button>
-        </div>
+    <!-- Overtime Alert from contractor -->
+    <div class="overtime-alert" id="overtimeAlert">
+      <div class="ota-title">⏰ ผู้รับเหมาขอต่อเวลาทำงาน</div>
+      <div class="ota-detail" id="overtimeAlertDetail">—</div>
+    </div>
+
+    <!-- Phase Tabs -->
+    <div class="phase-tabs">
+      <div class="phase-tab active" id="tab1" onclick="switchPhase(1)">
+        <span class="phase-num">1</span>ก่อนเริ่มงาน
+      </div>
+      <div class="phase-tab" id="tab2" onclick="switchPhase(2)">
+        <span class="phase-num">2</span>ขณะปฏิบัติงาน
+      </div>
+      <div class="phase-tab" id="tab3" onclick="switchPhase(3)">
+        <span class="phase-num">3</span>หลังเสร็จงาน
       </div>
     </div>
 
-    <!-- General Checklist -->
-    <div class="card">
-      <div class="card-header"><div class="card-icon" style="background:var(--blue-light)">✅</div><div><div class="card-title">การตรวจสอบสำหรับงานทั่วไป</div></div></div>
-      <div class="card-body">
-        <div class="checklist">
-          <div class="check-row header-row">
-            <div class="check-label" style="font-size:11px;font-weight:600;color:var(--gray-700)">รายการตรวจสอบ</div>
-            <div class="check-cell hdr">ก่อนเริ่มงาน</div>
-            <div class="check-cell hdr">ขณะปฏิบัติ</div>
-            <div class="check-cell hdr">หลังเสร็จงาน</div>
-          </div>
-          <div id="generalChecklist"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hot Work -->
-    <div class="card cond-section" id="hotworkSection">
-      <div class="card-header"><div class="card-icon" style="background:var(--red-light)">🔥</div><div><div class="card-title">งานร้อน/ประกายไฟ (Hot Work)</div></div></div>
-      <div class="card-body">
-        <div class="checklist">
-          <div class="check-row header-row">
-            <div class="check-label" style="font-size:11px;font-weight:600;color:var(--gray-700)">รายการตรวจสอบ</div>
-            <div class="check-cell hdr">ก่อนเริ่มงาน</div>
-            <div class="check-cell hdr">ขณะปฏิบัติ</div>
-            <div class="check-cell hdr">หลังเสร็จงาน</div>
-          </div>
-          <div id="hotworkChecklist"></div>
-        </div>
-        <div style="padding:14px;border-top:1px solid var(--gray-100)">
-          <label class="form-label">เชื้อเพลิงที่ติดไฟได้ในบริเวณพื้นที่</label>
-          <div class="form-grid" style="margin-top:8px">
-            <input type="text" id="fuel1" placeholder="1.">
-            <input type="text" id="fuel2" placeholder="2.">
-            <input type="text" id="fuel3" placeholder="3.">
+    <!-- PHASE 1: ก่อนเริ่มงาน -->
+    <div id="phase1">
+      <!-- Training -->
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">🎓</div><div><div class="card-title">สถานะการอบรม</div></div></div>
+        <div class="card-body" style="padding:16px">
+          <label class="form-label">ผู้รับเหมาผ่านการอบรมกฎระเบียบความปลอดภัย</label>
+          <div class="training-options">
+            <button class="training-btn pass" id="trainPass" onclick="setTraining('pass')">✅ ผ่านการอบรมแล้ว</button>
+            <button class="training-btn fail" id="trainFail" onclick="setTraining('fail')">❌ ยังไม่ผ่านการอบรม</button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Confined Space -->
-    <div class="card cond-section" id="confinedSection">
-      <div class="card-header"><div class="card-icon" style="background:#EAD7FF">🏠</div><div><div class="card-title">งานในที่อับอากาศ (Confined Space)</div></div></div>
-      <div class="card-body">
-        <div class="checklist">
-          <div class="check-row header-row">
-            <div class="check-label" style="font-size:11px;font-weight:600;color:var(--gray-700)">รายการตรวจสอบ</div>
-            <div class="check-cell hdr">ก่อนเริ่มงาน</div>
-            <div class="check-cell hdr">ขณะปฏิบัติ</div>
-            <div class="check-cell hdr">หลังเสร็จงาน</div>
+      <!-- General Before -->
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--blue-light)">📋</div><div><div class="card-title">การตรวจสอบก่อนเริ่มงาน — งานทั่วไป</div></div></div>
+        <div class="card-body">
+          <table class="check-table">
+            <thead><tr><th style="width:60%">รายการตรวจสอบ</th><th style="width:40%;text-align:center">ผล</th></tr></thead>
+            <tbody id="general_before"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card cond-section" id="hotwork_before_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--red-light)">🔥</div><div><div class="card-title">ก่อนเริ่มงาน — Hot Work</div></div></div>
+        <div class="card-body">
+          <table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead>
+          <tbody id="hotwork_before"></tbody></table>
+          <div style="padding:12px 14px;border-top:1px solid var(--gray-100)">
+            <label class="form-label">เชื้อเพลิงที่ติดไฟได้ในบริเวณพื้นที่</label>
+            <div class="form-grid" style="margin-top:6px">
+              <input type="text" id="fuel1" placeholder="1."><input type="text" id="fuel2" placeholder="2."><input type="text" id="fuel3" placeholder="3.">
+            </div>
           </div>
-          <div id="confinedChecklist"></div>
-        </div>
-        <div style="padding:14px;border-top:1px solid var(--gray-100)">
-          <label class="form-label">ปริมาณสารเคมีอื่นๆ ระบุ</label>
-          <input type="text" id="chemOther" placeholder="ระบุสารเคมีและปริมาณ..." style="margin-top:6px">
         </div>
       </div>
-    </div>
-
-    <!-- Work at High -->
-    <div class="card cond-section" id="highriskSection">
-      <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">📏</div><div><div class="card-title">งานบนที่สูง ≥2 เมตร (Work at High)</div></div></div>
-      <div class="card-body">
-        <div class="checklist">
-          <div class="check-row header-row">
-            <div class="check-label" style="font-size:11px;font-weight:600;color:var(--gray-700)">รายการตรวจสอบ</div>
-            <div class="check-cell hdr">ก่อนเริ่มงาน</div>
-            <div class="check-cell hdr">ขณะปฏิบัติ</div>
-            <div class="check-cell hdr">หลังเสร็จงาน</div>
+      <div class="card cond-section" id="confined_before_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--purple-light)">🏠</div><div><div class="card-title">ก่อนเริ่มงาน — Confined Space</div></div></div>
+        <div class="card-body">
+          <table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead>
+          <tbody id="confined_before"></tbody></table>
+          <div style="padding:12px 14px;border-top:1px solid var(--gray-100)">
+            <label class="form-label">ปริมาณสารเคมีอื่นๆ</label>
+            <input type="text" id="chemOther" placeholder="ระบุ..." style="margin-top:6px">
           </div>
-          <div id="highriskChecklist"></div>
+        </div>
+      </div>
+      <div class="card cond-section" id="high_before_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">📏</div><div><div class="card-title">ก่อนเริ่มงาน — Work at High</div></div></div>
+        <div class="card-body">
+          <table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead>
+          <tbody id="high_before"></tbody></table>
+        </div>
+      </div>
+      <!-- Phase 1 signature -->
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--purple-light)">✍️</div><div><div class="card-title">ลายเซ็น จป. — ตรวจสอบก่อนเริ่มงาน</div></div></div>
+        <div class="card-body" style="padding:16px">
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="form-group"><label class="form-label">ชื่อ จป.วิชาชีพ *</label><input type="text" id="name1" placeholder="ชื่อ-นามสกุล"></div>
+            <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date1"></div>
+          </div>
+          <div class="sig-container"><canvas id="sig1"></canvas>
+            <div class="sig-ctrl"><button class="btn-clear" onclick="clearSigPhase(1)">🗑️ ล้าง</button><span style="font-size:11px;color:var(--gray-500);margin-left:auto">วาดลายเซ็น</span></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Overtime -->
-    <div class="card">
-      <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">⏰</div><div><div class="card-title">การขอต่อเวลาหลัง 17.00 น.</div></div></div>
-      <div class="card-body" style="padding:16px">
-        <div class="form-grid" style="margin-bottom:12px">
-          <div class="form-group"><label class="form-label">ตั้งแต่เวลา</label><input type="time" id="overtimeStart"></div>
-          <div class="form-group"><label class="form-label">ถึงเวลา</label><input type="time" id="overtimeEnd"></div>
+    <!-- PHASE 2: ขณะปฏิบัติงาน -->
+    <div id="phase2" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--blue-light)">📋</div><div><div class="card-title">การตรวจสอบขณะปฏิบัติงาน — งานทั่วไป</div></div></div>
+        <div class="card-body">
+          <table class="check-table"><thead><tr><th style="width:60%">รายการตรวจสอบ</th><th style="width:40%;text-align:center">ผล</th></tr></thead>
+          <tbody id="general_during"></tbody></table>
         </div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="radio" name="overtime" value="approved_same" style="accent-color:var(--green)"> อนุญาตให้ทำงานต่อได้ สภาพความปลอดภัยคงเดิม</label>
-          <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer"><input type="radio" name="overtime" value="rejected" style="accent-color:var(--red);margin-top:3px"> ไม่อนุญาต เพราะ <input type="text" id="overtimeReason" placeholder="ระบุเหตุผล..." style="margin-left:6px;flex:1;height:32px;padding:4px 8px"></label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="radio" name="overtime" value="approved_fixed" style="accent-color:var(--blue)"> ทำการแก้ไขแล้ว สภาพปลอดภัย อนุญาตทำงานต่อ</label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="radio" name="overtime" value="na" checked> ไม่มีการขอต่อเวลา</label>
+      </div>
+      <div class="card cond-section" id="hotwork_during_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--red-light)">🔥</div><div><div class="card-title">ขณะปฏิบัติงาน — Hot Work</div></div></div>
+        <div class="card-body"><table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead><tbody id="hotwork_during"></tbody></table></div>
+      </div>
+      <div class="card cond-section" id="confined_during_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--purple-light)">🏠</div><div><div class="card-title">ขณะปฏิบัติงาน — Confined Space</div></div></div>
+        <div class="card-body"><table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead><tbody id="confined_during"></tbody></table></div>
+      </div>
+      <div class="card cond-section" id="high_during_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">📏</div><div><div class="card-title">ขณะปฏิบัติงาน — Work at High</div></div></div>
+        <div class="card-body"><table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead><tbody id="high_during"></tbody></table></div>
+      </div>
+      <!-- Overtime decision -->
+      <div class="card" id="overtimeDecisionCard" style="display:none">
+        <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">⏰</div><div><div class="card-title">การอนุมัติต่อเวลา</div><div class="card-sub" id="overtimeDecisionSub">—</div></div></div>
+        <div class="card-body" style="padding:16px">
+          <div class="overtime-decision">
+            <label class="ot-option"><input type="radio" name="otDecision" value="approved_same"> อนุญาตให้ทำงานต่อได้ สภาพความปลอดภัยคงเดิม</label>
+            <label class="ot-option"><input type="radio" name="otDecision" value="rejected"> ไม่อนุญาต เพราะ <input type="text" id="otRejectReason" placeholder="ระบุเหตุผล..." style="margin-left:8px;flex:1;height:30px;padding:4px 8px;display:inline-block;width:auto"></label>
+            <label class="ot-option"><input type="radio" name="otDecision" value="approved_fixed"> ทำการแก้ไขแล้ว สภาพปลอดภัย อนุญาตทำงานต่อ</label>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--purple-light)">✍️</div><div><div class="card-title">ลายเซ็น จป. — ตรวจสอบขณะปฏิบัติงาน</div></div></div>
+        <div class="card-body" style="padding:16px">
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="form-group"><label class="form-label">ชื่อ จป.วิชาชีพ *</label><input type="text" id="name2" placeholder="ชื่อ-นามสกุล"></div>
+            <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date2"></div>
+          </div>
+          <div class="sig-container"><canvas id="sig2"></canvas>
+            <div class="sig-ctrl"><button class="btn-clear" onclick="clearSigPhase(2)">🗑️ ล้าง</button><span style="font-size:11px;color:var(--gray-500);margin-left:auto">วาดลายเซ็น</span></div>
+          </div>
+          <div style="margin-top:12px"><label class="form-label">หมายเหตุ</label><textarea id="note2" placeholder="ข้อสังเกต..." style="margin-top:5px"></textarea></div>
         </div>
       </div>
     </div>
 
-    <!-- Inspector Signature -->
-    <div class="card">
-      <div class="card-header"><div class="card-icon" style="background:#EAD7FF">✍️</div><div><div class="card-title">ลายเซ็น จป.วิชาชีพ</div></div></div>
-      <div class="card-body" style="padding:16px">
-        <div class="form-grid" style="margin-bottom:12px">
-          <div class="form-group"><label class="form-label">ชื่อ จป.วิชาชีพ *</label><input type="text" id="inspectorName" placeholder="ชื่อ-นามสกุล"></div>
-          <div class="form-group"><label class="form-label">วันที่</label><input type="text" id="inspectorDate"></div>
+    <!-- PHASE 3: หลังเสร็จงาน -->
+    <div id="phase3" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--blue-light)">📋</div><div><div class="card-title">การตรวจสอบหลังปฏิบัติงานเสร็จ — งานทั่วไป</div></div></div>
+        <div class="card-body">
+          <table class="check-table"><thead><tr><th style="width:60%">รายการตรวจสอบ</th><th style="width:40%;text-align:center">ผล</th></tr></thead>
+          <tbody id="general_after"></tbody></table>
         </div>
-        <label class="form-label" style="display:block;margin-bottom:6px">ลายเซ็น *</label>
-        <div class="sig-container"><canvas id="sigCanvas"></canvas>
-          <div class="sig-ctrl"><button class="btn-clear" onclick="clearSig()">🗑️ ล้าง</button><span style="font-size:11px;color:var(--gray-500);margin-left:auto">วาดด้วยนิ้วหรือเมาส์</span></div>
+      </div>
+      <div class="card cond-section" id="hotwork_after_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--red-light)">🔥</div><div><div class="card-title">หลังเสร็จงาน — Hot Work</div></div></div>
+        <div class="card-body"><table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead><tbody id="hotwork_after"></tbody></table></div>
+      </div>
+      <div class="card cond-section" id="confined_after_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--purple-light)">🏠</div><div><div class="card-title">หลังเสร็จงาน — Confined Space</div></div></div>
+        <div class="card-body"><table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead><tbody id="confined_after"></tbody></table></div>
+      </div>
+      <div class="card cond-section" id="high_after_card">
+        <div class="card-header"><div class="card-icon" style="background:var(--orange-light)">📏</div><div><div class="card-title">หลังเสร็จงาน — Work at High</div></div></div>
+        <div class="card-body"><table class="check-table"><thead><tr><th style="width:60%">รายการ</th><th style="width:40%;text-align:center">ผล</th></tr></thead><tbody id="high_after"></tbody></table></div>
+      </div>
+      <!-- Post-work confirmation -->
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--green-light)">🔍</div><div><div class="card-title">การตรวจสอบพื้นที่หลังปฏิบัติงานเสร็จ</div></div></div>
+        <div class="card-body" style="padding:16px">
+          <p style="font-size:13px;color:var(--gray-700);background:var(--green-light);padding:12px;border-radius:6px;line-height:1.7;margin-bottom:14px">
+            หลังจากเสร็จงาน ข้าพเจ้าได้ตรวจสอบพื้นที่ปฏิบัติงาน <strong>ไม่มีสิ่งของเสียหาย ไม่มีผู้ได้รับอันตราย</strong> และปฏิบัติตามกฎระเบียบทุกประการแล้ว
+          </p>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">ผู้รับเหมา (รับทราบ)</label><input type="text" id="postContractor" placeholder="ชื่อ-นามสกุล"></div>
+            <div class="form-group"><label class="form-label">แผนกที่ว่าจ้าง (รับทราบ)</label><input type="text" id="postDept" placeholder="ชื่อ-นามสกุล / แผนก"></div>
+          </div>
         </div>
-        <div style="margin-top:12px"><label class="form-label">หมายเหตุ</label><textarea id="inspectorNote" placeholder="ข้อสังเกต..." style="margin-top:5px"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--purple-light)">✍️</div><div><div class="card-title">ลายเซ็น จป. — ตรวจสอบหลังเสร็จงาน</div></div></div>
+        <div class="card-body" style="padding:16px">
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="form-group"><label class="form-label">ชื่อ จป.วิชาชีพ *</label><input type="text" id="name3" placeholder="ชื่อ-นามสกุล"></div>
+            <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date3"></div>
+          </div>
+          <div class="sig-container"><canvas id="sig3"></canvas>
+            <div class="sig-ctrl"><button class="btn-clear" onclick="clearSigPhase(3)">🗑️ ล้าง</button><span style="font-size:11px;color:var(--gray-500);margin-left:auto">วาดลายเซ็น</span></div>
+          </div>
+          <div style="margin-top:12px"><label class="form-label">หมายเหตุ</label><textarea id="note3" placeholder="ข้อสังเกต..." style="margin-top:5px"></textarea></div>
+        </div>
       </div>
     </div>
 
@@ -216,19 +327,22 @@ textarea{resize:vertical;min-height:60px}
 </div>
 
 <div class="action-bar" id="actionBar" style="display:none">
-  <button class="btn btn-secondary" onclick="history.back()">← กลับ</button>
-  <button class="btn btn-purple" onclick="saveChecklist()" id="btnSave">💾 บันทึก Checklist</button>
+  <div class="phase-indicator" id="phaseIndicator">ช่วงที่ 1/3 — ก่อนเริ่มงาน</div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-secondary" onclick="history.back()">← กลับ</button>
+    <button class="btn btn-purple" onclick="savePhase()" id="btnSave">💾 บันทึกช่วงนี้</button>
+  </div>
 </div>
 
 <div id="success-screen">
-  <div class="card" style="max-width:480px;margin:0 auto">
+  <div class="card" style="max-width:500px;margin:0 auto">
     <div class="card-body" style="padding:40px 28px;text-align:center">
-      <div style="font-size:56px;margin-bottom:16px">✅</div>
-      <div style="font-size:20px;font-weight:700;margin-bottom:8px">บันทึก Checklist เรียบร้อย</div>
+      <div style="font-size:52px;margin-bottom:16px" id="successIcon">✅</div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:8px" id="successTitle">บันทึกเรียบร้อย</div>
       <div style="color:var(--gray-700);font-size:14px;margin-bottom:24px" id="successSub"></div>
-      <div style="display:flex;gap:10px;justify-content:center">
-        <a href="dashboard.html" class="btn btn-purple">📊 Dashboard</a>
-        <button class="btn btn-secondary" onclick="location.reload()">🔄 กลับ</button>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-purple" onclick="goNextPhase()" id="btnNext" style="display:none">ถัดไป: ช่วงที่ 2 →</button>
+        <a href="dashboard.html" class="btn btn-secondary">📊 Dashboard</a>
       </div>
     </div>
   </div>
@@ -238,22 +352,27 @@ textarea{resize:vertical;min-height:60px}
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
 let permitData = null;
+let currentPhase = 1;
+let savedPhases = {1:false, 2:false, 3:false};
+let sigCtxs = {};
 let checkStates = {};
 let trainingStatus = '';
-let sigCtx;
 
-const GENERAL_ITEMS = ['ปิดแยกระบบที่เกี่ยวข้อง','ตรวจสอบอุปกรณ์ให้อยู่ในสภาพดีก่อนใช้งาน','กั้นพื้นที่และติดป้ายเตือน','พื้นที่ปราศจากสิ่งของกีดขวาง','เก็บอุปกรณ์ที่ไม่จำเป็นออก','แต่งกายเหมาะสม/PPE','ปฏิบัติงานเสร็จสิ้น','ขอต่อเวลาทำงาน','ทำความสะอาดพื้นที่หลังเสร็จ','การเก็บอุปกรณ์เป็นระเบียบ'];
-const HOTWORK_ITEMS = ['ถังดับเพลิง','กรณีพื้นที่ปิดต้องมีการระบายอากาศ','เคลื่อนย้ายวัสดุติดไฟ/สารไวไฟออก'];
-const CONFINED_ITEMS = ['ผู้ปฏิบัติงาน/ผู้ช่วย/ผู้ควบคุม ผ่านการอบรม','ผู้ปฏิบัติงานมีสุขภาพสมบูรณ์','ปริมาณออกซิเจน 19.5–23.5%','ปริมาณสารไวไฟ ≤10% LEL','ปริมาณสารเคมีอื่นๆ (ระบุด้านล่าง)','แสงสว่างเพียงพอ','ผู้ช่วยอยู่บริเวณทางเข้า-ออกตลอดเวลา'];
-const HIGHRISK_ITEMS = ['ผู้ปฏิบัติงานผ่านการอบรม','สวมใส่อุปกรณ์ป้องกันการตก','บันไดแข็งแรงและติดตั้งถูกต้อง','นั่งร้านมีโครงสร้างแข็งแรง','ปิดกั้นช่องโหว่ที่วัสดุหล่นได้','นั่งร้านเคลื่อนที่ได้ล้อล็อคได้','มีการติดป้ายอนุญาตหลังตรวจสอบ','ผู้ปฏิบัติงานมีสุขภาพสมบูรณ์','สภาพเครื่องจักรที่ใช้ทำงานบนที่สูง','ใบรับรองการตรวจสภาพเครื่องจักร'];
+const ITEMS = {
+  general: ['ปิดแยกระบบที่เกี่ยวข้อง','ตรวจสอบอุปกรณ์ให้อยู่ในสภาพดีก่อนใช้งาน','กั้นพื้นที่และติดป้ายเตือนในบริเวณที่ปฏิบัติงาน','พื้นที่ปฏิบัติงานต้องปราศจากสิ่งของกีดขวาง','เก็บอุปกรณ์หรือสิ่งไม่จำเป็นออกจากพื้นที่','แต่งกายเหมาะสมกับชนิดของงาน/อุปกรณ์ PPE','ปฏิบัติงานเสร็จสิ้น','ขอต่อเวลาทำงาน','ทำความสะอาดพื้นที่หลังเสร็จงาน','การเก็บอุปกรณ์เป็นระเบียบ'],
+  hotwork: ['ถังดับเพลิง','กรณีพื้นที่ปิดต้องมีการระบายอากาศที่เหมาะสม','เคลื่อนย้ายวัสดุติดไฟ/สารไวไฟออกจากพื้นที่ทำงาน'],
+  confined: ['ผู้ปฏิบัติงาน ผู้ช่วยเหลือ ผู้ควบคุม ผู้ได้รับอนุญาต ผ่านการอบรม','ผู้ปฏิบัติงานมีสุขภาพสมบูรณ์จากการตรวจสุขภาพ','ปริมาณออกซิเจน ร้อยละ 19.5–23.5','ปริมาณสารไวไฟ ไม่เกินร้อยละ 10 LEL','ปริมาณสารเคมีอื่นๆ (ระบุด้านล่าง)','แสงสว่างเพียงพอ','ผู้ช่วยเหลือต้องอยู่บริเวณทางเข้า-ออกตลอดเวลา'],
+  high: ['ผู้ปฏิบัติงานผ่านการอบรม','ผู้ปฏิบัติงานสวมใส่อุปกรณ์ป้องกันการตกและผูกรัดเครื่องมือ','บันไดแข็งแรงและติดตั้งถูกต้อง','นั่งร้านมีโครงสร้างแข็งแรง มีการค้ำยันถูกต้อง','ปิดกั้นนั่งร้านไม่ให้มีช่องโหว่ที่วัสดุรั่วหล่นได้','นั่งร้านเคลื่อนที่ได้ล้อล็อคได้','มีการติดป้ายอนุญาตให้ใช้งานหลังผ่านการตรวจสอบ','ผู้ปฏิบัติงานมีสุขภาพสมบูรณ์จากการตรวจสุขภาพ','สภาพเครื่องจักรที่ใช้ทำงานบนที่สูง','ใบรับรองการตรวจสภาพเครื่องจักร'],
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const permitId = params.get('id');
   if (!permitId) { document.getElementById('loading').innerHTML = '❌ ไม่พบ Permit ID'; return; }
-  document.getElementById('inspectorDate').value = new Date().toLocaleDateString('th-TH');
+  const now = new Date().toLocaleString('th-TH');
+  ['date1','date2','date3'].forEach(id => { const el = document.getElementById(id); if(el) el.value = now; });
   loadData(permitId);
-  initSigCanvas();
+  ['sig1','sig2','sig3'].forEach((id,i) => initSig(id, i+1));
 });
 
 async function loadData(permitId) {
@@ -261,127 +380,199 @@ async function loadData(permitId) {
     const controller = new AbortController();
     setTimeout(() => controller.abort(), 8000);
     const res = await fetch(`${APPS_SCRIPT_URL}?action=get_approval&id=${encodeURIComponent(permitId)}`, {signal:controller.signal, redirect:'follow', mode:'cors'});
-    const text = await res.text();
-    const json = JSON.parse(text);
+    const json = JSON.parse(await res.text());
     if (json.success && json.permit) permitData = json.permit;
     else throw new Error('no data');
   } catch(e) {
-    permitData = {permit_id: new URLSearchParams(window.location.search).get('id'), company_name:'Demo', supervisor:'—', hazard_types:''};
+    permitData = {permit_id: new URLSearchParams(window.location.search).get('id'), company_name:'Demo', supervisor:'—', hazard_types:'', work_date:'—', work_area:'—', overtime_start:'', overtime_end:''};
   }
 
+  // Banner
   document.getElementById('bannerPermitId').textContent = permitData.permit_id;
-  document.getElementById('bannerMeta').textContent = (permitData.company_name||'') + ' | ' + (permitData.supervisor||'');
+  document.getElementById('bannerCompany').textContent = (permitData.company_name||'') + ' | ' + (permitData.supervisor||'');
+  document.getElementById('permitInfoGrid').innerHTML = [
+    {l:'วันที่ทำงาน', v: (permitData.work_date||'')+(permitData.work_date_end?' — '+permitData.work_date_end:'')},
+    {l:'เวลา', v: (permitData.time_start||'—')+'–'+(permitData.time_end||'—')},
+    {l:'พื้นที่', v: permitData.work_area||'—'},
+    {l:'ประเภทงาน', v: permitData.hazard_types||'—'},
+    {l:'จำนวนคน', v: (permitData.worker_count||0)+' คน'},
+    {l:'PPE', v: permitData.ppe_required||'—'},
+  ].map(i=>`<div class="permit-info-item"><div class="pil">${i.l}</div><div class="piv">${i.v||'—'}</div></div>`).join('');
 
-  buildChecklist('generalChecklist', GENERAL_ITEMS);
-  buildChecklist('hotworkChecklist', HOTWORK_ITEMS);
-  buildChecklist('confinedChecklist', CONFINED_ITEMS);
-  buildChecklist('highriskChecklist', HIGHRISK_ITEMS);
+  // Overtime alert
+  const otStart = permitData.overtime_start || '';
+  const otEnd = permitData.overtime_end || '';
+  if (otStart && otEnd) {
+    const alert = document.getElementById('overtimeAlert');
+    alert.classList.add('show');
+    document.getElementById('overtimeAlertDetail').textContent = `ขอต่อเวลา ${otStart} — ${otEnd} น. (รอการอนุมัติจาก จป.)`;
+    const card = document.getElementById('overtimeDecisionCard');
+    if (card) {
+      card.style.display = 'block';
+      document.getElementById('overtimeDecisionSub').textContent = `ผู้รับเหมาขอต่อเวลา ${otStart}–${otEnd} น.`;
+    }
+  }
 
+  // Build checklists for all 3 phases
+  const phases = ['before','during','after'];
+  const types = ['general','hotwork','confined','high'];
+  phases.forEach(phase => {
+    types.forEach(type => {
+      buildCheck(`${type}_${phase}`, ITEMS[type]);
+    });
+  });
+
+  // Show conditional sections based on hazards
   const h = (permitData.hazard_types||'').toLowerCase();
-  if (h.includes('hotwork')) document.getElementById('hotworkSection').classList.add('show');
-  if (h.includes('confined')) document.getElementById('confinedSection').classList.add('show');
-  if (h.includes('highrisk') || h.includes('high')) document.getElementById('highriskSection').classList.add('show');
+  ['before','during','after'].forEach(phase => {
+    if (h.includes('hotwork')) { const el = document.getElementById(`hotwork_${phase}_card`); if(el) el.classList.add('show'); }
+    if (h.includes('confined')) { const el = document.getElementById(`confined_${phase}_card`); if(el) el.classList.add('show'); }
+    if (h.includes('highrisk') || h.includes('high')) { const el = document.getElementById(`high_${phase}_card`); if(el) el.classList.add('show'); }
+  });
 
   document.getElementById('loading').style.display = 'none';
   document.getElementById('main-content').style.display = 'block';
   document.getElementById('actionBar').style.display = 'flex';
 }
 
-function buildChecklist(containerId, items) {
+function buildCheck(containerId, items) {
   const container = document.getElementById(containerId);
+  if (!container) return;
   items.forEach((label, idx) => {
     const key = containerId + '_' + idx;
-    checkStates[key] = {before:null, during:null, after:null};
-    const row = document.createElement('div');
-    row.className = 'check-row';
-    row.innerHTML = `<div class="check-label">${idx+1}. ${label}</div>
-      <div class="check-cell">${makeRG(key,'before')}</div>
-      <div class="check-cell">${makeRG(key,'during')}</div>
-      <div class="check-cell">${makeRG(key,'after')}</div>`;
-    container.appendChild(row);
+    checkStates[key] = null;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${idx+1}. ${label}</td>
+      <td style="text-align:center">
+        <div class="radio-group">
+          <button class="rb ok" onclick="setCheck('${key}',this,'ok')">✓</button>
+          <button class="rb ng" onclick="setCheck('${key}',this,'ng')">✗</button>
+          <button class="rb na" onclick="setCheck('${key}',this,'na')">N/A</button>
+        </div>
+      </td>`;
+    container.appendChild(tr);
   });
 }
 
-function makeRG(key, phase) {
-  return `<div class="radio-group">
-    <button class="rb ok" onclick="setCheck('${key}','${phase}','ok',this)">✓</button>
-    <button class="rb ng" onclick="setCheck('${key}','${phase}','ng',this)">✗</button>
-    <button class="rb na" onclick="setCheck('${key}','${phase}','na',this)">-</button>
-  </div>`;
-}
-
-function setCheck(key, phase, val, btn) {
+function setCheck(key, btn, val) {
   btn.closest('.radio-group').querySelectorAll('.rb').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  checkStates[key][phase] = val;
+  checkStates[key] = val;
 }
 
-function setTraining(status) {
-  trainingStatus = status;
-  document.getElementById('trainPass').classList.toggle('active', status==='pass');
-  document.getElementById('trainFail').classList.toggle('active', status==='fail');
+function setTraining(s) {
+  trainingStatus = s;
+  document.getElementById('trainPass').classList.toggle('active', s==='pass');
+  document.getElementById('trainFail').classList.toggle('active', s==='fail');
 }
 
-function initSigCanvas() {
-  const canvas = document.getElementById('sigCanvas');
+function switchPhase(n) {
+  currentPhase = n;
+  for (let i=1; i<=3; i++) {
+    document.getElementById('phase'+i).style.display = i===n ? 'block' : 'none';
+    document.getElementById('tab'+i).classList.toggle('active', i===n);
+  }
+  const names = {1:'ก่อนเริ่มงาน', 2:'ขณะปฏิบัติงาน', 3:'หลังเสร็จงาน'};
+  document.getElementById('phaseIndicator').textContent = `ช่วงที่ ${n}/3 — ${names[n]}`;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function initSig(canvasId, phaseNum) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
   canvas.width = 860; canvas.height = 170;
-  sigCtx = canvas.getContext('2d');
-  sigCtx.strokeStyle = '#202124'; sigCtx.lineWidth = 2.5; sigCtx.lineCap = 'round'; sigCtx.lineJoin = 'round';
-  let drawing = false, lx = 0, ly = 0;
-  const pos = e => { const r = canvas.getBoundingClientRect(); const sx = canvas.width/r.width, sy = canvas.height/r.height; const src = e.touches ? e.touches[0] : e; return {x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy}; };
-  canvas.addEventListener('mousedown', e => {drawing=true; const p=pos(e); lx=p.x; ly=p.y;});
-  canvas.addEventListener('mousemove', e => { if(!drawing)return; const p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(lx,ly); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); lx=p.x; ly=p.y; });
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#202124'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  sigCtxs[phaseNum] = ctx;
+  let drawing = false, lx=0, ly=0;
+  const pos = e => { const r=canvas.getBoundingClientRect(), sx=canvas.width/r.width, sy=canvas.height/r.height, src=e.touches?e.touches[0]:e; return {x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy}; };
+  canvas.addEventListener('mousedown', e=>{drawing=true; const p=pos(e); lx=p.x; ly=p.y;});
+  canvas.addEventListener('mousemove', e=>{ if(!drawing)return; const p=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(p.x,p.y); ctx.stroke(); lx=p.x; ly=p.y; });
   canvas.addEventListener('mouseup', ()=>drawing=false);
   canvas.addEventListener('mouseleave', ()=>drawing=false);
   canvas.addEventListener('touchstart', e=>{e.preventDefault(); drawing=true; const p=pos(e); lx=p.x; ly=p.y;},{passive:false});
-  canvas.addEventListener('touchmove', e=>{e.preventDefault(); if(!drawing)return; const p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(lx,ly); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); lx=p.x; ly=p.y;},{passive:false});
+  canvas.addEventListener('touchmove', e=>{e.preventDefault(); if(!drawing)return; const p=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(p.x,p.y); ctx.stroke(); lx=p.x; ly=p.y;},{passive:false});
   canvas.addEventListener('touchend', ()=>drawing=false);
 }
 
-function clearSig() { sigCtx.clearRect(0,0,860,170); }
-function isSigEmpty() { return !sigCtx.getImageData(0,0,860,170).data.some(v=>v!==0); }
+function clearSigPhase(n) { const ctx=sigCtxs[n]; if(ctx) ctx.clearRect(0,0,860,170); }
+function isSigPhaseEmpty(n) { const canvas=document.getElementById('sig'+n); if(!canvas)return true; return !canvas.getContext('2d').getImageData(0,0,860,170).data.some(v=>v!==0); }
 
-async function saveChecklist() {
-  const name = document.getElementById('inspectorName').value.trim();
-  if (!name) { showToast('กรุณากรอกชื่อ จป.', 'error'); return; }
-  if (isSigEmpty()) { showToast('กรุณาลงลายเซ็น', 'error'); return; }
+async function savePhase() {
+  const n = currentPhase;
+  const nameEl = document.getElementById('name'+n);
+  if (!nameEl?.value.trim()) { showToast('กรุณากรอกชื่อ จป.', 'error'); return; }
+  if (isSigPhaseEmpty(n)) { showToast('กรุณาลงลายเซ็น', 'error'); return; }
 
   const btn = document.getElementById('btnSave');
   btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
 
-  const overtime = document.querySelector('input[name="overtime"]:checked')?.value || 'na';
+  const phaseNames = {1:'before', 2:'during', 3:'after'};
+  const phase = phaseNames[n];
+
+  // Collect checks for this phase
+  const phaseChecks = {};
+  Object.keys(checkStates).forEach(k => { if(k.includes('_'+phase+'_')) phaseChecks[k] = checkStates[k]; });
+
+  const overtime = n===2 ? (document.querySelector('input[name="otDecision"]:checked')?.value || '') : '';
+
   const payload = JSON.stringify({
     permitId: permitData.permit_id,
-    type: 'checklist',
-    inspectorName: name,
-    inspectorDate: document.getElementById('inspectorDate').value,
-    inspectorNote: document.getElementById('inspectorNote').value,
-    trainingStatus,
-    checkStates,
+    type: 'checklist_phase',
+    phase, phaseNum: n,
+    inspectorName: nameEl.value.trim(),
+    inspectorDate: document.getElementById('date'+n)?.value || '',
+    inspectorNote: document.getElementById('note'+n)?.value || '',
+    trainingStatus: n===1 ? trainingStatus : '',
+    checkStates: phaseChecks,
     overtime,
-    overtimeStart: document.getElementById('overtimeStart').value,
-    overtimeEnd: document.getElementById('overtimeEnd').value,
-    overtimeReason: document.getElementById('overtimeReason')?.value || '',
-    hotworkFuels: [document.getElementById('fuel1')?.value, document.getElementById('fuel2')?.value, document.getElementById('fuel3')?.value].filter(Boolean).join(', '),
-    chemOther: document.getElementById('chemOther')?.value || '',
+    otRejectReason: document.getElementById('otRejectReason')?.value || '',
+    hotworkFuels: n===1 ? [document.getElementById('fuel1')?.value, document.getElementById('fuel2')?.value, document.getElementById('fuel3')?.value].filter(Boolean).join(', ') : '',
+    chemOther: n===1 ? (document.getElementById('chemOther')?.value||'') : '',
+    postContractor: n===3 ? (document.getElementById('postContractor')?.value||'') : '',
+    postDept: n===3 ? (document.getElementById('postDept')?.value||'') : '',
     savedAt: new Date().toLocaleString('th-TH'),
   });
 
   try {
-    await fetch(APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: payload });
+    await fetch(APPS_SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:payload});
   } catch(e) { console.warn(e); }
+
+  savedPhases[n] = true;
+  document.getElementById('tab'+n).classList.add('saved');
 
   btn.disabled = false;
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('actionBar').style.display = 'none';
-  document.getElementById('successSub').textContent = permitData.permit_id + ' — บันทึก Checklist เรียบร้อย';
+
+  const phaseLabels = {1:'ก่อนเริ่มงาน', 2:'ขณะปฏิบัติงาน', 3:'หลังเสร็จงาน'};
+  document.getElementById('successIcon').textContent = n===3?'🎉':'✅';
+  document.getElementById('successTitle').textContent = `บันทึกช่วง "${phaseLabels[n]}" เรียบร้อย`;
+  document.getElementById('successSub').textContent = permitData.permit_id + ' — บันทึกแล้ว ' + new Date().toLocaleString('th-TH');
+
+  const btnNext = document.getElementById('btnNext');
+  if (n < 3) {
+    btnNext.style.display = 'inline-flex';
+    btnNext.textContent = `ถัดไป: ช่วงที่ ${n+1} "${phaseLabels[n+1]}" →`;
+  } else {
+    btnNext.style.display = 'none';
+  }
+
   document.getElementById('success-screen').style.display = 'block';
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
+function goNextPhase() {
+  const n = currentPhase + 1;
+  document.getElementById('success-screen').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  document.getElementById('actionBar').style.display = 'flex';
+  switchPhase(n);
+}
+
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show'+(type?' '+type:'');
+  t.textContent = msg; t.className = 'show'+(type?' t-'+type:'');
   setTimeout(()=>t.className='', 3000);
 }
 </script>

@@ -132,8 +132,17 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:160px}
           <div class="form-group"><label class="form-label">ชื่อบริษัทผู้รับเหมา <span class="req">*</span></label><input type="text" id="companyName" placeholder="ชื่อบริษัท"></div>
           <div class="form-group"><label class="form-label">ชื่อหัวหน้างาน/ผู้ควบคุมงาน <span class="req">*</span></label><input type="text" id="supervisorName" placeholder="ชื่อ-นามสกุล"></div>
           <div class="form-group"><label class="form-label">เบอร์ติดต่อ <span class="req">*</span></label><input type="tel" id="phone" placeholder="0xx-xxx-xxxx"></div>
-          <div class="form-group"><label class="form-label">วันที่ปฏิบัติงาน <span class="req">*</span></label><input type="date" id="workDate"></div>
-          <div class="form-group"><label class="form-label">เวลา <span class="req">*</span></label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input type="time" id="timeStart" value="08:00"><input type="time" id="timeEnd" value="17:00"></div></div>
+          <div class="form-group"><label class="form-label">วันที่เริ่มปฏิบัติงาน <span class="req">*</span></label><input type="date" id="workDate"></div>
+          <div class="form-group"><label class="form-label">วันที่สิ้นสุดปฏิบัติงาน <span class="req">*</span></label><input type="date" id="workDateEnd"></div>
+          <div class="form-group"><label class="form-label">เวลาเริ่ม - สิ้นสุด <span class="req">*</span></label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input type="time" id="timeStart" value="08:00"><input type="time" id="timeEnd" value="17:00"></div></div>
+          <div class="form-group">
+            <label class="form-label">ขอต่อเวลาหลัง 17.00 น. (ถ้ามี)</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <input type="time" id="overtimeStart" placeholder="เวลาเริ่ม">
+              <input type="time" id="overtimeEnd" placeholder="เวลาสิ้นสุด">
+            </div>
+            <div style="font-size:11px;color:var(--gray-500);margin-top:4px">⚠️ ต้องได้รับอนุมัติจาก จป.วิชาชีพก่อนทำงาน</div>
+          </div>
           <div class="form-group full"><label class="form-label">ลักษณะการปฏิบัติงาน <span class="req">*</span></label><textarea id="workDesc" placeholder="อธิบายลักษณะงาน..."></textarea></div>
           <div class="form-group full"><label class="form-label">ระบุพื้นที่/บริเวณทำงาน <span class="req">*</span></label><input type="text" id="workArea" placeholder="เช่น อาคาร A ชั้น 2"></div>
         </div>
@@ -582,8 +591,11 @@ function collectFormData() {
     supervisorName: document.getElementById('supervisorName').value,
     phone: document.getElementById('phone').value,
     workDate: document.getElementById('workDate').value,
+    workDateEnd: document.getElementById('workDateEnd').value,
     timeStart: document.getElementById('timeStart').value,
     timeEnd: document.getElementById('timeEnd').value,
+    overtimeStart: document.getElementById('overtimeStart').value,
+    overtimeEnd: document.getElementById('overtimeEnd').value,
     workDesc: document.getElementById('workDesc').value,
     workArea: document.getElementById('workArea').value,
     hazards: hazards.join(', '),
