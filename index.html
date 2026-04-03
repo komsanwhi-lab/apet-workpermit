@@ -191,6 +191,14 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:160px}
           </table>
         </div>
         <button class="btn-add-row" onclick="addRiskRow()">+ เพิ่มแถว</button>
+        <div style="margin-top:14px;padding:14px 16px;background:var(--gray-50);border-radius:8px;border:1.5px dashed var(--gray-300)">
+          <div style="font-size:13px;color:var(--gray-700);margin-bottom:8px">📎 <strong>กรณีพื้นที่ไม่พอ</strong> — แนบเอกสารประเมินความเสี่ยงเพิ่มเติม (PDF, Word, Excel, รูปภาพ)</div>
+          <label style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--gray-300);border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px;color:var(--gray-700)">
+            📄 เลือกไฟล์
+            <input type="file" id="riskFile" accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.png" style="display:none" onchange="showRiskFileName(this)">
+          </label>
+          <span id="riskFileLabel" style="font-size:12px;color:var(--gray-500);margin-left:10px">ยังไม่ได้เลือกไฟล์</span>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -253,23 +261,14 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:160px}
           </div>
         </div>
 
-        <!-- Steps 2-4: แจ้งให้ทราบ (กรอกในระบบโดย จป.) -->
+        <!-- Steps 2-4: แจ้งให้ทราบ -->
         <div style="background:var(--gray-50);border-radius:8px;padding:16px;border:1.5px solid var(--gray-200)">
-          <div style="font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:8px">ขั้นตอนที่ 2-4 — ดำเนินการโดย จป.วิชาชีพ</div>
-          <div style="font-size:12px;color:var(--gray-500);line-height:1.7">
-            หลังจากส่งฟอร์มนี้แล้ว <strong>จป.วิชาชีพ</strong> จะดำเนินการตรวจสอบและรวบรวมลายเซ็น:<br>
-            ✍️ แผนกที่ว่าจ้าง → ✍️ จป.วิชาชีพ → ✍️ ประธาน คปอ.<br>
-            ผ่านหน้า <strong>ตรวจสอบใบอนุญาต (หน้าที่ 2/2)</strong> ใน Dashboard
-          </div>
-          <div class="form-grid" style="margin-top:12px">
-            <div class="form-group">
-              <label class="form-label">แผนกที่ว่าจ้าง/รับผิดชอบ</label>
-              <input type="text" id="deptName" placeholder="ชื่อแผนก">
-            </div>
-            <div class="form-group">
-              <label class="form-label">ผู้รับผิดชอบแผนก</label>
-              <input type="text" id="deptContact" placeholder="ชื่อ-นามสกุล">
-            </div>
+          <div style="font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:8px">ขั้นตอนที่ 2-4 — หลังส่งฟอร์ม</div>
+          <div style="font-size:12px;color:var(--gray-500);line-height:1.8">
+            ✍️ <strong>แผนกที่ว่าจ้าง</strong> ตรวจสอบและลงชื่อ<br>
+            ✍️ <strong>จป.วิชาชีพ</strong> ตรวจสอบพื้นที่และลงชื่อ<br>
+            ✍️ <strong>ประธาน คปอ.</strong> อนุมัติขั้นสุดท้าย<br>
+            <span style="color:var(--green);font-weight:600">→ ผู้รับเหมาเริ่มทำงานได้เมื่อครบทุกขั้นตอน</span>
           </div>
         </div>
 
@@ -446,6 +445,17 @@ function addToolRow() {
 
 function showFileName(input) {
   const label = document.getElementById('fileNameLabel');
+  if (input.files && input.files[0]) {
+    label.textContent = '✅ ' + input.files[0].name;
+    label.style.color = 'var(--green)';
+  } else {
+    label.textContent = 'ยังไม่ได้เลือกไฟล์';
+    label.style.color = 'var(--gray-500)';
+  }
+}
+
+function showRiskFileName(input) {
+  const label = document.getElementById('riskFileLabel');
   if (input.files && input.files[0]) {
     label.textContent = '✅ ' + input.files[0].name;
     label.style.color = 'var(--green)';

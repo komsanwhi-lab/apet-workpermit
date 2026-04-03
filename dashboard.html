@@ -97,6 +97,8 @@ body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; color: var(--gra
 .btn-dept:hover { background: var(--blue); color: white; }
 .btn-chairman { border-color: var(--green); color: var(--green); }
 .btn-chairman:hover { background: var(--green); color: white; }
+.btn-checklist { border-color: #E67E22; color: #E67E22; }
+.btn-checklist:hover { background: #E67E22; color: white; }
 
 /* Modal */
 .modal-overlay {
@@ -405,6 +407,7 @@ function renderTable(permits) {
           <button class="btn-sm btn-view" onclick="viewPermit('${p.permit_id}')">ดู</button>
           <button class="btn-sm btn-dept" onclick="openInspector('${p.permit_id}', 'dept')" title="แผนกที่ว่าจ้าง">🏢 แผนก</button>
           <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" title="จป.วิชาชีพ">🔍 จป.</button>
+          <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" title="Checklist จป.">📋 Checklist</button>
           <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" title="ประธาน คปอ.">✅ คปอ.</button>
           ${p.status === 'รอตรวจสอบ' ? `
           <button class="btn-sm btn-approve" onclick="updateStatus('${p.permit_id}', 'อนุมัติ')">✓</button>
@@ -604,6 +607,10 @@ const PPE_MAP = {
 function openInspector(permitId, role) {
   const roleParam = role ? '&role=' + role : '';
   window.open('inspector.html?id=' + encodeURIComponent(permitId) + roleParam, '_blank');
+}
+
+function openChecklist(permitId) {
+  window.open('checklist.html?id=' + encodeURIComponent(permitId), '_blank');
 }
 
 function showToast(msg, type = '') {
