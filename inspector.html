@@ -275,12 +275,11 @@ async function loadData(permitId, role) {
     const text = await res.text();
     console.log('Response:', text);
     const json = JSON.parse(text);
-    if (json.success && json.permit) {
-      permitData = json.permit;
+    if (json.success) {
+      permitData = json.permit || null;
       approvalState = json.approval || { dept: null, inspector: null, chairman: null };
-    } else {
-      throw new Error('No data');
     }
+    if (!permitData) throw new Error('No permit data');
   } catch(e) {
     console.warn('Using demo data:', e.message);
     permitData = {
@@ -299,6 +298,9 @@ async function loadData(permitId, role) {
   }
 
   renderPage(role);
+  // แสดงเนื้อหา ซ่อน loading
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
   initCanvases();
   setTimeout(() => scrollToRole(role), 600);
 }
@@ -445,13 +447,20 @@ async function saveSig(role) {
   const finalStatus = allSigned ? 'อนุมัติ' : 'รอตรวจสอบ';
 
   try {
-    const payload = encodeURIComponent(JSON.stringify({
+    const payload = JSON.stringify({
       permitId: permitData.permit_id,
-      role, name, date, note, sigData, savedAt, finalStatus,
+      role, name, date, note, savedAt, finalStatus,
       allApprovals: approvalState,
-    }));
-    await fetch(`${APPS_SCRIPT_URL}?action=save_approval&data=${payload}`);
-  } catch(e) { console.warn(e); }
+    });
+    // ใช้ no-cors POST เพื่อหลีกเลี่ยง URL ยาวเกิน
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+    });
+    console.log('Saved OK');
+  } catch(e) { console.warn('Save error:', e); }
 
   btn.disabled = false;
 
