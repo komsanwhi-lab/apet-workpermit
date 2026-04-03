@@ -275,12 +275,11 @@ async function loadData(permitId, role) {
     const text = await res.text();
     console.log('Response:', text);
     const json = JSON.parse(text);
-    if (json.success && json.permit) {
-      permitData = json.permit;
+    if (json.success) {
+      permitData = json.permit || null;
       approvalState = json.approval || { dept: null, inspector: null, chairman: null };
-    } else {
-      throw new Error('No data');
     }
+    if (!permitData) throw new Error('No permit data');
   } catch(e) {
     console.warn('Using demo data:', e.message);
     permitData = {
