@@ -81,6 +81,11 @@ body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; color: var(--gra
 .badge-pending { background: var(--yellow-light); color: #856404; }
 .badge-approved { background: var(--green-light); color: #1E8449; }
 .badge-rejected { background: var(--red-light); color: #96281B; }
+.badge-wait-dept { background: #FFF3CD; color: #856404; }
+.badge-wait-safety { background: #EAD7FF; color: #7C5CBF; }
+.badge-wait-chair { background: var(--blue-light); color: #185FA5; }
+.badge-expired { background: #F2F3F4; color: #5F6368; }
+.badge-closed { background: #D5D8DC; color: #2C3E50; }
 
 /* Action buttons */
 .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
@@ -101,6 +106,10 @@ body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; color: var(--gra
 .btn-checklist:hover { background: #E67E22; color: white; }
 .btn-print { border-color: #5F6368; color: #5F6368; }
 .btn-print:hover { background: #5F6368; color: white; }
+.btn-overtime { border-color: #E67E22; color: #E67E22; }
+.btn-overtime:hover { background: #E67E22; color: white; }
+.btn-close-work { border-color: #2C3E50; color: #2C3E50; }
+.btn-close-work:hover { background: #2C3E50; color: white; }
 
 /* Modal */
 .modal-overlay {
@@ -389,9 +398,24 @@ function renderTable(permits) {
   const rows = permits.map(p => {
     const hazardTags = (p.hazard_types || '').split(', ').filter(Boolean)
       .map(h => `<span class="hazard-tag">${HAZARD_MAP[h] || h}</span>`).join('');
-    const badgeClass = p.status === 'อนุมัติ' ? 'badge-approved'
-      : p.status === 'ไม่อนุมัติ' ? 'badge-rejected' : 'badge-pending';
-    const statusIcon = p.status === 'อนุมัติ' ? '✅' : p.status === 'ไม่อนุมัติ' ? '❌' : '⏳';
+    const badgeClass = {
+      'อนุมัติ': 'badge-approved',
+      'ไม่อนุมัติ': 'badge-rejected',
+      'รอแผนกที่ว่าจ้าง': 'badge-wait-dept',
+      'รอ จป.วิชาชีพ': 'badge-wait-safety',
+      'รอ ประธาน คปอ.': 'badge-wait-chair',
+      'หมดอายุ': 'badge-expired',
+      'ปิดงาน': 'badge-closed',
+    }[p.status] || 'badge-pending';
+    const statusIcon = {
+      'อนุมัติ': '✅',
+      'ไม่อนุมัติ': '❌',
+      'รอแผนกที่ว่าจ้าง': '🏢',
+      'รอ จป.วิชาชีพ': '🔍',
+      'รอ ประธาน คปอ.': '👑',
+      'หมดอายุ': '⏰',
+      'ปิดงาน': '🔒',
+    }[p.status] || '⏳';
 
     return `<tr>
       <td><span class="permit-id">${p.permit_id}</span></td>
@@ -411,7 +435,9 @@ function renderTable(permits) {
           <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" title="จป.วิชาชีพ">🔍 จป.</button>
           <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" title="Checklist จป.">📋 Checklist</button>
           <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" title="ประธาน คปอ.">✅ คปอ.</button>
-          <button class="btn-sm btn-print" onclick="openPrintPage('${p.permit_id}')" title="พิมพ์ใบอนุญาต">🖨️</button>
+          <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" title="ต่อเวลา">⏰ ต่อเวลา</button>
+          <button class="btn-sm btn-print" onclick="openPrintPage('${p.permit_id}')" title="พิมพ์">🖨️</button>
+          ${p.status === 'อนุมัติ' ? `<button class="btn-sm btn-close-work" onclick="closeWork('${p.permit_id}')" title="ปิดงาน">🔒 ปิดงาน</button>` : ''}
           ${p.status === 'รอตรวจสอบ' ? `
           <button class="btn-sm btn-approve" onclick="updateStatus('${p.permit_id}', 'อนุมัติ')">✓</button>
           <button class="btn-sm btn-reject" onclick="updateStatus('${p.permit_id}', 'ไม่อนุมัติ')">✗</button>
@@ -618,6 +644,22 @@ function openChecklist(permitId) {
 
 function openPrintPage(permitId) {
   window.open('print.html?id=' + encodeURIComponent(permitId), '_blank');
+}
+
+function openOvertime(permitId) {
+  window.open('overtime.html?id=' + encodeURIComponent(permitId), '_blank');
+}
+
+async function closeWork(permitId) {
+  if (!confirm(`ยืนยันปิดงาน ${permitId}?\nการปิดงานจะไม่สามารถเปลี่ยนแปลงได้`)) return;
+  const p = allPermits.find(x => x.permit_id === permitId);
+  if (p) p.status = 'ปิดงาน';
+  try {
+    await fetch(`${APPS_SCRIPT_URL}?action=close_permit&id=${encodeURIComponent(permitId)}`);
+  } catch(e) {}
+  renderStats();
+  filterTable();
+  showToast('🔒 ปิดงาน ' + permitId + ' เรียบร้อย', 'success');
 }
 
 function showToast(msg, type = '') {

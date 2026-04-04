@@ -500,15 +500,24 @@ function updateProgress() {
 // ===== VALIDATE =====
 function validateStep(step) {
   const req = {
-    1: ['permitDate','companyName','supervisorName','phone','workDate','workDesc','workArea'],
+    1: ['permitDate','companyName','supervisorName','phone','workDate','workDateEnd','workDesc','workArea'],
   };
   if (req[step]) {
     for (const id of req[step]) {
       const el = document.getElementById(id);
-      if (!el.value.trim()) {
+      if (!el || !el.value.trim()) {
         showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
-        el.focus(); return false;
+        if (el) el.focus(); return false;
       }
+    }
+  }
+  // validate workDateEnd >= workDate
+  if (step === 1) {
+    const start = document.getElementById('workDate').value;
+    const end = document.getElementById('workDateEnd').value;
+    if (start && end && end < start) {
+      showToast('วันสิ้นสุดต้องไม่น้อยกว่าวันเริ่มงาน', 'error');
+      return false;
     }
   }
   if (step === 2) {
@@ -518,6 +527,21 @@ function validateStep(step) {
   if (step === 3) {
     const names = Array.from(document.querySelectorAll('.worker-name')).filter(w => w.value.trim());
     if (!names.length) { showToast('กรุณากรอกรายชื่อผู้ปฏิบัติงาน', 'error'); return false; }
+  }
+  if (step === 4) {
+    // บังคับกรอกอย่างน้อย 1 แถว risk
+    const rows = document.querySelectorAll('#riskTableBody tr');
+    let hasRisk = false;
+    for (const tr of rows) {
+      const cells = tr.querySelectorAll('textarea');
+      if (cells[0]?.value.trim() && cells[1]?.value.trim() && cells[2]?.value.trim()) {
+        hasRisk = true; break;
+      }
+    }
+    if (!hasRisk) {
+      showToast('กรุณาระบุลักษณะงาน ความเสี่ยง และมาตรการป้องกันอย่างน้อย 1 รายการ', 'error');
+      return false;
+    }
   }
   if (step === 5) {
     if (!document.getElementById('consentCheck').checked) { showToast('กรุณายืนยันการรับทราบกฎระเบียบ', 'error'); return false; }

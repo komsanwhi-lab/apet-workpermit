@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ขอต่อเวลา — APET Work Permit</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C0392B;--red-light:#FADBD8;--green:#27AE60;--green-light:#D5F5E3;--orange:#E67E22;--orange-light:#FDEBD0;--gray-50:#F8F9FA;--gray-200:#E8EAED;--gray-300:#DADCE0;--gray-500:#9AA0A6;--gray-700:#5F6368;--gray-900:#202124}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:var(--gray-900);min-height:100vh}
+.site-header{background:var(--orange);padding:0}
+.header-inner{max-width:600px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.header-logo{background:rgba(255,255,255,.2);border-radius:6px;padding:4px 10px;font-weight:700;font-size:17px;color:#fff;border:1px solid rgba(255,255,255,.3)}
+.header-title{color:#fff;font-size:15px;font-weight:600}
+.header-sub{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
+.page{max-width:600px;margin:0 auto;padding:24px 16px 48px}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
+.card-header{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:14px 20px;display:flex;align-items:center;gap:10px}
+.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.card-title{font-weight:600;font-size:14px}
+.card-body{padding:20px}
+.permit-info{background:var(--orange-light);border:2px solid var(--orange);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+.pi-id{font-family:monospace;font-size:16px;font-weight:700;color:var(--orange)}
+.pi-company{font-size:13px;color:var(--gray-700);margin-top:4px}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label.form-label{font-size:13px;font-weight:500;color:var(--gray-700)}
+.req{color:var(--red);margin-left:2px}
+input[type=text],input[type=time],textarea{border:1.5px solid var(--gray-300);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;width:100%;transition:border-color .15s;background:#fff}
+input:focus,textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(230,126,34,.1)}
+textarea{resize:vertical;min-height:60px}
+.warning-box{background:#FFF3CD;border:1.5px solid #FBBF7E;border-radius:8px;padding:14px 16px;font-size:13px;color:#856404;line-height:1.7;margin-bottom:16px}
+.btn{padding:12px 28px;border-radius:6px;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:8px;width:100%;justify-content:center}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-orange:hover{background:#CA6F1E}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;transition:transform .3s;opacity:0}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+#toast.error{background:var(--red)}
+#toast.success{background:var(--green)}
+#success-screen{display:none;text-align:center;padding:40px 20px}
+#loading{text-align:center;padding:60px;color:var(--gray-500)}
+#main-content{display:none}
+</style>
+</head>
+<body>
+<div class="site-header">
+  <div class="header-inner">
+    <div class="header-logo">APET</div>
+    <div>
+      <div class="header-title">⏰ ขอต่อเวลาการทำงาน</div>
+      <div class="header-sub">สำหรับผู้รับเหมาที่ต้องการทำงานหลัง 17.00 น.</div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div id="loading">🔄 กำลังโหลดข้อมูลใบอนุญาต...</div>
+
+  <div id="main-content">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--orange-light)">📋</div>
+        <div><div class="card-title">ข้อมูลใบอนุญาต</div></div>
+      </div>
+      <div class="card-body">
+        <div class="permit-info">
+          <div class="pi-id" id="piId">—</div>
+          <div class="pi-company" id="piCompany">—</div>
+          <div style="font-size:12px;color:var(--gray-500);margin-top:6px" id="piDetails">—</div>
+        </div>
+
+        <div class="warning-box">
+          ⚠️ <strong>หมายเหตุ:</strong> การขอต่อเวลาจะส่งการแจ้งเตือนไปยัง จป.วิชาชีพทันที
+          ต้องได้รับการอนุมัติก่อนทำงานต่อ หากไม่ได้รับอนุมัติ <strong>ห้ามทำงานต่อ</strong>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">ต่อตั้งแต่เวลา <span class="req">*</span></label>
+            <input type="time" id="otStart" value="17:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ถึงเวลา <span class="req">*</span></label>
+            <input type="time" id="otEnd">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ชื่อผู้ขอต่อเวลา (หัวหน้างาน) <span class="req">*</span></label>
+          <input type="text" id="contractorName" placeholder="ชื่อ-นามสกุล">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">เหตุผลในการขอต่อเวลา <span class="req">*</span></label>
+          <textarea id="reason" placeholder="ระบุเหตุผล เช่น งานยังไม่เสร็จเนื่องจาก..."></textarea>
+        </div>
+
+        <button class="btn btn-orange" onclick="submitOvertime()" id="btnSubmit">
+          ⏰ ส่งคำขอต่อเวลา
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="success-screen">
+    <div class="card">
+      <div class="card-body" style="padding:40px 28px;text-align:center">
+        <div style="font-size:52px;margin-bottom:16px">⏰</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">ส่งคำขอต่อเวลาแล้ว</div>
+        <div style="color:var(--gray-700);font-size:14px;margin-bottom:8px">แจ้ง จป.วิชาชีพ เพื่อขออนุมัติแล้ว</div>
+        <div style="background:var(--orange-light);border-radius:8px;padding:12px;font-size:13px;color:#856404;margin-bottom:20px">
+          ⚠️ <strong>รอการอนุมัติจาก จป.วิชาชีพก่อน</strong><br>ห้ามทำงานต่อจนกว่าจะได้รับอนุมัติ
+        </div>
+        <div style="font-size:13px;color:var(--gray-500)" id="otDetails"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
+let permitData = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const permitId = params.get('id');
+  if (!permitId) {
+    document.getElementById('loading').innerHTML = '❌ ไม่พบ Permit ID<br><small>ต้องเปิดผ่าน Dashboard หรือ QR Code</small>';
+    return;
+  }
+
+  try {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=get_approval&id=${encodeURIComponent(permitId)}`, {signal:controller.signal, redirect:'follow', mode:'cors'});
+    const json = JSON.parse(await res.text());
+    if (json.success && json.permit) permitData = json.permit;
+  } catch(e) {
+    permitData = {permit_id: permitId, company_name:'—', supervisor:'—', work_date:'—', work_date_end:'—', time_start:'—', time_end:'—', work_area:'—'};
+  }
+
+  const p = permitData;
+  document.getElementById('piId').textContent = p.permit_id;
+  document.getElementById('piCompany').textContent = (p.company_name||'') + ' | ' + (p.supervisor||'');
+  document.getElementById('piDetails').textContent =
+    '📅 ' + (p.work_date||'—') + (p.work_date_end?' — '+p.work_date_end:'') +
+    ' ⏰ ' + (p.time_start||'—') + '–' + (p.time_end||'—') + ' น.' +
+    ' 📍 ' + (p.work_area||'—');
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+});
+
+async function submitOvertime() {
+  const otStart = document.getElementById('otStart').value;
+  const otEnd = document.getElementById('otEnd').value;
+  const name = document.getElementById('contractorName').value.trim();
+  const reason = document.getElementById('reason').value.trim();
+
+  if (!otStart || !otEnd) { showToast('กรุณาระบุเวลาเริ่มและสิ้นสุด', 'error'); return; }
+  if (otEnd <= otStart) { showToast('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม', 'error'); return; }
+  if (!name) { showToast('กรุณากรอกชื่อผู้ขอต่อเวลา', 'error'); return; }
+  if (!reason) { showToast('กรุณาระบุเหตุผล', 'error'); return; }
+
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...';
+
+  const payload = JSON.stringify({
+    type: 'overtime_request',
+    permitId: permitData.permit_id,
+    otStart, otEnd,
+    contractorName: name,
+    reason,
+    requestedAt: new Date().toLocaleString('th-TH'),
+  });
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:payload});
+  } catch(e) { console.warn(e); }
+
+  btn.disabled = false;
+  document.getElementById('main-content').style.display = 'none';
+  document.getElementById('otDetails').textContent = `ขอต่อเวลา ${otStart} — ${otEnd} น. | ผู้ขอ: ${name}`;
+  document.getElementById('success-screen').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show'+(type?' '+type:'');
+  setTimeout(()=>t.className='', 3000);
+}
+</script>
+</body>
+</html>
