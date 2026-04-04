@@ -99,6 +99,8 @@ body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; color: var(--gra
 .btn-chairman:hover { background: var(--green); color: white; }
 .btn-checklist { border-color: #E67E22; color: #E67E22; }
 .btn-checklist:hover { background: #E67E22; color: white; }
+.btn-print { border-color: #5F6368; color: #5F6368; }
+.btn-print:hover { background: #5F6368; color: white; }
 
 /* Modal */
 .modal-overlay {
@@ -409,6 +411,7 @@ function renderTable(permits) {
           <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" title="จป.วิชาชีพ">🔍 จป.</button>
           <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" title="Checklist จป.">📋 Checklist</button>
           <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" title="ประธาน คปอ.">✅ คปอ.</button>
+          <button class="btn-sm btn-print" onclick="openPrintPage('${p.permit_id}')" title="พิมพ์ใบอนุญาต">🖨️</button>
           ${p.status === 'รอตรวจสอบ' ? `
           <button class="btn-sm btn-approve" onclick="updateStatus('${p.permit_id}', 'อนุมัติ')">✓</button>
           <button class="btn-sm btn-reject" onclick="updateStatus('${p.permit_id}', 'ไม่อนุมัติ')">✗</button>
@@ -611,6 +614,10 @@ function openInspector(permitId, role) {
 
 function openChecklist(permitId) {
   window.open('checklist.html?id=' + encodeURIComponent(permitId), '_blank');
+}
+
+function openPrintPage(permitId) {
+  window.open('print.html?id=' + encodeURIComponent(permitId), '_blank');
 }
 
 function showToast(msg, type = '') {

@@ -221,7 +221,8 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:130px}
       <div style="font-size:20px;font-weight:700;margin-bottom:8px" id="successTitle">บันทึกเรียบร้อย</div>
       <div style="color:var(--gray-700);font-size:14px;margin-bottom:24px" id="successSub"></div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <a href="dashboard.html" class="btn btn-primary">📊 ไป Dashboard</a>
+        <button class="btn btn-approve" id="btnPrint" onclick="openPrint()" style="display:none">🖨️ พิมพ์ใบอนุญาต</button>
+        <a href="dashboard.html" class="btn btn-save">📊 ไป Dashboard</a>
         <button class="btn btn-secondary" onclick="location.reload()">🔄 กลับหน้านี้</button>
       </div>
     </div>
@@ -482,6 +483,8 @@ async function saveSig(role) {
     title.textContent = 'อนุมัติแล้ว — ครบทุกขั้นตอน!';
     sub.textContent = permitData.permit_id + ' — ผู้รับเหมาสามารถเริ่มปฏิบัติงานได้เลย';
     sub.style.color = 'var(--green)';
+    // แสดงปุ่มพิมพ์
+    document.getElementById('btnPrint').style.display = 'inline-flex';
   } else {
     const roleNames = { dept:'แผนกที่ว่าจ้าง', inspector:'จป.วิชาชีพ', chairman:'ประธาน คปอ.' };
     icon.textContent = '✅';
@@ -493,6 +496,10 @@ async function saveSig(role) {
       sub.textContent += '\n\nยังรอ: ' + remaining.map(r=>remainNames[r]).join(', ');
     }
   }
+}
+
+function openPrint() {
+  window.open('print.html?id=' + encodeURIComponent(permitData.permit_id), '_blank');
 }
 
 function showToast(msg, type='') {
