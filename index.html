@@ -643,16 +643,19 @@ async function submitForm() {
   btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...';
 
   formData = collectFormData();
-  formData.permitId = 'APET-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
 
   try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(formData)
-    });
-  } catch(e) { console.warn(e); }
+    // ใช้ APET core system
+    const permitId = await APET.createPermit(formData);
+    formData.permitId = permitId;
+    APET.showToast('ส่งใบขออนุญาตเรียบร้อย', 'success');
+  } catch(e) {
+    console.warn('Submit error:', e);
+    // Fallback: ใช้ ID ที่สร้างไว้
+    if (!formData.permitId) {
+      formData.permitId = 'APET-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
+    }
+  }
 
   btn.disabled = false; btn.textContent = '📤 ส่งใบขออนุญาต';
   showSuccess();
@@ -716,5 +719,6 @@ function showToast(msg, type='') {
   setTimeout(() => t.className = '', 3000);
 }
 </script>
+<script src="core.js"></script>
 </body>
 </html>
