@@ -1,96 +1,359 @@
-<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Print</title><style>
-:root{--red:#C0392B;--red-light:#FADBD8;--green:#27AE60;--green-light:#D5F5E3;--orange:#E67E22;--orange-light:#FDEBD0;--blue:#2980B9;--blue-light:#D6EAF8;--purple:#7C5CBF;--purple-light:#EAD7FF;--gray-50:#F8F9FA;--gray-100:#F1F3F4;--gray-200:#E8EAED;--gray-300:#DADCE0;--gray-500:#9AA0A6;--gray-700:#5F6368;--gray-900:#202124}
-*{box-sizing:border-box} body{font-family:Arial,sans-serif;background:#F0F2F5;color:var(--gray-900);margin:0}
-.header{background:#1A252F;color:#fff;padding:14px 20px;display:flex;gap:14px;align-items:center}
-.logo{background:var(--red);padding:4px 10px;border-radius:6px;font-weight:700}
-.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
-.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
-.card h2{font-size:15px;margin:0;padding:14px 18px;border-bottom:1px solid var(--gray-200);background:var(--gray-50)}
-.card .body{padding:18px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-label{font-size:13px;font-weight:600;color:var(--gray-700);display:block;margin-bottom:4px}
-input,textarea,select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-300);border-radius:8px;font:inherit}
-textarea{min-height:80px;resize:vertical}
-button,.btn{border:none;border-radius:8px;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
-.btn-red{background:var(--red);color:#fff}.btn-blue{background:var(--blue);color:#fff}.btn-green{background:var(--green);color:#fff}.btn-purple{background:var(--purple);color:#fff}
-.btn-gray{background:#fff;color:var(--gray-700);border:1px solid var(--gray-300)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.notice{padding:12px 14px;border-radius:10px;background:var(--orange-light);border:1px solid #f6c58a}
-.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid var(--gray-200);text-align:left;font-size:13px;vertical-align:top}
-.table th{background:var(--gray-50);font-size:12px;text-transform:uppercase;color:var(--gray-700)}
-.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
-.badge-pending{background:#FFF3CD;color:#856404}.badge-approved{background:var(--green-light);color:#1E8449}.badge-rejected{background:var(--red-light);color:#96281B}
-.badge-blue{background:var(--blue-light);color:#185FA5}.badge-purple{background:var(--purple-light);color:#6c45bf}
-.sig{border:1.5px solid var(--gray-300);border-radius:8px;background:#fafafa;overflow:hidden}
-canvas{width:100%;height:150px;display:block;touch-action:none;cursor:crosshair}
-.sigbar{padding:8px 10px;border-top:1px solid var(--gray-200);background:var(--gray-50);display:flex;justify-content:space-between}
-.center{text-align:center}
-.hidden{display:none!important}
-@media(max-width:800px){.grid,.grid3{grid-template-columns:1fr}}
-</style><style>@media print{.no-print{display:none} body{background:#fff} .wrap{padding:0} .card{box-shadow:none;border:1px solid #ddd}}</style></head><body>
-<div class="header no-print"><div class="logo">APET</div><div>พิมพ์ใบอนุญาต</div><div style="margin-left:auto"><button class="btn btn-red" onclick="window.print()">พิมพ์</button></div></div>
-<div class="wrap"><div id="box" class="notice">กำลังโหลด...</div></div>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>พิมพ์ใบอนุญาต — APET</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C0392B;--green:#27AE60;--blue:#2980B9;--gray:#5F6368;--light:#F8F9FA;--border:#DADCE0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:#202124}
+
+/* Screen controls */
+.screen-only{background:#1A252F;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.screen-only h1{color:#fff;font-size:15px;font-weight:600}
+.btn{padding:9px 20px;border-radius:6px;font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-print{background:var(--red);color:#fff}
+.btn-back{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.ml-auto{margin-left:auto}
+
+/* A4 Page */
+.a4-wrapper{max-width:210mm;margin:20px auto;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.a4-page{padding:10mm 12mm;min-height:297mm;position:relative}
+
+/* Header */
+.doc-header{display:flex;align-items:center;gap:12px;padding-bottom:6px;border-bottom:3px solid var(--red);margin-bottom:8px}
+.logo-box{background:var(--red);color:#fff;font-weight:800;font-size:20px;padding:4px 10px;border-radius:4px;letter-spacing:1px}
+.doc-title{text-align:center;flex:1}
+.doc-title h1{font-size:14px;font-weight:700;color:var(--red)}
+.doc-title h2{font-size:11px;font-weight:400;color:var(--gray);margin-top:2px}
+.safety-logo{width:40px;height:40px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+
+/* Permit ID banner */
+.permit-id-bar{background:var(--red);color:#fff;padding:6px 12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pid{font-family:monospace;font-size:15px;font-weight:700}
+.pstatus{font-size:12px;background:rgba(255,255,255,.2);padding:2px 10px;border-radius:10px}
+
+/* Sections */
+.section{margin-bottom:8px;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.section-header{background:var(--light);padding:5px 10px;font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.section-body{padding:8px 10px}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.info-grid.cols3{grid-template-columns:1fr 1fr 1fr}
+.info-item{display:flex;flex-direction:column}
+.info-label{font-size:9px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.4px}
+.info-value{font-size:11px;font-weight:500;color:#202124;padding:2px 0;border-bottom:1px solid var(--border)}
+.info-item.full{grid-column:1/-1}
+
+/* Hazard badges */
+.hazard-wrap{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.hazard-badge{background:var(--red);color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+
+/* Workers */
+.workers-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px}
+.worker-item{font-size:10px;padding:2px 0;border-bottom:1px dashed var(--border)}
+
+/* Risk table */
+.risk-table{width:100%;border-collapse:collapse;font-size:10px}
+.risk-table th{background:var(--light);padding:4px 6px;text-align:left;font-weight:700;border:1px solid var(--border);font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+.risk-table td{padding:4px 6px;border:1px solid var(--border);vertical-align:top;line-height:1.4}
+
+/* PPE grid */
+.ppe-wrap{display:flex;flex-wrap:wrap;gap:4px}
+.ppe-badge{background:var(--blue);color:#fff;font-size:9px;padding:2px 7px;border-radius:3px}
+
+/* Rules */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.rule-item{display:flex;gap:5px;padding:2px 0;font-size:9.5px;line-height:1.4;border-bottom:1px solid var(--light)}
+.rule-num{min-width:16px;height:16px;background:var(--red);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* Signature boxes */
+.sig-section{border:1px solid var(--border);border-radius:4px;margin-bottom:6px;overflow:hidden}
+.sig-header{background:var(--light);padding:4px 8px;font-size:10px;font-weight:700;border-bottom:1px solid var(--border)}
+.sig-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.sig-box{padding:6px 8px;border-right:1px solid var(--border);min-height:50px}
+.sig-box:last-child{border-right:none}
+.sig-role{font-size:9px;font-weight:700;color:var(--gray);margin-bottom:4px}
+.sig-name{font-size:10px;border-bottom:1px solid #202124;min-height:20px;margin-bottom:2px;padding-bottom:2px}
+.sig-date{font-size:9px;color:var(--gray)}
+.sig-img{max-width:100%;max-height:35px;object-fit:contain}
+
+/* Checklist table */
+.cl-table{width:100%;border-collapse:collapse;font-size:9.5px}
+.cl-table th{background:var(--light);padding:4px 6px;border:1px solid var(--border);font-size:9px;font-weight:700;text-align:center}
+.cl-table td{padding:3px 6px;border:1px solid var(--border);line-height:1.4}
+.cl-table td.center{text-align:center}
+.check-ok{color:var(--green);font-weight:700}
+.check-ng{color:var(--red);font-weight:700}
+.check-na{color:var(--gray)}
+
+/* Approval status */
+.approval-status{display:flex;gap:0;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.approval-step{flex:1;text-align:center;padding:6px;border-right:1px solid var(--border)}
+.approval-step:last-child{border-right:none}
+.approval-step.done{background:var(--green)}
+.approval-step.pending{background:var(--light)}
+.as-role{font-size:9px;font-weight:700;color:#fff}
+.as-name{font-size:8px;color:rgba(255,255,255,.85);margin-top:2px}
+.approval-step.pending .as-role{color:var(--gray)}
+.approval-step.pending .as-name{color:var(--gray)}
+
+/* Footer */
+.doc-footer{border-top:2px solid var(--red);margin-top:8px;padding-top:5px;display:flex;justify-content:space-between;font-size:8px;color:var(--gray)}
+
+/* Print styles */
+@media print {
+  body{background:#fff}
+  .screen-only{display:none!important}
+  .a4-wrapper{box-shadow:none;margin:0;max-width:100%}
+  .a4-page{padding:8mm 10mm}
+  @page{size:A4;margin:0}
+}
+
+#loading-screen{text-align:center;padding:80px;color:var(--gray);font-size:15px}
+#print-content{display:none}
+</style>
+</head>
+<body>
+
+<div class="screen-only">
+  <h1>🖨️ พิมพ์ใบขออนุญาตเข้าปฏิบัติงาน</h1>
+  <button class="btn btn-back ml-auto" onclick="history.back()">← กลับ</button>
+  <button class="btn btn-print" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>
+</div>
+
+<div id="loading-screen">🔄 กำลังโหลดข้อมูล...</div>
+
+<div id="print-content">
+<div class="a4-wrapper">
+<div class="a4-page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="logo-box">APET</div>
+    <div class="doc-title">
+      <h1>แบบฟอร์มขออนุญาตเข้าปฏิบัติงานภายในบริษัท</h1>
+      <h2>บริษัท แอร์-คอน พาร์ทส์ เอ็นจิเนียริ่ง (ประเทศไทย) จำกัด</h2>
+    </div>
+    <div class="safety-logo">🦺</div>
+  </div>
+
+  <!-- Permit ID -->
+  <div class="permit-id-bar">
+    <span class="pid" id="pPermitId">—</span>
+    <span class="pstatus" id="pStatus">รอตรวจสอบ</span>
+    <span style="font-size:11px;opacity:.8" id="pSubmittedAt">—</span>
+  </div>
+
+  <!-- Approval Status -->
+  <div class="approval-status" id="pApprovalStatus"></div>
+
+  <!-- Section 1: ข้อมูลทั่วไป -->
+  <div class="section">
+    <div class="section-header">📋 ข้อมูลทั่วไป</div>
+    <div class="section-body">
+      <div class="info-grid cols3">
+        <div class="info-item"><span class="info-label">วันที่เขียนใบ</span><span class="info-value" id="pPermitDate">—</span></div>
+        <div class="info-item"><span class="info-label">วันเริ่มปฏิบัติงาน</span><span class="info-value" id="pWorkDate">—</span></div>
+        <div class="info-item"><span class="info-label">วันสิ้นสุด</span><span class="info-value" id="pWorkDateEnd">—</span></div>
+        <div class="info-item"><span class="info-label">บริษัทผู้รับเหมา</span><span class="info-value" id="pCompany">—</span></div>
+        <div class="info-item"><span class="info-label">หัวหน้างาน/ผู้ควบคุม</span><span class="info-value" id="pSupervisor">—</span></div>
+        <div class="info-item"><span class="info-label">เบอร์ติดต่อ</span><span class="info-value" id="pPhone">—</span></div>
+        <div class="info-item"><span class="info-label">เวลาปฏิบัติงาน</span><span class="info-value" id="pTime">—</span></div>
+        <div class="info-item"><span class="info-label">ขอต่อเวลา</span><span class="info-value" id="pOvertime">—</span></div>
+        <div class="info-item"><span class="info-label">พื้นที่ทำงาน</span><span class="info-value" id="pArea">—</span></div>
+        <div class="info-item full"><span class="info-label">ลักษณะการปฏิบัติงาน</span><span class="info-value" id="pWorkDesc">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: ประเภทงาน + PPE -->
+  <div class="info-grid" style="gap:6px;margin-bottom:6px">
+    <div class="section" style="margin-bottom:0">
+      <div class="section-header">⚠️ ประเภท/ความเสี่ยงของงาน</div>
+      <div class="section-body"><div class="hazard-wrap" id="pHazards"></div></div>
+    </div>
+    <div class="section" style="margin-bottom:0">
+      <div class="section-header">🦺 PPE ที่ต้องใช้</div>
+      <div class="section-body"><div class="ppe-wrap" id="pPPE"></div></div>
+    </div>
+  </div>
+
+  <!-- Section 3: รายชื่อ -->
+  <div class="section">
+    <div class="section-header">👥 รายชื่อผู้ปฏิบัติงาน (<span id="pWorkerCount">0</span> คน)</div>
+    <div class="section-body">
+      <div class="workers-grid" id="pWorkers"></div>
+    </div>
+  </div>
+
+  <!-- Section 4: ความเสี่ยง -->
+  <div class="section">
+    <div class="section-header">📊 ลักษณะงาน / ความเสี่ยง / มาตรการป้องกัน</div>
+    <div class="section-body">
+      <table class="risk-table">
+        <thead><tr><th style="width:33%">ลักษณะงานและรายละเอียด</th><th style="width:33%">ความเสี่ยง</th><th style="width:33%">มาตรการป้องกัน</th></tr></thead>
+        <tbody id="pRisks"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 5: เครื่องมือ -->
+  <div class="section">
+    <div class="section-header">🔧 เครื่องมืออุปกรณ์ที่นำเข้ามา</div>
+    <div class="section-body"><div style="font-size:10px" id="pTools">—</div></div>
+  </div>
+
+  <!-- Section 6: กฎระเบียบ -->
+  <div class="section">
+    <div class="section-header">📜 กฎระเบียบข้อบังคับในการทำงานสำหรับผู้รับเหมา</div>
+    <div class="section-body">
+      <div class="rules-grid" id="pRules"></div>
+      <div style="margin-top:6px;padding:4px 8px;background:#FFF3CD;border-radius:3px;font-size:9px;color:#856404">
+        ⚠️ <strong>หมายเหตุ:</strong> จป. และพนักงานที่เกี่ยวข้องสามารถสั่งให้หยุดการทำงานได้หากพบว่างานเสี่ยงต่อการเกิดอันตรายต่อชีวิตและทรัพย์สิน
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 7: ลายเซ็นอนุมัติ -->
+  <div class="section">
+    <div class="section-header">✍️ ลายเซ็นและการอนุมัติ</div>
+    <div class="section-body" style="padding:6px 8px">
+      <div style="font-size:9px;color:var(--gray);margin-bottom:6px">ข้าพเจ้าได้อ่านและทำความเข้าใจตลอดจนทราบเงื่อนไขในใบอนุญาตนี้ทุกประการและยอมรับโดยไม่ขัดข้อง</div>
+      <div class="sig-grid" id="pSignatures"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <span>ระบบใบอนุญาตออนไลน์ APET Safety Management System</span>
+    <span id="pFooterDate">—</span>
+    <span>หน้าที่ 1/1</span>
+  </div>
+
+</div>
+</div>
+</div>
+
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
-function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
-async function fetchPermit(id){
-  const res = await fetch(`${APPS_SCRIPT_URL}?action=get_approval&id=${encodeURIComponent(id)}`, {redirect:'follow', mode:'cors'});
-  const text = await res.text();
-  return JSON.parse(text);
+
+const RULES = ['ปฏิบัติงานตามกฎระเบียบข้อบังคับ','แลกบัตรและติดบัตรประจำตัวทุกครั้งเมื่อเข้าพื้นที่','เขียนใบขออนุญาตและนำไปติดที่พื้นที่ทำงาน','แต่งกายให้รัดกุม สวมใส่ PPE เหมาะสมกับงาน','ตรวจสอบความปลอดภัยก่อนเริ่มงานทุกครั้ง','ห้ามใช้เครื่องมือหรืออุปกรณ์ไฟฟ้าที่ชำรุด','งานที่มีเปลวไฟต้องใช้วัสดุปิดบัง','ห้ามต่อพ่วงอุปกรณ์ไฟฟ้าเกินกำลัง','งานบนที่สูงต้องใช้อุปกรณ์ป้องกันการตก','งานสารเคมีต้องป้องกันไม่ให้ไหลสู่สิ่งแวดล้อม','หากเกิดอุบัติเหตุต้องรายงานผู้ควบคุมงานทันที','เมื่อแจ้งเหตุฉุกเฉินให้ไปจุดรวมพล','หลังเสร็จงานต้องจัดเก็บอุปกรณ์ให้เรียบร้อย','ห้ามสูบบุหรี่ ยกเว้นพื้นที่ที่กำหนด','ห้ามจุดหรือก่อกองไฟ ยกเว้นพื้นที่ที่จัดให้','ห้ามพกพาอาวุธทุกชนิด','ห้ามดื่มของมึนเมาหรือเสพสารเสพติด','ห้ามก่อเหตุทะเลาะวิวาท','ต้องปฏิบัติตามป้ายความปลอดภัยอย่างเคร่งครัด','เมื่อพบเหตุฉุกเฉินต้องแจ้งผู้เกี่ยวข้องทันที','ห้ามรับประทานอาหารในพื้นที่ปฏิบัติงาน','ห้ามนำเด็กอายุต่ำกว่า 15 ปีเข้าพื้นที่','หากมีฝุ่นต้องจัดหาอุปกรณ์ป้องกันที่เหมาะสม','ใบอนุญาตใช้ได้ 08.00-17.00 น. เท่านั้น'];
+
+const HAZARD_MAP = {construction:'🏗️ ก่อสร้าง',electrical:'⚡ ไฟฟ้า',pressure:'💨 ความดัน',machine:'⚙️ เครื่องจักร',aircon:'❄️ แอร์',hotwork:'🔥 งานร้อน',waterpipe:'🚰 ท่อน้ำ',fireprotect:'🧯 อัคคีภัย',confined:'🏠 ที่อับอากาศ',windsys:'💨 ลม',hoist:'🏗️ รอก/เครน',highrisk:'📏 งานสูง',gas:'🛢️ ก๊าซ',chemical:'☣️ สารเคมี',other:'📝 อื่นๆ'};
+const PPE_MAP = {helmet:'⛑️หมวก',gloves:'🧤ถุงมือ',shoes:'👢รองเท้า',harness:'🔗เข็มขัด',glasses:'🥽แว่นตา',earplug:'🎧ที่อุดหู',weldmask:'😷หน้ากากเชื่อม',chemask:'🧪หน้ากากสารเคมี',chesuit:'🥼ชุดสารเคมี'};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const permitId = params.get('id');
+  if (!permitId) { document.getElementById('loading-screen').innerHTML = '❌ ไม่พบ Permit ID'; return; }
+  loadAndRender(permitId);
+});
+
+async function loadAndRender(permitId) {
+  let permit = null, approval = null;
+  try {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=get_approval&id=${encodeURIComponent(permitId)}`, {signal:controller.signal, redirect:'follow', mode:'cors'});
+    const json = JSON.parse(await res.text());
+    if (json.success) { permit = json.permit; approval = json.approval; }
+  } catch(e) { console.warn(e); }
+
+  if (!permit) {
+    document.getElementById('loading-screen').innerHTML = '❌ ไม่พบข้อมูลใบอนุญาต';
+    return;
+  }
+
+  renderPage(permit, approval || {dept:null, inspector:null, chairman:null});
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('print-content').style.display = 'block';
 }
-function makeSignature(id){
- const c=document.getElementById(id); if(!c) return null;
- c.width=900; c.height=170; const ctx=c.getContext('2d'); ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
- let d=false,lx=0,ly=0;
- const pos=e=>{const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height,s=e.touches?e.touches[0]:e;return {x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy}};
- c.addEventListener('mousedown',e=>{d=true;const p=pos(e);lx=p.x;ly=p.y;});
- c.addEventListener('mousemove',e=>{if(!d)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
- ['mouseup','mouseleave'].forEach(ev=>c.addEventListener(ev,()=>d=false));
- c.addEventListener('touchstart',e=>{e.preventDefault();d=true;const p=pos(e);lx=p.x;ly=p.y;},{passive:false});
- c.addEventListener('touchmove',e=>{e.preventDefault();if(!d)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;},{passive:false});
- c.addEventListener('touchend',()=>d=false);
- return {clear(){ctx.clearRect(0,0,c.width,c.height)}, empty(){return !ctx.getImageData(0,0,c.width,c.height).data.some(v=>v!==0)}, data(){return c.toDataURL('image/png')}};
-}
-function statusBadge(status){
-  if(status==='อนุมัติ') return `<span class="badge badge-approved">อนุมัติ</span>`;
-  if(status==='ไม่อนุมัติ') return `<span class="badge badge-rejected">ไม่อนุมัติ</span>`;
-  if(status==='รอ จป.วิชาชีพ') return `<span class="badge badge-purple">รอ จป.</span>`;
-  if(status==='รอ ประธาน คปอ.') return `<span class="badge badge-blue">รอ คปอ.</span>`;
-  return `<span class="badge badge-pending">${esc(status||'รอตรวจสอบ')}</span>`;
+
+function renderPage(p, approval) {
+  // Header
+  document.getElementById('pPermitId').textContent = p.permit_id || '—';
+  document.getElementById('pStatus').textContent = p.status || 'รอตรวจสอบ';
+  document.getElementById('pSubmittedAt').textContent = 'ส่งเมื่อ: ' + (p.submitted_at || '—');
+  document.getElementById('pFooterDate').textContent = 'พิมพ์เมื่อ: ' + new Date().toLocaleString('th-TH');
+
+  // Approval status bar
+  const steps = [
+    {role:'dept', label:'แผนกที่ว่าจ้าง', data: approval.dept},
+    {role:'inspector', label:'จป.วิชาชีพ', data: approval.inspector},
+    {role:'chairman', label:'ประธาน คปอ.', data: approval.chairman},
+  ];
+  document.getElementById('pApprovalStatus').innerHTML = steps.map(s => `
+    <div class="approval-step ${s.data?'done':'pending'}">
+      <div class="as-role">${s.label}</div>
+      <div class="as-name">${s.data ? '✓ '+s.data.name : 'รอลงชื่อ'}</div>
+    </div>`).join('');
+
+  // Info
+  document.getElementById('pPermitDate').textContent = p.permit_date || '—';
+  document.getElementById('pWorkDate').textContent = p.work_date || '—';
+  document.getElementById('pWorkDateEnd').textContent = p.work_date_end || '—';
+  document.getElementById('pCompany').textContent = p.company_name || '—';
+  document.getElementById('pSupervisor').textContent = p.supervisor || '—';
+  document.getElementById('pPhone').textContent = p.phone || '—';
+  document.getElementById('pTime').textContent = (p.time_start||'—') + ' — ' + (p.time_end||'—') + ' น.';
+  document.getElementById('pOvertime').textContent = (p.overtime_start && p.overtime_end) ? p.overtime_start+' — '+p.overtime_end+' น.' : 'ไม่มี';
+  document.getElementById('pArea').textContent = p.work_area || '—';
+  document.getElementById('pWorkDesc').textContent = p.work_description || '—';
+
+  // Hazards
+  document.getElementById('pHazards').innerHTML = (p.hazard_types||'').split(', ').filter(Boolean)
+    .map(h => `<span class="hazard-badge">${HAZARD_MAP[h.trim()]||h}</span>`).join('') || '—';
+
+  // PPE
+  document.getElementById('pPPE').innerHTML = (p.ppe_required||'').split(', ').filter(Boolean)
+    .map(v => `<span class="ppe-badge">${PPE_MAP[v.trim()]||v}</span>`).join('') || '—';
+
+  // Workers
+  const workers = (p.workers||'').split('\n').filter(Boolean);
+  document.getElementById('pWorkerCount').textContent = p.worker_count || workers.length;
+  document.getElementById('pWorkers').innerHTML = workers.length
+    ? workers.map(w => `<div class="worker-item">${w}</div>`).join('')
+    : '<div style="font-size:10px;color:var(--gray)">—</div>';
+
+  // Risks
+  const risks = (p.risks||'').split('\n').filter(Boolean);
+  document.getElementById('pRisks').innerHTML = risks.length
+    ? risks.map(r => {
+        const parts = r.replace(/^\d+\.\s*/,'').split('|');
+        const task = (parts[0]||'').replace('งาน:','').trim();
+        const risk = (parts[1]||'').replace('เสี่ยง:','').trim();
+        const ctrl = (parts[2]||'').replace('ป้องกัน:','').trim();
+        return `<tr><td>${task||'—'}</td><td>${risk||'—'}</td><td>${ctrl||'—'}</td></tr>`;
+      }).join('')
+    : '<tr><td colspan="3" style="text-align:center;color:var(--gray)">—</td></tr>';
+
+  // Tools
+  document.getElementById('pTools').textContent = p.tools || '—';
+
+  // Rules
+  document.getElementById('pRules').innerHTML = RULES.map((r,i) =>
+    `<div class="rule-item"><span class="rule-num">${i+1}</span><span>${r}</span></div>`
+  ).join('');
+
+  // Signatures
+  const sigRoles = [
+    {label:'ผู้รับเหมา', name: p.signer_name, title: p.signer_title},
+    {label:'แผนกที่ว่าจ้าง', name: approval.dept?.name, date: approval.dept?.date},
+    {label:'จป.วิชาชีพ', name: approval.inspector?.name, date: approval.inspector?.date},
+    {label:'ประธาน คปอ.', name: approval.chairman?.name, date: approval.chairman?.date},
+  ];
+  document.getElementById('pSignatures').innerHTML = sigRoles.map(s => `
+    <div class="sig-box">
+      <div class="sig-role">${s.label}</div>
+      <div class="sig-name">${s.name||''}</div>
+      <div class="sig-date">${s.title||s.date||''}</div>
+    </div>`).join('');
 }
 </script>
-<script>
-(async function(){
-  const id = new URLSearchParams(location.search).get('id');
-  if (!id) return document.getElementById('box').textContent = 'ไม่พบ Permit ID';
-  try {
-    const json = await fetchPermit(id); const p = json.permit || null; const a = json.approval || {};
-    if (!p) throw new Error('no data');
-    document.getElementById('box').outerHTML = `
-      <div class="card"><h2>ข้อมูลหลัก</h2><div class="body">
-        <div class="grid3">
-          <div><b>Permit ID</b><div style="font-family:monospace">${esc(p.permit_id)}</div></div>
-          <div><b>สถานะ</b><div>${esc(p.status||'รอตรวจสอบ')}</div></div>
-          <div><b>ส่งเมื่อ</b><div>${esc(p.submitted_at||'')}</div></div>
-          <div><b>บริษัท</b><div>${esc(p.company_name)}</div></div>
-          <div><b>ผู้ควบคุมงาน</b><div>${esc(p.supervisor)}</div></div>
-          <div><b>เบอร์โทร</b><div>${esc(p.phone)}</div></div>
-          <div><b>วันที่</b><div>${esc(p.work_date)}${p.work_date_end?' - '+esc(p.work_date_end):''}</div></div>
-          <div><b>เวลา</b><div>${esc((p.time_start||'-')+' - '+(p.time_end||'-'))}</div></div>
-          <div><b>พื้นที่</b><div>${esc(p.work_area)}</div></div>
-        </div>
-        <div style="margin-top:14px"><b>ลักษณะงาน</b><div>${esc(p.work_description||'')}</div></div>
-        <div style="margin-top:14px"><b>ประเภทงาน</b><div>${esc(p.hazard_types||'')}</div></div>
-        <div style="margin-top:14px"><b>PPE</b><div>${esc(p.ppe_required||'')}${p.ppe_other ? ' , '+esc(p.ppe_other) : ''}</div></div>
-      </div></div>
-      <div class="card"><h2>การอนุมัติ</h2><div class="body">
-        <div class="grid3">
-          <div><b>แผนกที่ว่าจ้าง</b><div>${a.dept ? esc(a.dept.name)+' / '+esc(a.dept.date) : '-'}</div></div>
-          <div><b>จป.วิชาชีพ</b><div>${a.inspector ? esc(a.inspector.name)+' / '+esc(a.inspector.date) : '-'}</div></div>
-          <div><b>ประธาน คปอ.</b><div>${a.chairman ? esc(a.chairman.name)+' / '+esc(a.chairman.date) : '-'}</div></div>
-        </div>
-      </div></div>`;
-  } catch(e) { document.getElementById('box').textContent = 'โหลดข้อมูลไม่ได้'; }
-})();
-</script></body></html>
+<script src="core.js"></script>
+</body>
+</html>
