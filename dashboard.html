@@ -429,19 +429,24 @@ function renderTable(permits) {
       <td><span class="workers-count">👥 ${p.worker_count || 0}</span></td>
       <td><span class="badge ${badgeClass}">${statusIcon} ${p.status || '-'}</span></td>
       <td>
-        <div class="action-btns">
-          <button class="btn-sm btn-view" onclick="viewPermit('${p.permit_id}')">ดู</button>
-          <button class="btn-sm btn-dept" onclick="openInspector('${p.permit_id}', 'dept')" title="แผนกที่ว่าจ้าง">🏢 แผนก</button>
-          <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" title="จป.วิชาชีพ">🔍 จป.</button>
-          <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" title="Checklist จป.">📋 Checklist</button>
-          <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" title="ประธาน คปอ.">✅ คปอ.</button>
-          <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" title="ต่อเวลา">⏰ ต่อเวลา</button>
-          <button class="btn-sm btn-print" onclick="openPrintPage('${p.permit_id}')" title="พิมพ์">🖨️</button>
-          ${p.status === 'อนุมัติ' ? `<button class="btn-sm btn-close-work" onclick="closeWork('${p.permit_id}')" title="ปิดงาน">🔒 ปิดงาน</button>` : ''}
-          ${p.status === 'รอตรวจสอบ' ? `
-          <button class="btn-sm btn-approve" onclick="updateStatus('${p.permit_id}', 'อนุมัติ')">✓</button>
-          <button class="btn-sm btn-reject" onclick="updateStatus('${p.permit_id}', 'ไม่อนุมัติ')">✗</button>
-          ` : ''}
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:180px">
+          <!-- แถว 1: ดู + พิมพ์ -->
+          <div style="display:flex;gap:3px">
+            <button class="btn-sm btn-view" onclick="viewPermit('${p.permit_id}')" style="flex:1">🔎 ดูข้อมูล</button>
+            <button class="btn-sm btn-print" onclick="openPrintPage('${p.permit_id}')" title="พิมพ์ใบอนุญาต">🖨️</button>
+          </div>
+          <!-- แถว 2: ลงชื่ออนุมัติ 3 คน -->
+          <div style="display:flex;gap:3px">
+            <button class="btn-sm btn-dept" onclick="openInspector('${p.permit_id}', 'dept')" style="flex:1" title="แผนกที่ว่าจ้างลงชื่อ">🏢 แผนก</button>
+            <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" style="flex:1" title="จป.วิชาชีพลงชื่อ">🔍 จป.</button>
+            <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" style="flex:1" title="ประธาน คปอ.ลงชื่อ">👑 คปอ.</button>
+          </div>
+          <!-- แถว 3: Checklist + ต่อเวลา + ปิดงาน -->
+          <div style="display:flex;gap:3px">
+            <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" style="flex:1" title="Checklist จป.">📋 Checklist</button>
+            <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" style="flex:1" title="ขอต่อเวลา">⏰ ต่อเวลา</button>
+            ${p.status === 'อนุมัติ' ? `<button class="btn-sm btn-close-work" onclick="openCloseWork('${p.permit_id}')" style="flex:1" title="ปิดงาน">🔒 ปิดงาน</button>` : '<div style="flex:1"></div>'}
+          </div>
         </div>
       </td>
     </tr>`;
@@ -459,7 +464,7 @@ function renderTable(permits) {
             <th>ประเภทงาน</th>
             <th>คน</th>
             <th>สถานะ</th>
-            <th>จัดการ</th>
+            <th style="min-width:190px">จัดการ <span style="font-weight:400;color:var(--gray-500);font-size:10px">(ดู / ลงชื่อ / Checklist)</span></th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -640,6 +645,10 @@ function openInspector(permitId, role) {
 
 function openChecklist(permitId) {
   window.open('checklist.html?id=' + encodeURIComponent(permitId), '_blank');
+}
+
+function openCloseWork(permitId) {
+  window.open('closework.html?id=' + encodeURIComponent(permitId), '_blank');
 }
 
 function openPrintPage(permitId) {
