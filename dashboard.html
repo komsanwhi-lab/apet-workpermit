@@ -3,677 +3,294 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — ใบอนุญาตผู้รับเหมา APET</title>
+<title>Dashboard — APET Work Permit</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --red: #C0392B; --red-light: #FADBD8;
-  --green: #27AE60; --green-light: #D5F5E3;
-  --orange: #E67E22; --orange-light: #FDEBD0;
-  --blue: #2980B9; --blue-light: #D6EAF8;
-  --yellow-light: #FFF3CD;
-  --gray-50: #F8F9FA; --gray-100: #F1F3F4; --gray-200: #E8EAED;
-  --gray-300: #DADCE0; --gray-500: #9AA0A6; --gray-700: #5F6368; --gray-900: #202124;
-  --white: #FFFFFF;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --radius: 10px; --radius-sm: 6px;
+:root{
+  --red:#C0392B;--red-light:#FADBD8;--green:#27AE60;--green-light:#D5F5E3;--orange:#E67E22;--orange-light:#FDEBD0;
+  --blue:#2980B9;--blue-light:#D6EAF8;--purple:#7C5CBF;--purple-light:#EAD7FF;--gray-50:#F8F9FA;--gray-100:#F1F3F4;
+  --gray-200:#E8EAED;--gray-300:#DADCE0;--gray-500:#9AA0A6;--gray-700:#5F6368;--gray-900:#202124;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; color: var(--gray-900); min-height: 100vh; }
-
-/* Header */
-.site-header { background: #1A252F; padding: 0; }
-.header-inner { max-width: 1200px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 14px; }
-.header-logo { background: var(--red); border-radius: 6px; padding: 4px 8px; font-weight: 700; font-size: 17px; color: white; }
-.header-title { color: white; font-size: 15px; font-weight: 500; }
-.header-sub { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 1px; }
-.header-right { margin-left: auto; display: flex; gap: 8px; }
-.btn-header { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 6px 14px; font-size: 13px; font-family: inherit; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.15s; }
-.btn-header:hover { background: rgba(255,255,255,0.18); }
-
-/* Layout */
-.page { max-width: 1200px; margin: 0 auto; padding: 24px 16px 48px; }
-
-/* Stats */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-.stat-card { background: white; border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm); display: flex; align-items: flex-start; gap: 14px; }
-.stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-.stat-icon.red { background: var(--red-light); }
-.stat-icon.green { background: var(--green-light); }
-.stat-icon.orange { background: var(--orange-light); }
-.stat-icon.blue { background: var(--blue-light); }
-.stat-num { font-size: 28px; font-weight: 700; line-height: 1; }
-.stat-label { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
-.stat-sub { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
-
-/* Card */
-.card { background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 16px; overflow: hidden; }
-.card-header { background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
-.card-title { font-weight: 600; font-size: 14px; }
-.card-sub { font-size: 12px; color: var(--gray-500); }
-.card-body { padding: 0; }
-
-/* Toolbar */
-.toolbar { display: flex; gap: 10px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--gray-200); flex-wrap: wrap; }
-.search-box { flex: 1; min-width: 200px; position: relative; }
-.search-box input { width: 100%; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); padding: 8px 12px 8px 34px; font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.15s; }
-.search-box input:focus { border-color: var(--red); }
-.search-box::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; }
-.filter-select { border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px; font-family: inherit; outline: none; cursor: pointer; }
-.filter-select:focus { border-color: var(--red); }
-
-/* Table */
-.permits-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.permits-table th { background: var(--gray-50); padding: 11px 14px; text-align: left; font-weight: 600; font-size: 12px; color: var(--gray-700); border-bottom: 2px solid var(--gray-200); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-.permits-table td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
-.permits-table tr:last-child td { border-bottom: none; }
-.permits-table tr:hover td { background: var(--gray-50); }
-.permit-id { font-weight: 600; font-family: monospace; font-size: 12px; color: var(--gray-700); }
-.company-name { font-weight: 500; }
-.supervisor { font-size: 12px; color: var(--gray-700); }
-.work-area { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hazard-tags { display: flex; flex-wrap: wrap; gap: 3px; max-width: 200px; }
-.hazard-tag { background: var(--red-light); color: var(--red); padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 500; white-space: nowrap; }
-.workers-count { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
-
-/* Status badges */
-.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-.badge-pending { background: var(--yellow-light); color: #856404; }
-.badge-approved { background: var(--green-light); color: #1E8449; }
-.badge-rejected { background: var(--red-light); color: #96281B; }
-.badge-wait-dept { background: #FFF3CD; color: #856404; }
-.badge-wait-safety { background: #EAD7FF; color: #7C5CBF; }
-.badge-wait-chair { background: var(--blue-light); color: #185FA5; }
-.badge-expired { background: #F2F3F4; color: #5F6368; }
-.badge-closed { background: #D5D8DC; color: #2C3E50; }
-
-/* Action buttons */
-.action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
-.btn-sm { padding: 4px 8px; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 11px; cursor: pointer; font-family: inherit; background: white; transition: all 0.15s; white-space: nowrap; }
-.btn-approve { border-color: var(--green); color: var(--green); }
-.btn-approve:hover { background: var(--green); color: white; }
-.btn-reject { border-color: var(--red); color: var(--red); }
-.btn-reject:hover { background: var(--red); color: white; }
-.btn-view { border-color: var(--blue); color: var(--blue); }
-.btn-view:hover { background: var(--blue); color: white; }
-.btn-inspect { border-color: #7C5CBF; color: #7C5CBF; }
-.btn-inspect:hover { background: #7C5CBF; color: white; }
-.btn-dept { border-color: var(--blue); color: var(--blue); }
-.btn-dept:hover { background: var(--blue); color: white; }
-.btn-chairman { border-color: var(--green); color: var(--green); }
-.btn-chairman:hover { background: var(--green); color: white; }
-.btn-checklist { border-color: #E67E22; color: #E67E22; }
-.btn-checklist:hover { background: #E67E22; color: white; }
-.btn-print { border-color: #5F6368; color: #5F6368; }
-.btn-print:hover { background: #5F6368; color: white; }
-.btn-overtime { border-color: #E67E22; color: #E67E22; }
-.btn-overtime:hover { background: #E67E22; color: white; }
-.btn-close-work { border-color: #2C3E50; color: #2C3E50; }
-.btn-close-work:hover { background: #2C3E50; color: white; }
-
-/* Modal */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.modal-overlay.open { display: flex; }
-.modal { background: white; border-radius: var(--radius); max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-.modal-header { background: var(--gray-50); padding: 16px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; }
-.modal-title { font-weight: 600; font-size: 15px; }
-.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--gray-500); padding: 0 4px; }
-.modal-body { padding: 20px; }
-.detail-section { margin-bottom: 20px; }
-.detail-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray-500); margin-bottom: 10px; border-bottom: 1px solid var(--gray-200); padding-bottom: 4px; }
-.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.detail-row { font-size: 13px; }
-.detail-label { font-weight: 500; color: var(--gray-700); margin-bottom: 2px; font-size: 12px; }
-.detail-value { color: var(--gray-900); }
-.detail-row.full { grid-column: 1 / -1; }
-.workers-list { background: var(--gray-50); border-radius: 6px; padding: 10px 14px; }
-.worker-item { padding: 4px 0; font-size: 13px; border-bottom: 1px solid var(--gray-200); }
-.worker-item:last-child { border-bottom: none; }
-.modal-actions { padding: 16px 20px; border-top: 1px solid var(--gray-200); display: flex; gap: 8px; justify-content: flex-end; background: var(--gray-50); position: sticky; bottom: 0; }
-.btn { padding: 9px 20px; border-radius: 6px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
-.btn-primary { background: var(--green); color: white; }
-.btn-danger { background: var(--red); color: white; }
-.btn-secondary { background: white; color: var(--gray-700); border: 1.5px solid var(--gray-300); }
-
-/* Empty state */
-.empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500); }
-.empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
-
-/* Loading */
-.loading { text-align: center; padding: 40px; color: var(--gray-500); font-size: 14px; }
-
-/* Toast */
-#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--gray-900); color: white; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 9999; transition: transform 0.3s; }
-#toast.show { transform: translateX(-50%) translateY(0); }
-#toast.success { background: var(--green); }
-
-/* Responsive */
-@media (max-width: 900px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .detail-grid { grid-template-columns: 1fr; }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:var(--gray-900)}
+.site-header{background:#1A252F;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.header-inner{max-width:1180px;margin:0 auto;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.header-logo{background:var(--red);color:#fff;border-radius:8px;padding:5px 10px;font-weight:700;letter-spacing:.4px}
+.header-title{color:#fff;font-size:15px;font-weight:600}
+.header-sub{color:rgba(255,255,255,.7);font-size:12px}
+.header-right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn-header{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:8px 14px;border-radius:8px;text-decoration:none;font-size:13px}
+.page{max-width:1180px;margin:0 auto;padding:18px 14px 40px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:12px;align-items:flex-start}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.stat-icon.red{background:var(--red-light)}.stat-icon.green{background:var(--green-light)}.stat-icon.orange{background:var(--orange-light)}.stat-icon.blue{background:var(--blue-light)}
+.stat-num{font-size:28px;font-weight:700;line-height:1}.stat-label{font-size:12px;color:var(--gray-500);margin-top:4px}.stat-sub{font-size:11px;color:var(--gray-500);margin-top:2px}
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.card-header{padding:16px 18px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.card-title{font-size:15px;font-weight:700}.card-sub{font-size:12px;color:var(--gray-500);margin-top:2px}
+.toolbar{padding:14px 18px;border-bottom:1px solid var(--gray-200);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px}
+.input,.select{width:100%;border:1.5px solid var(--gray-300);border-radius:10px;padding:10px 12px;font:inherit;background:#fff}
+.input:focus,.select:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,.1)}
+.role-chip{display:inline-flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);padding:6px 10px;border-radius:999px;font-size:12px;color:var(--gray-700)}
+.table-wrap{overflow:auto}.permits-table{width:100%;border-collapse:collapse;font-size:13px}.permits-table th{background:var(--gray-50);text-align:left;padding:12px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-700);border-bottom:2px solid var(--gray-200)}.permits-table td{padding:12px 14px;border-bottom:1px solid var(--gray-100);vertical-align:top}.permits-table tr:hover td{background:var(--gray-50)}
+.permit-id{font-family:monospace;font-weight:700}.company-name{font-weight:600}.subtext{font-size:12px;color:var(--gray-500);margin-top:2px}.work-area{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hazard-tags{display:flex;flex-wrap:wrap;gap:4px}.hazard-tag{background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:999px;font-size:10px;font-weight:600}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+.action-btns{display:flex;gap:6px;flex-wrap:wrap}.btn-sm{padding:6px 9px;border-radius:8px;border:1px solid var(--gray-300);background:#fff;font:inherit;font-size:11px;cursor:pointer}.btn-view{border-color:var(--blue);color:var(--blue)}.btn-qr{border-color:var(--orange);color:var(--orange)}.btn-dept{border-color:var(--blue);color:var(--blue)}.btn-inspector{border-color:var(--purple);color:var(--purple)}.btn-chairman{border-color:var(--green);color:var(--green)}.btn-checklist{border-color:var(--orange);color:var(--orange)}.btn-print{border-color:#5F6368;color:#5F6368}.btn-close{border-color:#2C3E50;color:#2C3E50}
+.mobile-list{display:none;padding:14px}.permit-card{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:14px;padding:14px;margin-bottom:12px}.permit-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:10px}.permit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-bottom:10px}.label{font-size:11px;color:var(--gray-500);text-transform:uppercase}.value{font-size:13px;font-weight:600}.empty-state,.loading{padding:40px 18px;text-align:center;color:var(--gray-500)}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:#202124;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;transition:transform .3s;z-index:50}.show{transform:translateX(-50%) translateY(0)}.success{background:var(--green)}
+@media(max-width:980px){.stats-grid{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.header-right{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}.table-wrap{display:none}.mobile-list{display:block}.toolbar{grid-template-columns:1fr}.permit-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr}.permit-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <div class="site-header">
   <div class="header-inner">
     <div class="header-logo">APET</div>
     <div>
       <div class="header-title">Dashboard — ใบอนุญาตผู้รับเหมา</div>
-      <div class="header-sub">จป.วิชาชีพ · บริษัท แอร์-คอน พาร์ทส์ เอ็นจิเนียริ่ง</div>
+      <div class="header-sub" id="headerSub">ภาพรวมทุกบทบาท</div>
     </div>
     <div class="header-right">
-      <a href="index.html" class="btn-header">📋 กรอกใบอนุญาต</a>
+      <a href="index.html" class="btn-header">📋 สร้างใบใหม่</a>
       <button class="btn-header" onclick="loadData()">🔄 รีเฟรช</button>
     </div>
   </div>
 </div>
 
 <div class="page">
-
-  <!-- Stats -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon red">📋</div>
-      <div>
-        <div class="stat-num" id="statTotal">—</div>
-        <div class="stat-label">ใบอนุญาตทั้งหมด</div>
-        <div class="stat-sub" id="statWeek">7 วันล่าสุด: —</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon orange">⏳</div>
-      <div>
-        <div class="stat-num" id="statPending">—</div>
-        <div class="stat-label">รอตรวจสอบ</div>
-        <div class="stat-sub">กรุณาดำเนินการ</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon green">✅</div>
-      <div>
-        <div class="stat-num" id="statApproved">—</div>
-        <div class="stat-label">อนุมัติแล้ว</div>
-        <div class="stat-sub" id="statApprovedPct">—</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon red">❌</div>
-      <div>
-        <div class="stat-num" id="statRejected">—</div>
-        <div class="stat-label">ไม่อนุมัติ</div>
-      </div>
-    </div>
+    <div class="stat-card"><div class="stat-icon red">📋</div><div><div class="stat-num" id="statTotal">—</div><div class="stat-label">ทั้งหมด</div><div class="stat-sub" id="statWeek">7 วันล่าสุด: —</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">⏳</div><div><div class="stat-num" id="statPending">—</div><div class="stat-label">ค้างดำเนินการ</div><div class="stat-sub" id="statPendingLabel">ตามบทบาทที่เลือก</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-num" id="statApproved">—</div><div class="stat-label">อนุมัติแล้ว</div><div class="stat-sub" id="statApprovedPct">—</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue">👤</div><div><div class="stat-num" id="statRole">—</div><div class="stat-label">บทบาทปัจจุบัน</div><div class="stat-sub">เปลี่ยนมุมมองได้จากตัวกรอง</div></div></div>
   </div>
 
-  <!-- Permits Table -->
   <div class="card">
     <div class="card-header">
       <div>
         <div class="card-title">รายการใบอนุญาต</div>
         <div class="card-sub" id="tableCount">กำลังโหลด...</div>
       </div>
+      <div class="role-chip" id="roleSummaryChip">🧭 ทุกบทบาท</div>
     </div>
+
     <div class="toolbar">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="ค้นหาบริษัท, หัวหน้างาน, พื้นที่..." oninput="filterTable()">
-      </div>
-      <select class="filter-select" id="statusFilter" onchange="filterTable()">
-        <option value="">สถานะทั้งหมด</option>
-        <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+      <input id="searchInput" class="input" placeholder="ค้นหาเลข Permit, บริษัท, พื้นที่" oninput="filterTable()">
+      <select id="roleFilter" class="select" onchange="changeRole()">
+        <option value="all">ทุกบทบาท</option>
+        <option value="contractor">ผู้รับเหมา</option>
+        <option value="dept">แผนกที่ว่าจ้าง</option>
+        <option value="inspector">จป.วิชาชีพ</option>
+        <option value="chairman">ประธาน คปอ.</option>
+      </select>
+      <select id="statusFilter" class="select" onchange="filterTable()">
+        <option value="">ทุกสถานะ</option>
+        <option value="รอแผนกที่ว่าจ้าง">รอแผนกที่ว่าจ้าง</option>
+        <option value="รอ จป.วิชาชีพ">รอ จป.วิชาชีพ</option>
+        <option value="รอ ประธาน คปอ.">รอ ประธาน คปอ.</option>
         <option value="อนุมัติ">อนุมัติ</option>
         <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
+        <option value="หมดอายุ">หมดอายุ</option>
+        <option value="ปิดงาน">ปิดงาน</option>
       </select>
-      <select class="filter-select" id="dateFilter" onchange="filterTable()">
-        <option value="">วันที่ทั้งหมด</option>
+      <select id="dateFilter" class="select" onchange="filterTable()">
+        <option value="">ทุกช่วงเวลา</option>
         <option value="today">วันนี้</option>
         <option value="week">7 วันล่าสุด</option>
         <option value="month">30 วันล่าสุด</option>
       </select>
     </div>
-    <div class="card-body">
-      <div id="tableContainer">
-        <div class="loading">🔄 กำลังโหลดข้อมูล...</div>
-      </div>
-    </div>
-  </div>
 
-</div>
-
-<!-- Detail Modal -->
-<div class="modal-overlay" id="modal" onclick="closeModal(event)">
-  <div class="modal" id="modalContent" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title" id="modalTitle">รายละเอียดใบอนุญาต</div>
-        <div id="modalId" style="font-size:12px; color:var(--gray-500); margin-top:2px; font-family:monospace"></div>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-actions" id="modalActions"></div>
+    <div id="tableContainer" class="table-wrap"><div class="loading">🔄 กำลังโหลดข้อมูล...</div></div>
+    <div id="mobileContainer" class="mobile-list"></div>
   </div>
 </div>
 
 <div id="toast"></div>
-
+<script src="core.js"></script>
 <script>
-// ===== CONFIG =====
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec'; // << ใส่ URL เดียวกับ index.html
-
-// ===== DATA =====
 let allPermits = [];
-let currentPermitId = null;
+let visiblePermits = [];
+let currentRole = APET.getParam('role', 'all');
 
-// ===== DEMO DATA (ใช้เมื่อยังไม่ได้ connect Apps Script) =====
 const DEMO_DATA = [
-  {
-    permit_id: 'APET-2024-5831', submitted_at: '28/12/2567 09:15', status: 'รอตรวจสอบ',
-    permit_date: '2024-12-28', company_name: 'บริษัท ซีเมนส์ (ไทยแลนด์) จำกัด',
-    supervisor: 'นาย สมชาย ใจดี', phone: '081-234-5678',
-    work_date: '2024-12-28', time_start: '09:00', time_end: '17:00',
-    work_area: 'อาคาร B ห้องไฟฟ้าหลัก', work_description: 'ซ่อมบำรุงตู้ควบคุมไฟฟ้า MCC Room',
-    hazard_types: 'electrical, highrisk', worker_count: 3,
-    workers: '1. นาย สมชาย ใจดี\n2. นาย วิชัย สุขใจ\n3. นาย ประสิทธิ์ มั่นคง',
-    ppe_required: 'helmet, gloves, glasses, shoes', ppe_other: 'Voltage gloves',
-    tools: 'Multimeter, Voltage tester, Screwdriver set',
-    risks: '1. งาน: ซ่อมตู้ MCC | เสี่ยง: ไฟฟ้าดูด | ป้องกัน: ตัด Breaker ก่อนทำงาน',
-    signer_name: 'นาย สมชาย ใจดี', signer_title: 'วิศวกรไฟฟ้า'
-  },
-  {
-    permit_id: 'APET-2024-4422', submitted_at: '27/12/2567 14:30', status: 'อนุมัติ',
-    permit_date: '2024-12-27', company_name: 'บริษัท อินทัช คูลลิ่ง จำกัด',
-    supervisor: 'นาง วิไล แข็งแกร่ง', phone: '086-555-1234',
-    work_date: '2024-12-27', time_start: '08:00', time_end: '17:00',
-    work_area: 'ห้อง Chiller Roof Top อาคาร A',
-    work_description: 'ซ่อมบำรุงระบบ Chiller และเติมน้ำยาแอร์',
-    hazard_types: 'aircon, chemical, highrisk', worker_count: 2,
-    workers: '1. นาง วิไล แข็งแกร่ง\n2. นาย กิตติ เก่งกาจ',
-    ppe_required: 'helmet, gloves, glasses, shoes, chemask, chesuit',
-    tools: 'Manifold gauge, Vacuum pump, Refrigerant tank',
-    risks: '1. งาน: เติมน้ำยา | เสี่ยง: สารเคมีอันตราย | ป้องกัน: สวม PPE ครบ',
-    signer_name: 'นาง วิไล แข็งแกร่ง', signer_title: 'ช่างระบบแอร์'
-  },
-  {
-    permit_id: 'APET-2024-3917', submitted_at: '26/12/2567 08:45', status: 'อนุมัติ',
-    permit_date: '2024-12-26', company_name: 'บริษัท พลาสมา เวลดิ้ง จำกัด',
-    supervisor: 'นาย อนันต์ ทองคำ', phone: '085-678-9012',
-    work_date: '2024-12-26', time_start: '08:00', time_end: '16:00',
-    work_area: 'โรงผลิต Line 2 Section C',
-    work_description: 'เชื่อมท่อระบบน้ำหล่อเย็น',
-    hazard_types: 'hotwork, waterpipe', worker_count: 4,
-    workers: '1. นาย อนันต์ ทองคำ\n2. นาย บุญมี สว่าง\n3. นาย จรัส ดี\n4. นาย ประเสริฐ ฤทธิ์',
-    ppe_required: 'helmet, gloves, glasses, shoes, weldmask, earplug',
-    tools: 'Welding machine, Angle grinder, Cutting disc',
-    risks: '1. งาน: เชื่อมท่อ | เสี่ยง: เปลวไฟ สะเก็ดไฟ | ป้องกัน: กั้นพื้นที่ เตรียมถังดับเพลิง',
-    signer_name: 'นาย อนันต์ ทองคำ', signer_title: 'หัวหน้าช่างเชื่อม'
-  },
-  {
-    permit_id: 'APET-2024-2104', submitted_at: '24/12/2567 10:00', status: 'ไม่อนุมัติ',
-    permit_date: '2024-12-24', company_name: 'บริษัท ท่อไทย จำกัด',
-    supervisor: 'นาย ปรีชา รักงาน', phone: '089-111-2222',
-    work_date: '2024-12-24', time_start: '07:00', time_end: '20:00',
-    work_area: 'ท่อระบายน้ำทิ้งโรงงาน',
-    work_description: 'ซ่อมท่อน้ำทิ้งใต้ดิน',
-    hazard_types: 'confined, waterpipe', worker_count: 2,
-    workers: '1. นาย ปรีชา รักงาน\n2. นาย สุรชัย ขยัน',
-    ppe_required: 'helmet, shoes, harness',
-    tools: 'Pipe wrench, Hand pump',
-    risks: '1. งาน: เข้าท่อ confined space | เสี่ยง: ขาดอากาศ ก๊าซพิษ | ป้องกัน: ตรวจ O2 ก่อนเข้า',
-    signer_name: 'นาย ปรีชา รักงาน', signer_title: 'ช่างท่อ'
-  },
-];
+  { permit_id:'APET-2026-1001', submitted_at:'09/04/2569 09:00', status:'รอแผนกที่ว่าจ้าง', company_name:'บริษัท เอ บี ซี เซอร์วิส จำกัด', supervisor:'นายธนา', work_date:'2026-04-09', time_start:'08:00', time_end:'17:00', work_area:'MCC Room', hazard_types:'electrical, highrisk', worker_count:'3' },
+  { permit_id:'APET-2026-1002', submitted_at:'09/04/2569 10:00', status:'รอ จป.วิชาชีพ', company_name:'บริษัท โอเมก้า คูลลิ่ง จำกัด', supervisor:'นางสาววิภา', work_date:'2026-04-09', time_start:'08:00', time_end:'16:00', work_area:'Chiller Roof', hazard_types:'aircon, chemical', worker_count:'2' },
+  { permit_id:'APET-2026-1003', submitted_at:'08/04/2569 08:20', status:'รอ ประธาน คปอ.', company_name:'บริษัท เวลด์โปร จำกัด', supervisor:'นายเกียรติ', work_date:'2026-04-08', time_start:'09:00', time_end:'18:00', work_area:'Line 2', hazard_types:'hotwork', worker_count:'4' },
+  { permit_id:'APET-2026-1004', submitted_at:'07/04/2569 07:45', status:'อนุมัติ', company_name:'บริษัท ไทยท่อ จำกัด', supervisor:'นายปรีชา', work_date:'2026-04-07', time_start:'07:00', time_end:'17:00', work_area:'Utility Pipe Rack', hazard_types:'waterpipe', worker_count:'2' }
+].map(APET.normalizePermit);
 
-// ===== INIT =====
+const HAZARD_MAP = {
+  construction:'🏗️ ก่อสร้าง', electrical:'⚡ ไฟฟ้า', pressure:'💨 ความดัน', machine:'⚙️ เครื่องจักร', aircon:'❄️ แอร์', hotwork:'🔥 งานร้อน',
+  waterpipe:'🚰 ท่อน้ำ', fireprotect:'🧯 อัคคีภัย', confined:'🏠 ที่อับอากาศ', windsys:'💨 ระบบลม', hoist:'🏗️ รอก/เครน', highrisk:'📏 งานสูง', gas:'🛢️ ระบบก๊าซ', chemical:'☣️ สารเคมี', other:'📝 อื่นๆ'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('roleFilter').value = currentRole;
+  updateRoleHeader();
   loadData();
 });
 
-// ===== LOAD DATA =====
 async function loadData() {
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=list', { mode: 'cors' });
-    const json = await res.json();
-    if (json.success && json.permits.length > 0) {
-      allPermits = json.permits;
-    } else {
-      throw new Error('No data');
-    }
-  } catch (err) {
-    console.log('Using demo data');
+    const permits = await APET.listPermits();
+    allPermits = permits.length ? permits : DEMO_DATA;
+  } catch (e) {
+    console.warn('load fallback', e);
     allPermits = DEMO_DATA;
   }
-  renderStats();
-  renderTable(allPermits);
+  allPermits = allPermits.map(p => ({ ...p, status: APET.getEffectiveStatus(p) }));
+  filterTable();
 }
 
-// ===== STATS =====
-function renderStats() {
-  const total = allPermits.length;
-  const pending = allPermits.filter(p => p.status === 'รอตรวจสอบ').length;
-  const approved = allPermits.filter(p => p.status === 'อนุมัติ').length;
-  const rejected = allPermits.filter(p => p.status === 'ไม่อนุมัติ').length;
-
-  const today = new Date().toISOString().split('T')[0];
-  const week = allPermits.filter(p => {
-    const d = new Date(p.work_date || '');
-    return (new Date() - d) / 86400000 <= 7;
-  }).length;
-
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statPending').textContent = pending;
-  document.getElementById('statApproved').textContent = approved;
-  document.getElementById('statRejected').textContent = rejected;
-  document.getElementById('statWeek').textContent = '7 วันล่าสุด: ' + week + ' ใบ';
-  document.getElementById('statApprovedPct').textContent = total > 0
-    ? Math.round(approved / total * 100) + '% อัตราอนุมัติ'
-    : '—';
+function updateRoleHeader() {
+  const cfg = APET.ROLES[currentRole] || APET.ROLES.all;
+  document.getElementById('headerSub').textContent = `มุมมอง: ${cfg.label}`;
+  document.getElementById('roleSummaryChip').textContent = `${cfg.icon} ${cfg.label}`;
+  document.getElementById('statRole').textContent = cfg.label;
+  document.getElementById('statPendingLabel').textContent = currentRole === 'all' ? 'ทุกคิวงาน' : `คิวของ ${cfg.label}`;
 }
 
-// ===== TABLE =====
-function renderTable(permits) {
-  document.getElementById('tableCount').textContent = `แสดง ${permits.length} รายการ`;
-
-  if (permits.length === 0) {
-    document.getElementById('tableContainer').innerHTML = `
-      <div class="empty-state">
-        <span class="icon">📭</span>
-        <div>ไม่พบข้อมูลใบอนุญาต</div>
-      </div>`;
-    return;
-  }
-
-  const rows = permits.map(p => {
-    const hazardTags = (p.hazard_types || '').split(', ').filter(Boolean)
-      .map(h => `<span class="hazard-tag">${HAZARD_MAP[h] || h}</span>`).join('');
-    const badgeClass = {
-      'อนุมัติ': 'badge-approved',
-      'ไม่อนุมัติ': 'badge-rejected',
-      'รอแผนกที่ว่าจ้าง': 'badge-wait-dept',
-      'รอ จป.วิชาชีพ': 'badge-wait-safety',
-      'รอ ประธาน คปอ.': 'badge-wait-chair',
-      'หมดอายุ': 'badge-expired',
-      'ปิดงาน': 'badge-closed',
-    }[p.status] || 'badge-pending';
-    const statusIcon = {
-      'อนุมัติ': '✅',
-      'ไม่อนุมัติ': '❌',
-      'รอแผนกที่ว่าจ้าง': '🏢',
-      'รอ จป.วิชาชีพ': '🔍',
-      'รอ ประธาน คปอ.': '👑',
-      'หมดอายุ': '⏰',
-      'ปิดงาน': '🔒',
-    }[p.status] || '⏳';
-
-    return `<tr>
-      <td><span class="permit-id">${p.permit_id}</span></td>
-      <td>
-        <div class="company-name">${p.company_name || '-'}</div>
-        <div class="supervisor">${p.supervisor || ''}</div>
-      </td>
-      <td>${p.work_date || '-'}</td>
-      <td class="work-area" title="${p.work_area || ''}">${p.work_area || '-'}</td>
-      <td><div class="hazard-tags">${hazardTags || '-'}</div></td>
-      <td><span class="workers-count">👥 ${p.worker_count || 0}</span></td>
-      <td><span class="badge ${badgeClass}">${statusIcon} ${p.status || '-'}</span></td>
-      <td>
-        <div style="display:flex;flex-direction:column;gap:4px;min-width:180px">
-          <!-- แถว 1: ดู + พิมพ์ -->
-          <div style="display:flex;gap:3px">
-            <button class="btn-sm btn-view" onclick="viewPermit('${p.permit_id}')" style="flex:1">🔎 ดูข้อมูล</button>
-            <button class="btn-sm btn-print" onclick="openPrintPage('${p.permit_id}')" title="พิมพ์ใบอนุญาต">🖨️</button>
-          </div>
-          <!-- แถว 2: ลงชื่ออนุมัติ 3 คน -->
-          <div style="display:flex;gap:3px">
-            <button class="btn-sm btn-dept" onclick="openInspector('${p.permit_id}', 'dept')" style="flex:1" title="แผนกที่ว่าจ้างลงชื่อ">🏢 แผนก</button>
-            <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" style="flex:1" title="จป.วิชาชีพลงชื่อ">🔍 จป.</button>
-            <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" style="flex:1" title="ประธาน คปอ.ลงชื่อ">👑 คปอ.</button>
-          </div>
-          <!-- แถว 3: Checklist + ต่อเวลา + ปิดงาน -->
-          <div style="display:flex;gap:3px">
-            <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" style="flex:1" title="Checklist จป.">📋 Checklist</button>
-            <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" style="flex:1" title="ขอต่อเวลา">⏰ ต่อเวลา</button>
-            ${p.status === 'อนุมัติ' ? `<button class="btn-sm btn-close-work" onclick="closeWork('${p.permit_id}')" style="flex:1" title="ปิดงาน">🔒 ปิดงาน</button>` : '<div style="flex:1"></div>'}
-          </div>
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('tableContainer').innerHTML = `
-    <div style="overflow-x:auto">
-      <table class="permits-table">
-        <thead>
-          <tr>
-            <th>Permit ID</th>
-            <th>บริษัท / หัวหน้างาน</th>
-            <th>วันทำงาน</th>
-            <th>พื้นที่</th>
-            <th>ประเภทงาน</th>
-            <th>คน</th>
-            <th>สถานะ</th>
-            <th style="min-width:190px">จัดการ <span style="font-weight:400;color:var(--gray-500);font-size:10px">(ดู / ลงชื่อ / Checklist)</span></th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
+function changeRole() {
+  currentRole = document.getElementById('roleFilter').value;
+  const url = new URL(window.location.href);
+  url.searchParams.set('role', currentRole);
+  window.history.replaceState({}, '', url);
+  updateRoleHeader();
+  filterTable();
 }
 
-// ===== FILTER =====
 function filterTable() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
   const status = document.getElementById('statusFilter').value;
   const dateFilter = document.getElementById('dateFilter').value;
   const now = new Date();
 
-  const filtered = allPermits.filter(p => {
-    const matchSearch = !search ||
-      (p.company_name || '').toLowerCase().includes(search) ||
-      (p.supervisor || '').toLowerCase().includes(search) ||
-      (p.work_area || '').toLowerCase().includes(search) ||
-      (p.permit_id || '').toLowerCase().includes(search);
-
+  const scoped = APET.getRoleScopedPermits(currentRole, allPermits);
+  visiblePermits = scoped.filter(p => {
+    const matchSearch = !search || [p.permit_id, p.company_name, p.supervisor, p.work_area].join(' ').toLowerCase().includes(search);
     const matchStatus = !status || p.status === status;
-
     let matchDate = true;
     if (dateFilter && p.work_date) {
       const d = new Date(p.work_date);
       const days = (now - d) / 86400000;
       if (dateFilter === 'today') matchDate = d.toDateString() === now.toDateString();
-      else if (dateFilter === 'week') matchDate = days <= 7;
-      else if (dateFilter === 'month') matchDate = days <= 30;
+      else if (dateFilter === 'week') matchDate = days >= 0 && days <= 7;
+      else if (dateFilter === 'month') matchDate = days >= 0 && days <= 30;
     }
-
     return matchSearch && matchStatus && matchDate;
   });
 
-  renderTable(filtered);
+  renderStats(scoped);
+  renderDesktop(visiblePermits);
+  renderMobile(visiblePermits);
 }
 
-// ===== VIEW MODAL =====
-function viewPermit(id) {
-  const p = allPermits.find(x => x.permit_id === id);
-  if (!p) return;
-  currentPermitId = id;
+function renderStats(scoped) {
+  const total = scoped.length;
+  const pending = scoped.filter(p => !!APET.getPendingRoleFromStatus(p.status)).length;
+  const approved = scoped.filter(p => p.status === APET.STATUS.APPROVED).length;
+  const week = scoped.filter(p => p.work_date && (new Date() - new Date(p.work_date)) / 86400000 <= 7).length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statApproved').textContent = approved;
+  document.getElementById('statWeek').textContent = `7 วันล่าสุด: ${week} ใบ`;
+  document.getElementById('statApprovedPct').textContent = total ? `${Math.round((approved/total)*100)}% อัตราอนุมัติ` : '—';
+  document.getElementById('tableCount').textContent = `แสดง ${visiblePermits.length} จาก ${total} รายการ`;
+}
 
-  document.getElementById('modalTitle').textContent = p.company_name || 'รายละเอียดใบอนุญาต';
-  document.getElementById('modalId').textContent = p.permit_id;
+function badgeClass(status) {
+  return {
+    'อนุมัติ':'background:#D5F5E3;color:#1E8449',
+    'ไม่อนุมัติ':'background:#FADBD8;color:#96281B',
+    'รอแผนกที่ว่าจ้าง':'background:#FFF3CD;color:#856404',
+    'รอ จป.วิชาชีพ':'background:#EAD7FF;color:#7C5CBF',
+    'รอ ประธาน คปอ.':'background:#D6EAF8;color:#185FA5',
+    'หมดอายุ':'background:#F2F3F4;color:#5F6368',
+    'ปิดงาน':'background:#D5D8DC;color:#2C3E50'
+  }[status] || 'background:#FFF3CD;color:#856404';
+}
 
-  const badgeClass = p.status === 'อนุมัติ' ? 'badge-approved'
-    : p.status === 'ไม่อนุมัติ' ? 'badge-rejected' : 'badge-pending';
+function hazardTags(raw) {
+  return String(raw || '').split(',').map(s => s.trim()).filter(Boolean).map(h => `<span class="hazard-tag">${HAZARD_MAP[h] || h}</span>`).join('');
+}
 
-  const hazardTags = (p.hazard_types || '').split(', ').filter(Boolean)
-    .map(h => `<span class="hazard-tag">${HAZARD_MAP[h] || h}</span>`).join('');
+function renderActions(p) {
+  const a = APET.getActionVisibility(currentRole, p);
+  const buttons = [];
+  if (a.view) buttons.push(`<button class="btn-sm btn-view" onclick="openPermit('${p.permit_id}')">ดู</button>`);
+  if (a.qr) buttons.push(`<button class="btn-sm btn-qr" onclick="openQr('${p.permit_id}')">QR</button>`);
+  if (a.dept) buttons.push(`<button class="btn-sm btn-dept" onclick="openInspector('${p.permit_id}','dept')">🏢 แผนก</button>`);
+  if (a.inspector) buttons.push(`<button class="btn-sm btn-inspector" onclick="openInspector('${p.permit_id}','inspector')">🔍 จป.</button>`);
+  if (a.checklist) buttons.push(`<button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')">📋 Checklist</button>`);
+  if (a.chairman) buttons.push(`<button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}','chairman')">👑 คปอ.</button>`);
+  if (a.overtime) buttons.push(`<button class="btn-sm btn-qr" onclick="openOvertime('${p.permit_id}')">⏰ OT</button>`);
+  if (a.print) buttons.push(`<button class="btn-sm btn-print" onclick="openPrint('${p.permit_id}')">🖨️ พิมพ์</button>`);
+  if (a.close) buttons.push(`<button class="btn-sm btn-close" onclick="closeWork('${p.permit_id}')">🔒 ปิดงาน</button>`);
+  return buttons.join('');
+}
 
-  const ppeLabels = (p.ppe_required || '').split(', ').filter(Boolean)
-    .map(v => PPE_MAP[v] || v).join(', ');
+function renderDesktop(permits) {
+  const box = document.getElementById('tableContainer');
+  if (!permits.length) {
+    box.innerHTML = `<div class="empty-state">📭 ไม่พบใบอนุญาตในมุมมองนี้</div>`;
+    return;
+  }
+  box.innerHTML = `<table class="permits-table"><thead><tr><th>Permit ID</th><th>บริษัท</th><th>วัน/เวลา</th><th>พื้นที่</th><th>ประเภทงาน</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>${permits.map(p => `
+      <tr>
+        <td><div class="permit-id">${p.permit_id}</div><div class="subtext">${p.submitted_at || '-'}</div></td>
+        <td><div class="company-name">${p.company_name || '-'}</div><div class="subtext">หัวหน้า: ${p.supervisor || '-'}</div></td>
+        <td>${APET.formatDate(p.work_date)}<div class="subtext">${p.time_start || '-'} - ${p.time_end || '-'}</div></td>
+        <td><div class="work-area" title="${p.work_area || ''}">${p.work_area || '-'}</div></td>
+        <td><div class="hazard-tags">${hazardTags(p.hazard_types) || '-'}</div></td>
+        <td><span class="badge" style="${badgeClass(p.status)}">${p.status}</span></td>
+        <td><div class="action-btns">${renderActions(p)}</div></td>
+      </tr>`).join('')}</tbody></table>`;
+}
 
-  const workers = (p.workers || '').split('\n').filter(Boolean)
-    .map(w => `<div class="worker-item">${w}</div>`).join('');
-
-  document.getElementById('modalBody').innerHTML = `
-    <div class="detail-section">
-      <div style="display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap">
-        <span class="badge ${badgeClass}">${p.status || '-'}</span>
-        <span style="font-size:12px; color:var(--gray-500)">ส่งเมื่อ: ${p.submitted_at || '-'}</span>
+function renderMobile(permits) {
+  const box = document.getElementById('mobileContainer');
+  if (!permits.length) {
+    box.innerHTML = `<div class="empty-state">📭 ไม่พบใบอนุญาตในมุมมองนี้</div>`;
+    return;
+  }
+  box.innerHTML = permits.map(p => `
+    <div class="permit-card">
+      <div class="permit-top">
+        <div>
+          <div class="permit-id">${p.permit_id}</div>
+          <div class="company-name" style="margin-top:4px">${p.company_name || '-'}</div>
+          <div class="subtext">หัวหน้า: ${p.supervisor || '-'}</div>
+        </div>
+        <span class="badge" style="${badgeClass(p.status)}">${p.status}</span>
       </div>
-    </div>
-
-    <div class="detail-section">
-      <div class="detail-section-title">ข้อมูลผู้รับเหมา</div>
-      <div class="detail-grid">
-        <div class="detail-row"><div class="detail-label">บริษัท</div><div class="detail-value">${p.company_name || '-'}</div></div>
-        <div class="detail-row"><div class="detail-label">หัวหน้างาน</div><div class="detail-value">${p.supervisor || '-'}</div></div>
-        <div class="detail-row"><div class="detail-label">เบอร์ติดต่อ</div><div class="detail-value">${p.phone || '-'}</div></div>
-        <div class="detail-row"><div class="detail-label">ผู้ลงนาม</div><div class="detail-value">${p.signer_name || '-'}${p.signer_title ? ' (' + p.signer_title + ')' : ''}</div></div>
+      <div class="permit-grid">
+        <div><div class="label">วันทำงาน</div><div class="value">${APET.formatDate(p.work_date)}</div></div>
+        <div><div class="label">เวลา</div><div class="value">${p.time_start || '-'} - ${p.time_end || '-'}</div></div>
+        <div><div class="label">พื้นที่</div><div class="value">${p.work_area || '-'}</div></div>
+        <div><div class="label">คนงาน</div><div class="value">${p.worker_count || 0} คน</div></div>
       </div>
-    </div>
-
-    <div class="detail-section">
-      <div class="detail-section-title">รายละเอียดงาน</div>
-      <div class="detail-grid">
-        <div class="detail-row"><div class="detail-label">วันที่ปฏิบัติงาน</div><div class="detail-value">${p.work_date || '-'}</div></div>
-        <div class="detail-row"><div class="detail-label">เวลา</div><div class="detail-value">${p.time_start || '-'} – ${p.time_end || '-'} น.</div></div>
-        <div class="detail-row full"><div class="detail-label">พื้นที่ทำงาน</div><div class="detail-value">${p.work_area || '-'}</div></div>
-        <div class="detail-row full"><div class="detail-label">ลักษณะงาน</div><div class="detail-value">${p.work_description || '-'}</div></div>
-      </div>
-    </div>
-
-    <div class="detail-section">
-      <div class="detail-section-title">ประเภทความเสี่ยง</div>
-      <div style="display:flex; flex-wrap:wrap; gap:4px">${hazardTags || '-'}</div>
-    </div>
-
-    <div class="detail-section">
-      <div class="detail-section-title">รายชื่อผู้ปฏิบัติงาน (${p.worker_count || 0} คน)</div>
-      <div class="workers-list">${workers || '<div style="color:var(--gray-500); font-size:13px">-</div>'}</div>
-    </div>
-
-    <div class="detail-section">
-      <div class="detail-section-title">PPE ที่ต้องใช้</div>
-      <div style="font-size:13px">${ppeLabels || '-'}${p.ppe_other ? ', ' + p.ppe_other : ''}</div>
-    </div>
-
-    ${p.tools ? `<div class="detail-section">
-      <div class="detail-section-title">เครื่องมือ/อุปกรณ์</div>
-      <div style="font-size:13px">${p.tools}</div>
-    </div>` : ''}
-
-    ${p.risks ? `<div class="detail-section">
-      <div class="detail-section-title">ความเสี่ยงและมาตรการป้องกัน</div>
-      <div style="font-size:12px; line-height:1.7; white-space:pre-line; background:var(--gray-50); padding:10px 14px; border-radius:6px">${p.risks}</div>
-    </div>` : ''}
-  `;
-
-  const isPending = p.status === 'รอตรวจสอบ';
-  document.getElementById('modalActions').innerHTML = `
-    ${isPending ? `
-    <button class="btn btn-primary" onclick="updateStatus('${id}', 'อนุมัติ')">✅ อนุมัติ</button>
-    <button class="btn btn-danger" onclick="updateStatus('${id}', 'ไม่อนุมัติ')">❌ ไม่อนุมัติ</button>
-    ` : `<button class="btn btn-secondary" onclick="revertStatus('${id}')">↩️ เปลี่ยนสถานะ</button>`}
-    <button class="btn btn-secondary" onclick="closeModal()">ปิด</button>
-  `;
-
-  document.getElementById('modal').classList.add('open');
+      <div class="hazard-tags" style="margin-bottom:10px">${hazardTags(p.hazard_types) || ''}</div>
+      <div class="action-btns">${renderActions(p)}</div>
+    </div>`).join('');
 }
 
-// ===== STATUS UPDATE =====
-async function updateStatus(id, newStatus) {
-  const p = allPermits.find(x => x.permit_id === id);
-  if (p) p.status = newStatus;
+function openPermit(id) { window.open(APET.buildPermitLink(id), '_blank'); }
+function openQr(id) { window.open(APET.buildQrPosterLink(id), '_blank'); }
+function openInspector(id, role) { window.open(APET.buildPageUrl('inspector.html', { id, role }), '_blank'); }
+function openChecklist(id) { window.open(APET.buildPageUrl('checklist.html', { id }), '_blank'); }
+function openPrint(id) { window.open(APET.buildPageUrl('print.html', { id }), '_blank'); }
+function openOvertime(id) { window.open(APET.buildPageUrl('overtime.html', { id }), '_blank'); }
 
-  try {
-    await fetch(`${APPS_SCRIPT_URL}?action=update_status&id=${id}&status=${encodeURIComponent(newStatus)}`);
-  } catch (e) { /* demo mode */ }
-
-  renderStats();
-  filterTable();
-  closeModal();
-  const icon = newStatus === 'อนุมัติ' ? '✅' : '❌';
-  showToast(`${icon} ${id} — ${newStatus}เรียบร้อย`, newStatus === 'อนุมัติ' ? 'success' : '');
-}
-
-function revertStatus(id) {
-  const p = allPermits.find(x => x.permit_id === id);
-  if (!p) return;
-  const choices = ['รอตรวจสอบ', 'อนุมัติ', 'ไม่อนุมัติ'].filter(s => s !== p.status);
-  const sel = document.getElementById('modalActions');
-  sel.innerHTML = `
-    <span style="font-size:13px; color:var(--gray-700)">เปลี่ยนเป็น:</span>
-    ${choices.map(c => `<button class="btn btn-secondary" onclick="updateStatus('${id}', '${c}')">${c}</button>`).join('')}
-    <button class="btn btn-secondary" onclick="viewPermit('${id}')">ยกเลิก</button>
-  `;
-}
-
-function closeModal(e) {
-  if (e && e.target !== document.getElementById('modal')) return;
-  document.getElementById('modal').classList.remove('open');
-}
-
-// ===== MAPS =====
-const HAZARD_MAP = {
-  construction: '🏗️ ก่อสร้าง', electrical: '⚡ ไฟฟ้า', pressure: '💨 ความดัน',
-  machine: '⚙️ เครื่องจักร', aircon: '❄️ แอร์', hotwork: '🔥 งานร้อน',
-  waterpipe: '🚰 ท่อน้ำ', fireprotect: '🧯 อัคคีภัย', confined: '🏠 ที่อับอากาศ',
-  windsys: '💨 ระบบลม', hoist: '🏗️ รอก/เครน', highrisk: '📏 งานสูง',
-  gas: '🛢️ ระบบก๊าซ', chemical: '☣️ สารเคมี', other: '📝 อื่นๆ'
-};
-const PPE_MAP = {
-  helmet: 'หมวกนิรภัย', gloves: 'ถุงมือ', shoes: 'รองเท้านิรภัย',
-  harness: 'เข็มขัดนิรภัย', glasses: 'แว่นตา', earplug: 'ที่อุดหู',
-  weldmask: 'หน้ากากเชื่อม', chemask: 'หน้ากากสารเคมี', chesuit: 'ชุดสารเคมี'
-};
-
-// ===== TOAST =====
-function openInspector(permitId, role) {
-  const roleParam = role ? '&role=' + role : '';
-  window.open('inspector.html?id=' + encodeURIComponent(permitId) + roleParam, '_blank');
-}
-
-function openChecklist(permitId) {
-  window.open('checklist.html?id=' + encodeURIComponent(permitId), '_blank');
-}
-
-function openPrintPage(permitId) {
-  window.open('print.html?id=' + encodeURIComponent(permitId), '_blank');
-}
-
-function openOvertime(permitId) {
-  window.open('overtime.html?id=' + encodeURIComponent(permitId), '_blank');
-}
-
-async function closeWork(permitId) {
-  if (!confirm(`ยืนยันปิดงาน ${permitId}?\nการปิดงานจะไม่สามารถเปลี่ยนแปลงได้`)) return;
-  const p = allPermits.find(x => x.permit_id === permitId);
-  if (p) p.status = 'ปิดงาน';
-  try {
-    await fetch(`${APPS_SCRIPT_URL}?action=close_permit&id=${encodeURIComponent(permitId)}`);
-  } catch(e) {}
-  renderStats();
-  filterTable();
-  showToast('🔒 ปิดงาน ' + permitId + ' เรียบร้อย', 'success');
-}
-
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show' + (type ? ' ' + type : '');
-  setTimeout(() => t.className = '', 3500);
+async function closeWork(id) {
+  if (!confirm(`ยืนยันปิดงาน ${id} ?`)) return;
+  try { await APET.closePermit(id); } catch (e) { console.warn(e); }
+  APET.showToast(`🔒 ปิดงาน ${id} เรียบร้อย`, 'success');
+  loadData();
 }
 </script>
-<script src="core.js"></script>
 </body>
 </html>

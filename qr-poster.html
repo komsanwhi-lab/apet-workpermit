@@ -2,279 +2,114 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>พิมพ์ QR Code — APET Work Permit</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; padding: 24px; }
-
-  /* Screen controls */
-  .controls {
-    max-width: 540px;
-    margin: 0 auto 24px;
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  }
-  .controls h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
-  .field { margin-bottom: 12px; }
-  label { display: block; font-size: 12px; font-weight: 600; color: #5F6368; margin-bottom: 4px; }
-  input { width: 100%; border: 1.5px solid #DADCE0; border-radius: 6px; padding: 8px 12px; font-size: 14px; font-family: inherit; outline: none; }
-  input:focus { border-color: #C0392B; }
-  .btn-print {
-    background: #C0392B; color: white; border: none; border-radius: 6px;
-    padding: 11px 24px; font-size: 14px; font-family: inherit; font-weight: 600;
-    cursor: pointer; width: 100%; margin-top: 4px;
-  }
-  .btn-print:hover { background: #96281B; }
-
-  /* Print page */
-  .poster-wrap {
-    max-width: 540px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-    overflow: hidden;
-  }
-
-  .poster {
-    padding: 32px 28px 28px;
-    text-align: center;
-  }
-
-  .poster-header {
-    background: #C0392B;
-    margin: -32px -28px 28px;
-    padding: 22px 28px 18px;
-    color: white;
-  }
-  .poster-logo { font-size: 32px; font-weight: 800; letter-spacing: 2px; margin-bottom: 4px; }
-  .poster-company { font-size: 11px; opacity: 0.8; line-height: 1.5; }
-
-  .poster-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #C0392B;
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-  .poster-sub {
-    font-size: 13px;
-    color: #5F6368;
-    margin-bottom: 24px;
-    line-height: 1.5;
-  }
-
-  .qr-box {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto 20px;
-    border: 3px solid #C0392B;
-    border-radius: 12px;
-    padding: 10px;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  #qrcode canvas, #qrcode img { display: block; }
-
-  .steps-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #202124;
-    margin-bottom: 12px;
-    text-align: left;
-  }
-  .steps {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    text-align: left;
-    margin-bottom: 20px;
-  }
-  .step {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-  .step-num {
-    width: 22px;
-    height: 22px;
-    background: #C0392B;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .divider {
-    border: none;
-    border-top: 1.5px dashed #DADCE0;
-    margin: 16px 0;
-  }
-
-  .location-badge {
-    display: inline-block;
-    background: #F1F3F4;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #5F6368;
-    margin-bottom: 16px;
-  }
-
-  .warning-box {
-    background: #FFF3CD;
-    border: 1.5px solid #FFDCA0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 12px;
-    color: #856404;
-    text-align: left;
-    line-height: 1.5;
-  }
-
-  .poster-footer {
-    background: #F8F9FA;
-    border-top: 1px solid #E8EAED;
-    padding: 12px 28px;
-    font-size: 11px;
-    color: #9AA0A6;
-    text-align: center;
-  }
-
-  /* Print styles */
-  @media print {
-    body { background: white; padding: 0; }
-    .controls { display: none; }
-    .poster-wrap { box-shadow: none; border-radius: 0; max-width: 100%; }
-    @page { margin: 10mm; size: A4; }
-  }
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Sarabun',sans-serif;background:#F0F2F5;padding:22px;color:#202124}.controls,.poster-wrap{max-width:560px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden}.controls{padding:20px;margin-bottom:22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:12px}label{display:block;font-size:12px;font-weight:700;color:#5F6368;margin-bottom:4px}input,select{width:100%;border:1.5px solid #DADCE0;border-radius:8px;padding:10px 12px;font:inherit;outline:none}input:focus,select:focus{border-color:#C0392B;box-shadow:0 0 0 3px rgba(192,57,43,.1)}.btn-print{background:#C0392B;color:#fff;border:none;border-radius:8px;padding:12px 24px;font:inherit;font-weight:700;cursor:pointer;width:100%;margin-top:8px}.poster{padding:30px 26px;text-align:center}.poster-header{background:#C0392B;margin:-30px -26px 24px;padding:22px 26px 18px;color:#fff}.poster-logo{font-size:32px;font-weight:800;letter-spacing:2px;margin-bottom:4px}.poster-company{font-size:11px;opacity:.84;line-height:1.5}.poster-title{font-size:22px;font-weight:800;color:#C0392B;line-height:1.3}.poster-sub{font-size:13px;color:#5F6368;margin:8px 0 20px;line-height:1.5}.permit-badge{display:inline-block;background:#F8F9FA;border:1px solid #E8EAED;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;color:#5F6368;margin-bottom:16px}.qr-box{width:220px;height:220px;margin:0 auto 18px;border:3px solid #C0392B;border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center}.target{font-size:12px;color:#5F6368;word-break:break-all;line-height:1.6;background:#F8F9FA;border-radius:10px;padding:10px 12px;margin-bottom:16px}.steps{display:flex;flex-direction:column;gap:8px;text-align:left;margin:18px 0}.step{display:flex;gap:10px;font-size:13px;line-height:1.5}.step-num{width:22px;height:22px;background:#C0392B;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}.poster-footer{background:#F8F9FA;border-top:1px solid #E8EAED;padding:12px 18px;font-size:11px;color:#9AA0A6;text-align:center}.location-badge{display:inline-block;background:#F1F3F4;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;color:#5F6368;margin-bottom:14px}.warning-box{background:#FFF3CD;border:1.5px solid #FFDCA0;border-radius:10px;padding:12px 14px;font-size:12px;color:#856404;text-align:left;line-height:1.6}.hint{font-size:12px;color:#9AA0A6;margin-top:8px}
+@media(max-width:640px){body{padding:12px}.grid{grid-template-columns:1fr}}
+@media print{body{background:#fff;padding:0}.controls{display:none}.poster-wrap{box-shadow:none;border-radius:0;max-width:100%}@page{margin:10mm;size:A4}}
 </style>
 </head>
 <body>
-
 <div class="controls">
-  <h2>⚙️ ตั้งค่าโปสเตอร์ QR Code</h2>
-  <div class="field">
-    <label>URL ของ Web Form (index.html)</label>
-    <input type="text" id="urlInput" placeholder="https://your-site.netlify.app/index.html" oninput="updateQR()">
+  <h2 style="font-size:16px;margin-bottom:14px">⚙️ ตั้งค่า QR Permit</h2>
+  <div class="grid">
+    <div class="field">
+      <label>ประเภท QR</label>
+      <select id="modeSelect" onchange="updateQR()">
+        <option value="permit">เปิด Permit รายใบ</option>
+        <option value="form">เปิดฟอร์มสร้างใบใหม่</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Permit ID</label>
+      <input id="permitIdInput" placeholder="เช่น APET-2026-1001" oninput="updateQR()">
+    </div>
   </div>
   <div class="field">
-    <label>ชื่อพื้นที่/จุดติดตั้ง (ไม่บังคับ)</label>
-    <input type="text" id="locationInput" placeholder="เช่น ประตูทางเข้าหลัก, อาคาร A" oninput="updateLocation()">
+    <label>Base URL เว็บไซต์</label>
+    <input id="baseUrlInput" placeholder="https://your-domain.com/index.html" oninput="updateQR()">
+  </div>
+  <div class="field">
+    <label>ชื่อพื้นที่/จุดติดตั้ง</label>
+    <input id="locationInput" placeholder="เช่น ประตูทางเข้าหลัก" oninput="updateQR()">
   </div>
   <button class="btn-print" onclick="window.print()">🖨️ พิมพ์โปสเตอร์</button>
+  <div class="hint">ทริกเล็ก ๆ: ถ้ากรอก Base URL เป็นหน้าปัจจุบัน ระบบจะตัดชื่อไฟล์ท้ายลิงก์ออกให้อัตโนมัติ</div>
 </div>
 
 <div class="poster-wrap">
   <div class="poster">
-
     <div class="poster-header">
       <div class="poster-logo">APET</div>
       <div class="poster-company">บริษัท แอร์-คอน พาร์ทส์ เอ็นจิเนียริ่ง (ประเทศไทย) จำกัด<br>Air-Con Parts Engineering (Thailand) Co., Ltd.</div>
     </div>
-
-    <div class="poster-title">ใบขออนุญาตเข้าปฏิบัติงาน<br>Contractor Work Permit</div>
-    <div class="poster-sub">สำหรับผู้รับเหมาและบุคคลภายนอก<br>For Contractors and External Personnel</div>
-
-    <div class="qr-box">
-      <div id="qrcode"></div>
-    </div>
-
+    <div class="poster-title">QR Code สำหรับเปิด Permit</div>
+    <div class="poster-sub" id="posterSub">สแกนแล้วเปิดหน้า Permit บนมือถือได้ทันที</div>
+    <div class="permit-badge" id="permitBadge">Permit: —</div>
+    <div class="qr-box"><div id="qrcode"></div></div>
     <div class="location-badge" id="locationBadge">📍 ประตูทางเข้าหลัก</div>
-
-    <div class="steps-title">วิธีขออนุญาตเข้าทำงาน</div>
+    <div class="target" id="targetUrl">—</div>
     <div class="steps">
-      <div class="step">
-        <span class="step-num">1</span>
-        <span><strong>สแกน QR Code</strong> ด้วยกล้องมือถือหรือ QR Reader</span>
-      </div>
-      <div class="step">
-        <span class="step-num">2</span>
-        <span><strong>กรอกข้อมูล</strong> ในแบบฟอร์มออนไลน์ให้ครบถ้วน</span>
-      </div>
-      <div class="step">
-        <span class="step-num">3</span>
-        <span><strong>ลงลายเซ็นดิจิทัล</strong> และส่งแบบฟอร์ม</span>
-      </div>
-      <div class="step">
-        <span class="step-num">4</span>
-        <span><strong>รอการอนุมัติ</strong> จาก จป.วิชาชีพ ก่อนเริ่มงาน</span>
-      </div>
+      <div class="step"><span class="step-num">1</span><span>สแกน QR ด้วยมือถือ</span></div>
+      <div class="step"><span class="step-num">2</span><span>ระบบจะเปิดหน้ารายละเอียด Permit หรือฟอร์มตามที่ตั้งไว้</span></div>
+      <div class="step"><span class="step-num">3</span><span>กดดูข้อมูล / ลงชื่อ / Checklist / พิมพ์ ได้ต่อทันที</span></div>
     </div>
-
-    <hr class="divider">
-
-    <div class="warning-box">
-      ⚠️ <strong>ข้อบังคับ:</strong> ผู้รับเหมาทุกรายต้องกรอกใบขออนุญาตก่อนเข้าปฏิบัติงานในทุกครั้ง
-      โดย จป.วิชาชีพ มีสิทธิ์สั่งหยุดงานหากพบความเสี่ยงต่อความปลอดภัย
-    </div>
-
+    <div class="warning-box">⚠️ แนะนำให้ใช้ลิงก์เว็บที่ Deploy แล้วจริง เช่น Netlify / GitHub Pages / Vercel ไม่ใช่ไฟล์ในเครื่องตรง ๆ เพราะมือถือเครื่องอื่นสแกนแล้วจะงงเหมือนประชุมที่ไม่มี agenda</div>
   </div>
-  <div class="poster-footer">
-    ติดต่อ จป.วิชาชีพ โทร: 033-XXX-XXXX | ระบบใบอนุญาตออนไลน์ APET Safety Management System
-  </div>
+  <div class="poster-footer">APET Safety Management System</div>
 </div>
 
+<script src="core.js"></script>
 <script>
 let qrInstance = null;
-
-function updateQR() {
-  const url = document.getElementById('urlInput').value.trim();
-  if (!url) return;
-
-  const container = document.getElementById('qrcode');
-  container.innerHTML = '';
-
-  qrInstance = new QRCode(container, {
-    text: url,
-    width: 178,
-    height: 178,
-    colorDark: '#C0392B',
-    colorLight: '#FFFFFF',
-    correctLevel: QRCode.CorrectLevel.M
-  });
-}
-
-function updateLocation() {
-  const loc = document.getElementById('locationInput').value.trim();
-  document.getElementById('locationBadge').textContent = '📍 ' + (loc || 'ประตูทางเข้าหลัก');
-}
-
-// Init with placeholder
-window.addEventListener('load', () => {
-  const saved = localStorage.getItem('apet_form_url');
-  if (saved) {
-    document.getElementById('urlInput').value = saved;
-    updateQR();
-  } else {
-    // Show sample QR
-    const container = document.getElementById('qrcode');
-    container.innerHTML = '';
-    new QRCode(container, {
-      text: 'https://your-site.netlify.app',
-      width: 178, height: 178,
-      colorDark: '#C0392B', colorLight: '#FFFFFF',
-      correctLevel: QRCode.CorrectLevel.M
-    });
-  }
-  document.getElementById('urlInput').addEventListener('change', e => {
-    localStorage.setItem('apet_form_url', e.target.value);
-  });
+const qs = new URLSearchParams(location.search);
+window.addEventListener('DOMContentLoaded', () => {
+  const savedBase = localStorage.getItem('apet_base_url') || '';
+  const queryId = qs.get('id') || '';
+  document.getElementById('permitIdInput').value = queryId;
+  document.getElementById('locationInput').value = localStorage.getItem('apet_qr_location') || 'ประตูทางเข้าหลัก';
+  document.getElementById('baseUrlInput').value = savedBase || location.href;
+  if (!queryId) document.getElementById('modeSelect').value = 'form';
+  updateQR();
 });
+function normalizeBaseUrl(url) {
+  const trimmed = (url || '').trim();
+  if (!trimmed) return location.href;
+  try {
+    const u = new URL(trimmed, location.href);
+    u.search = '';
+    u.hash = '';
+    u.pathname = u.pathname.replace(/\/[^/]*$/, '/');
+    return u.toString();
+  } catch {
+    return trimmed;
+  }
+}
+function buildTargetUrl() {
+  const mode = document.getElementById('modeSelect').value;
+  const permitId = document.getElementById('permitIdInput').value.trim();
+  const base = normalizeBaseUrl(document.getElementById('baseUrlInput').value.trim());
+  localStorage.setItem('apet_base_url', document.getElementById('baseUrlInput').value.trim());
+  localStorage.setItem('apet_qr_location', document.getElementById('locationInput').value.trim());
+  if (mode === 'permit' && permitId) return new URL(`permit.html?id=${encodeURIComponent(permitId)}`, base).toString();
+  return new URL('index.html', base).toString();
+}
+function updateQR() {
+  const mode = document.getElementById('modeSelect').value;
+  const permitId = document.getElementById('permitIdInput').value.trim();
+  const loc = document.getElementById('locationInput').value.trim() || 'ประตูทางเข้าหลัก';
+  const target = buildTargetUrl();
+  document.getElementById('locationBadge').textContent = '📍 ' + loc;
+  document.getElementById('targetUrl').textContent = target;
+  document.getElementById('permitBadge').textContent = mode === 'permit' ? `Permit: ${permitId || 'ยังไม่ระบุ'}` : 'QR เปิดฟอร์มสร้างใบใหม่';
+  document.getElementById('posterSub').textContent = mode === 'permit' ? 'สแกนแล้วเปิด Permit รายใบได้ทันที' : 'สแกนแล้วเปิดฟอร์มสร้างใบอนุญาตใหม่';
+  const box = document.getElementById('qrcode');
+  box.innerHTML = '';
+  qrInstance = new QRCode(box, { text: target, width: 198, height: 198, colorDark: '#C0392B', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.M });
+}
 </script>
 </body>
 </html>
