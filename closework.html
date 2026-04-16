@@ -6,111 +6,113 @@
 <title>ปิดงาน — APET Work Permit</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--red:#C0392B;--red-light:#FADBD8;--green:#27AE60;--green-light:#D5F5E3;--blue:#2980B9;--blue-light:#D6EAF8;--purple:#7C5CBF;--purple-light:#EAD7FF;--gray-50:#F8F9FA;--gray-200:#E8EAED;--gray-300:#DADCE0;--gray-500:#9AA0A6;--gray-700:#5F6368;--gray-900:#202124;--dark:#1A252F}
+:root{--red:#C0392B;--red-light:#FADBD8;--green:#27AE60;--green-light:#D5F5E3;--blue:#2980B9;--blue-light:#D6EAF8;--purple:#7C5CBF;--gray-50:#F8F9FA;--gray-200:#E8EAED;--gray-300:#DADCE0;--gray-500:#9AA0A6;--gray-700:#5F6368;--gray-900:#202124;--dark:#1A252F}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:var(--gray-900);min-height:100vh}
-.site-header{background:var(--dark);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.site-header{background:var(--dark);position:sticky;top:0;z-index:100}
 .header-inner{max-width:700px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
-.header-logo{background:var(--red);border-radius:6px;padding:4px 10px;font-weight:700;font-size:17px;color:#fff}
-.header-title{color:#fff;font-size:15px;font-weight:600}
-.header-sub{color:rgba(255,255,255,.6);font-size:12px;margin-top:1px}
-.header-right{margin-left:auto}
-.btn-header{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.logo{background:var(--red);border-radius:6px;padding:4px 10px;font-weight:700;font-size:17px;color:#fff}
+.htitle{color:#fff;font-size:15px;font-weight:600}
+.hsub{color:rgba(255,255,255,.6);font-size:12px;margin-top:1px}
+.hright{margin-left:auto}
+.btn-hdr{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.page{max-width:700px;margin:0 auto;padding:20px 16px 80px}
 
-.page{max-width:700px;margin:0 auto;padding:24px 16px 80px}
-
-/* Approval steps bar */
-.steps-bar{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:16px 20px;margin-bottom:20px}
-.steps-title{font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
-.steps-row{display:flex;align-items:center;gap:0}
+/* Steps */
+.steps-bar{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:16px 20px;margin-bottom:16px}
+.steps-row{display:flex;align-items:flex-start;gap:0;margin-top:10px}
 .step-item{flex:1;text-align:center;position:relative}
-.step-item:not(:last-child)::after{content:'';position:absolute;right:0;top:22px;width:100%;height:2px;background:var(--gray-200);z-index:0}
-.step-circle{width:44px;height:44px;border-radius:50%;border:3px solid var(--gray-200);background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;margin:0 auto 6px;position:relative;z-index:1;transition:all .3s}
-.step-label{font-size:11px;font-weight:600;color:var(--gray-500)}
-.step-sub{font-size:10px;color:var(--gray-500);margin-top:2px}
+.step-item:not(:last-child)::after{content:'';position:absolute;right:0;top:20px;width:100%;height:2px;background:var(--gray-200);z-index:0}
+.step-circle{width:42px;height:42px;border-radius:50%;border:3px solid var(--gray-200);background:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;margin:0 auto 5px;position:relative;z-index:1;transition:all .3s}
+.step-lbl{font-size:10px;font-weight:600;color:var(--gray-500);line-height:1.3}
+.step-sub{font-size:9px;color:var(--gray-500);margin-top:2px}
 .step-item.done .step-circle{border-color:var(--green);background:var(--green-light)}
-.step-item.done .step-label{color:var(--green)}
-.step-item.current .step-circle{border-color:currentColor;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.15)}50%{box-shadow:0 0 0 6px rgba(0,0,0,0)}}
+.step-item.done .step-lbl{color:var(--green)}
+.step-item.active .step-circle{border-color:var(--blue);animation:pulse 2s infinite}
+.step-item.active .step-lbl{color:var(--blue)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(41,128,185,.3)}50%{box-shadow:0 0 0 6px rgba(41,128,185,0)}}
 
 /* Permit banner */
-.permit-banner{background:var(--dark);border-radius:10px;padding:16px 20px;margin-bottom:20px}
-.banner-id{font-family:monospace;font-size:16px;font-weight:700;color:#fff}
-.banner-company{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px}
-.banner-info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.bi-item{background:rgba(255,255,255,.08);border-radius:6px;padding:8px 10px}
-.bi-label{font-size:9px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
-.bi-value{font-size:12px;color:#fff;font-weight:500}
+.permit-banner{background:var(--dark);border-radius:10px;padding:14px 18px;margin-bottom:16px}
+.banner-id{font-family:monospace;font-size:15px;font-weight:700;color:#fff}
+.banner-co{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px}
+.banner-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.bg-item{background:rgba(255,255,255,.08);border-radius:6px;padding:7px 10px}
+.bg-lbl{font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.bg-val{font-size:12px;color:#fff;font-weight:500}
 
-/* Card */
-.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
-.card-header{border-bottom:1px solid var(--gray-200);padding:14px 20px;display:flex;align-items:center;gap:10px;background:var(--gray-50)}
-.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.card-title{font-weight:600;font-size:14px}
-.card-sub{font-size:12px;color:var(--gray-500);margin-top:1px}
-.card-body{padding:20px}
+/* Confirm text */
+.confirm-box{background:var(--green-light);border:1.5px solid #82E0AA;border-radius:8px;padding:13px 15px;font-size:12.5px;color:#1E8449;line-height:1.8;margin-bottom:14px}
 
-/* Confirmation text */
-.confirm-text{background:var(--green-light);border:1.5px solid #82E0AA;border-radius:8px;padding:14px 16px;font-size:13px;color:#1E8449;line-height:1.8;margin-bottom:16px}
-
-/* Form */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-group{display:flex;flex-direction:column;gap:5px}
-label.form-label{font-size:13px;font-weight:500;color:var(--gray-700)}
-.req{color:var(--red);margin-left:2px}
-input[type=text]{border:1.5px solid var(--gray-300);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;width:100%;transition:border-color .15s;background:#fff}
-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(39,174,96,.1)}
-
-/* Signature */
-.sig-wrap{border:1.5px solid var(--gray-300);border-radius:6px;overflow:hidden;background:#FAFAFA;margin-top:10px}
-canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:130px}
-.sig-ctrl{display:flex;padding:6px 10px;background:var(--gray-50);border-top:1px solid var(--gray-200)}
-.btn-clear{font-size:12px;color:var(--gray-700);background:#fff;border:1px solid var(--gray-300);border-radius:4px;padding:3px 10px;cursor:pointer;font-family:inherit}
+/* Role cards */
+.role-card{border-radius:10px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+.role-card.step1{background:#EBF5FB;border:2px solid var(--blue)}
+.role-card.step2{background:#F4F6F7;border:2px solid #7F8C8D}
+.role-card.step3{background:#F5EEF8;border:2px solid var(--purple)}
+.role-card.locked{opacity:.55}
+.role-title{font-size:13px;font-weight:700;margin-bottom:12px}
+.step1 .role-title{color:var(--blue)}
+.step2 .role-title{color:#5D6D7E}
+.step3 .role-title{color:var(--purple)}
 
 /* Signed badge */
-.signed-badge{background:var(--green-light);border:1.5px solid #82E0AA;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:#1E8449;font-weight:600}
+.signed-badge{background:var(--green-light);border:1.5px solid #82E0AA;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#1E8449;font-weight:600}
+.signed-time{font-size:11px;font-weight:400;color:#239B56;margin-left:auto}
 
-/* Role sections */
-.role-card{border-radius:10px;padding:18px;margin-bottom:12px}
-.role-card.contractor{background:#EBF5FB;border:2px solid var(--blue)}
-.role-card.dept{background:#EAF4FB;border:2px solid #5DADE2}
-.role-card.inspector{background:var(--purple-light);border:2px solid var(--purple)}
-.role-card.locked{opacity:.5;pointer-events:none}
-.role-title{font-size:13px;font-weight:700;margin-bottom:12px}
-.role-card.contractor .role-title{color:var(--blue)}
-.role-card.dept .role-title{color:#2471A3}
-.role-card.inspector .role-title{color:var(--purple)}
+/* Lock msg */
+.lock-msg{background:#F2F3F4;border:1.5px solid var(--gray-300);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--gray-500);display:flex;align-items:center;gap:8px}
+
+/* Form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:12px;font-weight:500;color:var(--gray-700)}
+.req{color:var(--red)}
+input[type=text]{border:1.5px solid var(--gray-300);border-radius:6px;padding:8px 11px;font-size:13px;font-family:inherit;outline:none;width:100%;transition:border-color .15s;background:#fff}
+input:focus{border-color:var(--blue)}
+
+/* Canvas */
+.sig-wrap{border:1.5px solid var(--gray-300);border-radius:6px;overflow:hidden;background:#FAFAFA;margin:8px 0}
+canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:120px}
+.sig-ctrl{display:flex;padding:5px 10px;background:var(--gray-50);border-top:1px solid var(--gray-200);align-items:center}
+.btn-clr{font-size:11px;color:var(--gray-700);background:#fff;border:1px solid var(--gray-300);border-radius:4px;padding:3px 9px;cursor:pointer;font-family:inherit}
+.sig-hint{font-size:10px;color:var(--gray-500);margin-left:auto}
+
+/* Buttons */
+.row-right{display:flex;justify-content:flex-end;margin-top:10px}
+.btn{padding:10px 22px;border-radius:6px;font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-save{background:var(--green);color:#fff}
+.btn-save:disabled{opacity:.4;cursor:not-allowed}
+.btn-close{background:var(--red);color:#fff}
+.btn-secondary{background:#fff;color:var(--gray-700);border:1.5px solid var(--gray-300)}
 
 /* Action bar */
-.action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--gray-200);padding:12px 20px;display:flex;justify-content:flex-end;gap:10px;box-shadow:0 -4px 12px rgba(0,0,0,.08);z-index:100}
-.btn{padding:11px 24px;border-radius:6px;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:7px}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{background:#219A52}
-.btn-secondary{background:#fff;color:var(--gray-700);border:1.5px solid var(--gray-300)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
+.action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--gray-200);padding:11px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -3px 10px rgba(0,0,0,.08);z-index:100}
+.progress-text{font-size:12px;color:var(--gray-500)}
 
-#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;transition:transform .3s;opacity:0}
+/* Toast */
+#toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;transition:all .3s;opacity:0;white-space:nowrap}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 #toast.success{background:var(--green)}
 #toast.error{background:var(--red)}
 
+/* Success */
+#success-screen{display:none;padding:50px 20px;text-align:center}
 #loading{text-align:center;padding:80px 20px;color:var(--gray-500)}
 #main-content{display:none}
-#success-screen{display:none;padding:60px 20px;text-align:center}
 
-@media(max-width:600px){.form-grid{grid-template-columns:1fr}.banner-info{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}.banner-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
 <div class="site-header">
   <div class="header-inner">
-    <div class="header-logo">APET</div>
+    <div class="logo">APET</div>
     <div>
-      <div class="header-title">🔒 ปิดงาน — Close Work Permit</div>
-      <div class="header-sub">การตรวจสอบพื้นที่หลังปฏิบัติงานเสร็จ</div>
+      <div class="htitle">🔒 ปิดงาน — Close Work</div>
+      <div class="hsub">การตรวจสอบพื้นที่หลังปฏิบัติงานเสร็จ</div>
     </div>
-    <div class="header-right"><a href="dashboard.html" class="btn-header">📊 Dashboard</a></div>
+    <div class="hright"><a href="dashboard.html" class="btn-hdr">📊 Dashboard</a></div>
   </div>
 </div>
 
@@ -118,240 +120,185 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:130px}
   <div id="loading">🔄 กำลังโหลดข้อมูล...</div>
 
   <div id="main-content">
-
-    <!-- Permit Banner -->
+    <!-- Banner -->
     <div class="permit-banner">
-      <div class="banner-id" id="bannerPermitId">—</div>
-      <div class="banner-company" id="bannerCompany">—</div>
-      <div class="banner-info" id="bannerInfo"></div>
+      <div class="banner-id" id="bId">—</div>
+      <div class="banner-co" id="bCo">—</div>
+      <div class="banner-grid" id="bGrid"></div>
     </div>
 
-    <!-- Steps Bar -->
+    <!-- Steps -->
     <div class="steps-bar">
-      <div class="steps-title">ขั้นตอนการปิดงาน</div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px">ขั้นตอนการปิดงาน</div>
       <div class="steps-row">
-        <div class="step-item" id="closeStep1">
+        <div class="step-item" id="st1">
           <div class="step-circle">👷</div>
-          <div class="step-label">ผู้รับเหมา</div>
+          <div class="step-lbl">ผู้รับเหมา</div>
           <div class="step-sub">ลงชื่อปิดงาน</div>
         </div>
-        <div class="step-item" id="closeStep2">
+        <div class="step-item" id="st2">
           <div class="step-circle">🏢</div>
-          <div class="step-label">แผนกที่ว่าจ้าง</div>
+          <div class="step-lbl">แผนกที่ว่าจ้าง</div>
           <div class="step-sub">รับรอง</div>
         </div>
-        <div class="step-item" id="closeStep3">
+        <div class="step-item" id="st3">
           <div class="step-circle">🔍</div>
-          <div class="step-label">จป.วิชาชีพ</div>
-          <div class="step-sub">รับรองและปิดงาน</div>
+          <div class="step-lbl">จป.วิชาชีพ</div>
+          <div class="step-sub">ปิดงาน</div>
         </div>
       </div>
     </div>
 
-    <!-- Confirmation Text -->
-    <div class="confirm-text">
+    <!-- Confirm text -->
+    <div class="confirm-box">
       📋 <strong>การตรวจสอบพื้นที่หลังปฏิบัติงานเสร็จ</strong><br>
       หลังจากเสร็จงาน ข้าพเจ้าได้ตรวจสอบพื้นที่ปฏิบัติงาน
       <strong>ไม่มีสิ่งของเสียหาย ไม่มีผู้ปฏิบัติงานได้รับอันตราย</strong>
-      และได้มีการปฏิบัติตามกฎระเบียบข้อบังคับในการทำงานสำหรับผู้รับเหมา
-      ตามเงื่อนไขข้างต้นทุกประการแล้ว
+      และได้ปฏิบัติตามกฎระเบียบข้อบังคับตามเงื่อนไขข้างต้นทุกประการแล้ว
     </div>
 
     <!-- Step 1: ผู้รับเหมา -->
-    <div class="role-card contractor" id="section1">
-      <div class="role-title">👷 ขั้นตอนที่ 1 — ผู้รับเหมา (ลงชื่อปิดงาน)</div>
-      <div id="content1">
+    <div class="role-card step1" id="card1">
+      <div class="role-title">👷 ขั้นตอนที่ 1 — ผู้รับเหมา</div>
+      <div id="body1">
         <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">ชื่อผู้รับเหมา <span class="req">*</span></label>
-            <input type="text" id="name1" placeholder="ชื่อ-นามสกุล">
-          </div>
-          <div class="form-group">
-            <label class="form-label">วันที่/เวลา</label>
-            <input type="text" id="date1">
-          </div>
+          <div class="form-group"><label class="form-label">ชื่อผู้รับเหมา <span class="req">*</span></label><input type="text" id="name1" placeholder="ชื่อ-นามสกุล"></div>
+          <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date1"></div>
         </div>
-        <label class="form-label" style="display:block;margin-top:12px;margin-bottom:6px">ลายเซ็น <span class="req">*</span></label>
-        <div class="sig-wrap">
-          <canvas id="sig1"></canvas>
-          <div class="sig-ctrl">
-            <button class="btn-clear" onclick="clearSig(1)">🗑️ ล้าง</button>
-            <span style="font-size:11px;color:var(--gray-500);margin-left:auto">วาดด้วยนิ้วหรือเมาส์</span>
-          </div>
+        <div class="sig-wrap"><canvas id="sig1"></canvas>
+          <div class="sig-ctrl"><button class="btn-clr" onclick="clearSig(1)">🗑️ ล้าง</button><span class="sig-hint">วาดด้วยนิ้วหรือเมาส์</span></div>
         </div>
-        <div style="margin-top:12px;text-align:right">
-          <button class="btn btn-green" onclick="saveStep(1)" id="btn1">💾 บันทึกลายเซ็นผู้รับเหมา</button>
-        </div>
+        <div class="row-right"><button class="btn btn-save" id="btn1" onclick="saveStep(1)">💾 บันทึกลายเซ็นผู้รับเหมา</button></div>
       </div>
     </div>
 
-    <!-- Step 2: แผนกที่ว่าจ้าง -->
-    <div class="role-card dept" id="section2">
-      <div class="role-title">🏢 ขั้นตอนที่ 2 — แผนกที่ว่าจ้าง/รับผิดชอบ (รับรอง)</div>
-      <div id="content2">
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">ชื่อผู้รับผิดชอบ/แผนก <span class="req">*</span></label>
-            <input type="text" id="name2" placeholder="ชื่อ-นามสกุล / แผนก">
-          </div>
-          <div class="form-group">
-            <label class="form-label">วันที่/เวลา</label>
-            <input type="text" id="date2">
-          </div>
-        </div>
-        <label class="form-label" style="display:block;margin-top:12px;margin-bottom:6px">ลายเซ็น <span class="req">*</span></label>
-        <div class="sig-wrap">
-          <canvas id="sig2"></canvas>
-          <div class="sig-ctrl">
-            <button class="btn-clear" onclick="clearSig(2)">🗑️ ล้าง</button>
-            <span style="font-size:11px;color:var(--gray-500);margin-left:auto">วาดด้วยนิ้วหรือเมาส์</span>
-          </div>
-        </div>
-        <div style="margin-top:12px;text-align:right">
-          <button class="btn btn-green" onclick="saveStep(2)" id="btn2">💾 บันทึกลายเซ็นแผนก</button>
-        </div>
+    <!-- Step 2: แผนก -->
+    <div class="role-card step2" id="card2">
+      <div class="role-title">🏢 ขั้นตอนที่ 2 — แผนกที่ว่าจ้าง</div>
+      <div id="body2">
+        <div class="lock-msg">🔒 รอผู้รับเหมาลงชื่อก่อน</div>
       </div>
     </div>
 
-    <!-- Step 3: จป.วิชาชีพ -->
-    <div class="role-card inspector" id="section3">
-      <div class="role-title">🔍 ขั้นตอนที่ 3 — จป.วิชาชีพ (รับรองและปิดงาน)</div>
-      <div id="content3">
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">ชื่อ จป.วิชาชีพ <span class="req">*</span></label>
-            <input type="text" id="name3" placeholder="ชื่อ-นามสกุล">
-          </div>
-          <div class="form-group">
-            <label class="form-label">วันที่/เวลา</label>
-            <input type="text" id="date3">
-          </div>
-        </div>
-        <div id="lockMsg3" class="signed-badge" style="display:none;margin-bottom:12px">
-          🔒 รอผู้รับเหมาและแผนกที่ว่าจ้างลงชื่อก่อน
-        </div>
-        <label class="form-label" style="display:block;margin-top:12px;margin-bottom:6px">ลายเซ็น <span class="req">*</span></label>
-        <div class="sig-wrap">
-          <canvas id="sig3"></canvas>
-          <div class="sig-ctrl">
-            <button class="btn-clear" onclick="clearSig(3)">🗑️ ล้าง</button>
-            <span style="font-size:11px;color:var(--gray-500);margin-left:auto">วาดด้วยนิ้วหรือเมาส์</span>
-          </div>
-        </div>
-        <div style="margin-top:12px;text-align:right">
-          <button class="btn btn-green" onclick="saveStep(3)" id="btn3" disabled>🔒 รอลงชื่อให้ครบก่อน</button>
-        </div>
+    <!-- Step 3: จป. -->
+    <div class="role-card step3" id="card3">
+      <div class="role-title">🔍 ขั้นตอนที่ 3 — จป.วิชาชีพ (ปิดงาน)</div>
+      <div id="body3">
+        <div class="lock-msg">🔒 รอลงชื่อให้ครบ 2 ขั้นตอนก่อน</div>
       </div>
     </div>
+  </div><!-- /main-content -->
 
-  </div><!-- end main-content -->
-</div>
-
-<div class="action-bar" id="actionBar" style="display:none">
-  <button class="btn btn-secondary" onclick="history.back()">← กลับ</button>
-</div>
-
-<div id="success-screen">
-  <div class="card" style="max-width:500px;margin:0 auto">
-    <div class="card-body" style="padding:48px 32px;text-align:center">
-      <div style="font-size:56px;margin-bottom:16px" id="successIcon">✅</div>
-      <div style="font-size:22px;font-weight:700;margin-bottom:8px" id="successTitle">—</div>
-      <div style="color:var(--gray-700);font-size:14px;margin-bottom:24px" id="successSub">—</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-secondary" id="btnContinue" onclick="continueSign()" style="display:none">ถัดไป →</button>
-        <a href="dashboard.html" class="btn btn-green">📊 Dashboard</a>
-        <button class="btn btn-secondary" onclick="location.reload()">🔄 กลับหน้านี้</button>
-      </div>
+  <div id="success-screen">
+    <div style="font-size:56px;margin-bottom:16px">🎉</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:8px">ปิดงานเรียบร้อย!</div>
+    <div style="font-size:14px;color:var(--gray-700);margin-bottom:24px" id="successSub">—</div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <a href="dashboard.html" class="btn btn-save">📊 Dashboard</a>
     </div>
   </div>
 </div>
 
+<div class="action-bar" id="actionBar" style="display:none">
+  <div class="progress-text" id="progressText">—</div>
+  <button class="btn btn-secondary" onclick="history.back()">← กลับ</button>
+</div>
+
 <div id="toast"></div>
 
-<script src="core.js"></script>
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
 
 let permitData = null;
-let closeState = { 1: null, 2: null, 3: null };
-let sigCtxs = {};
-let currentStep = 0;
+let permitId = '';
+let closeState = { 1:null, 2:null, 3:null };
+let ctxs = {};
 
-// ===== INIT =====
+// ============ INIT ============
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
-  const permitId = params.get('id');
+  permitId = params.get('id') || '';
   if (!permitId) {
     document.getElementById('loading').innerHTML = '❌ ไม่พบ Permit ID';
     return;
   }
 
-  const now = new Date().toLocaleString('th-TH');
-  [1,2,3].forEach(i => {
-    const el = document.getElementById('date'+i);
-    if (el) el.value = now;
-    initSig(i);
-  });
+  // โหลด close state จาก localStorage ก่อน (fast)
+  const cached = localStorage.getItem('closeState_' + permitId);
+  if (cached) {
+    try { closeState = JSON.parse(cached); } catch(e) {}
+  }
 
-  await loadData(permitId);
+  await loadPermit();
+  initSig(1);
+  initSig(2);
+  initSig(3);
+  renderAll();
 });
 
-async function loadData(permitId) {
+// ============ LOAD ============
+async function loadPermit() {
   try {
     const controller = new AbortController();
-    setTimeout(() => controller.abort(), 10000);
-    // เรียก get_close_state แยกจาก get_approval
-    const [res1, res2] = await Promise.all([
-      fetch(`${APPS_SCRIPT_URL}?action=get_approval&id=${encodeURIComponent(permitId)}`, {
-        signal: controller.signal, redirect: 'follow', mode: 'cors'
-      }),
-      fetch(`${APPS_SCRIPT_URL}?action=get_close_state&id=${encodeURIComponent(permitId)}`, {
+    setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=get_approval&id=${encodeURIComponent(permitId)}`, {
+      signal: controller.signal, redirect: 'follow', mode: 'cors'
+    });
+    const json = JSON.parse(await res.text());
+    if (json.success && json.permit) permitData = json.permit;
+
+    // ลอง get_close_state ด้วย (ถ้า Apps Script ใหม่)
+    try {
+      const res2 = await fetch(`${APPS_SCRIPT_URL}?action=get_close_state&id=${encodeURIComponent(permitId)}`, {
         redirect: 'follow', mode: 'cors'
-      }),
-    ]);
-    const json1 = JSON.parse(await res1.text());
-    const json2 = JSON.parse(await res2.text());
+      });
+      const json2 = JSON.parse(await res2.text());
+      if (json2.success && json2.closeState) {
+        // merge กับ local: ใช้ server เป็นหลัก
+        [1,2,3].forEach(i => {
+          if (json2.closeState[i]) closeState[i] = json2.closeState[i];
+        });
+        saveLocal();
+      }
+    } catch(e2) { /* ใช้ local แทน */ }
 
-    if (json1.success && json1.permit) permitData = json1.permit;
-
-    // โหลด close state จาก server
-    if (json2.success && json2.closeState) {
-      closeState = json2.closeState;
-    }
   } catch(e) {
-    console.warn('Load error:', e);
     permitData = {
-      permit_id: new URLSearchParams(window.location.search).get('id'),
-      company_name: 'Demo', supervisor: '—',
+      permit_id: permitId, company_name: 'Demo', supervisor: '—',
       work_date: '—', work_area: '—', worker_count: 0,
     };
   }
-
-  renderBanner();
-  renderSteps();
-  loadExistingSigns();
 
   document.getElementById('loading').style.display = 'none';
   document.getElementById('main-content').style.display = 'block';
   document.getElementById('actionBar').style.display = 'flex';
 }
 
+// ============ RENDER ============
+function renderAll() {
+  renderBanner();
+  renderSteps();
+  renderCards();
+  renderProgress();
+}
+
 function renderBanner() {
-  const p = permitData;
-  document.getElementById('bannerPermitId').textContent = p.permit_id;
-  document.getElementById('bannerCompany').textContent = (p.company_name||'') + ' | ' + (p.supervisor||'');
-  document.getElementById('bannerInfo').innerHTML = [
+  const p = permitData || {};
+  document.getElementById('bId').textContent = p.permit_id || permitId;
+  document.getElementById('bCo').textContent = (p.company_name||'—') + ' | ' + (p.supervisor||'—');
+  document.getElementById('bGrid').innerHTML = [
     {l:'วันที่ทำงาน', v: p.work_date},
     {l:'พื้นที่', v: p.work_area},
     {l:'จำนวนคน', v: (p.worker_count||0)+' คน'},
-  ].map(i=>`<div class="bi-item"><div class="bi-label">${i.l}</div><div class="bi-value">${i.v||'—'}</div></div>`).join('');
+  ].map(x=>`<div class="bg-item"><div class="bg-lbl">${x.l}</div><div class="bg-val">${x.v||'—'}</div></div>`).join('');
 }
 
 function renderSteps() {
   [1,2,3].forEach(i => {
-    const el = document.getElementById('closeStep'+i);
+    const el = document.getElementById('st'+i);
+    el.className = 'step-item';
     if (closeState[i]) el.classList.add('done');
-    else if (i === getNextStep()) el.classList.add('current');
+    else if (getNextStep() === i) el.classList.add('active');
   });
 }
 
@@ -359,58 +306,74 @@ function getNextStep() {
   if (!closeState[1]) return 1;
   if (!closeState[2]) return 2;
   if (!closeState[3]) return 3;
-  return 0;
+  return 0; // ครบแล้ว
 }
 
-function loadExistingSigns() {
-  // Show signed badges for completed steps
-  [1,2,3].forEach(i => {
-    if (closeState[i]) {
-      const content = document.getElementById('content'+i);
-      content.innerHTML = `
-        <div class="signed-badge">
-          ✅ ลงชื่อแล้ว — ${closeState[i].name}
-          <span style="font-size:11px;font-weight:400;margin-left:8px">${closeState[i].date||''}</span>
-        </div>`;
-    }
-  });
-
-  // Lock/unlock step 3
-  updateStep3Lock();
-}
-
-function updateStep3Lock() {
-  const btn3 = document.getElementById('btn3');
-  const lock3 = document.getElementById('lockMsg3');
-  if (!btn3) return;
-  if (closeState[1] && closeState[2]) {
-    btn3.disabled = false;
-    btn3.textContent = '🔒 ปิดงาน (รับรองโดย จป.)';
-    btn3.style.background = '#C0392B';
-    if (lock3) lock3.style.display = 'none';
-  } else {
-    btn3.disabled = true;
-    btn3.textContent = '🔒 รอผู้รับเหมาและแผนกลงชื่อก่อน';
-    if (lock3) lock3.style.display = 'flex';
+function renderCards() {
+  // Step 1
+  if (closeState[1]) {
+    document.getElementById('body1').innerHTML = signedBadge(closeState[1]);
+  }
+  // Step 2
+  if (closeState[2]) {
+    document.getElementById('body2').innerHTML = signedBadge(closeState[2]);
+  } else if (closeState[1]) {
+    // unlock step 2
+    document.getElementById('body2').innerHTML = buildForm(2, '🏢 ชื่อผู้รับผิดชอบ/แผนก', 'บันทึกลายเซ็นแผนก');
+    initSig(2);
+  }
+  // Step 3
+  if (closeState[3]) {
+    document.getElementById('body3').innerHTML = signedBadge(closeState[3]);
+  } else if (closeState[1] && closeState[2]) {
+    // unlock step 3
+    document.getElementById('body3').innerHTML = buildForm(3, '🔍 ชื่อ จป.วิชาชีพ', 'ปิดงาน', true);
+    initSig(3);
   }
 }
 
-// ===== SIGNATURE =====
+function signedBadge(s) {
+  return `<div class="signed-badge">✅ ลงชื่อแล้ว — ${s.name}<span class="signed-time">${s.date||''}</span></div>`;
+}
+
+function buildForm(n, nameLabel, btnLabel, isClose=false) {
+  return `
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">${nameLabel} <span class="req">*</span></label><input type="text" id="name${n}" placeholder="ชื่อ-นามสกุล"></div>
+      <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date${n}" value="${new Date().toLocaleString('th-TH')}"></div>
+    </div>
+    <div class="sig-wrap"><canvas id="sig${n}"></canvas>
+      <div class="sig-ctrl"><button class="btn-clr" onclick="clearSig(${n})">🗑️ ล้าง</button><span class="sig-hint">วาดด้วยนิ้วหรือเมาส์</span></div>
+    </div>
+    <div class="row-right"><button class="btn ${isClose?'btn-close':'btn-save'}" id="btn${n}" onclick="saveStep(${n})">💾 ${btnLabel}</button></div>`;
+}
+
+function renderProgress() {
+  const done = [1,2,3].filter(i => closeState[i]).length;
+  const labels = ['—','ผู้รับเหมา','แผนกที่ว่าจ้าง','จป.วิชาชีพ'];
+  const next = getNextStep();
+  const txt = done === 3
+    ? '✅ ปิดงานครบทุกขั้นตอน'
+    : `ลงชื่อแล้ว ${done}/3 — รอ: ${labels[next]}`;
+  document.getElementById('progressText').textContent = txt;
+}
+
+// ============ SIGNATURE ============
 function initSig(n) {
   const canvas = document.getElementById('sig'+n);
   if (!canvas) return;
-  canvas.width = 660; canvas.height = 170;
+  // ต้อง reinit ทุกครั้งเพราะ buildForm สร้าง canvas ใหม่
+  delete ctxs[n];
+  canvas.width = 660; canvas.height = 155;
   const ctx = canvas.getContext('2d');
   ctx.strokeStyle = '#202124'; ctx.lineWidth = 2.5;
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  sigCtxs[n] = ctx;
-
-  let drawing = false, lx = 0, ly = 0;
+  ctxs[n] = ctx;
+  let drawing=false, lx=0, ly=0;
   const pos = e => {
     const r = canvas.getBoundingClientRect();
-    const sx = canvas.width/r.width, sy = canvas.height/r.height;
     const src = e.touches ? e.touches[0] : e;
-    return {x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy};
+    return {x:(src.clientX-r.left)*canvas.width/r.width, y:(src.clientY-r.top)*canvas.height/r.height};
   };
   canvas.addEventListener('mousedown', e=>{drawing=true;const p=pos(e);lx=p.x;ly=p.y;});
   canvas.addEventListener('mousemove', e=>{if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
@@ -422,117 +385,92 @@ function initSig(n) {
 }
 
 function clearSig(n) {
-  sigCtxs[n]?.clearRect(0,0,660,170);
+  delete ctxs[n];
+  const canvas = document.getElementById('sig'+n);
+  if (canvas) canvas.getContext('2d').clearRect(0,0,660,155);
 }
 
 function isSigEmpty(n) {
   const canvas = document.getElementById('sig'+n);
   if (!canvas) return true;
-  return !canvas.getContext('2d').getImageData(0,0,660,170).data.some(v=>v!==0);
+  return !canvas.getContext('2d').getImageData(0,0,660,155).data.some(v=>v!==0);
 }
 
-// ===== SAVE STEP =====
+// ============ SAVE ============
 async function saveStep(n) {
   // Lock check
-  if (n === 2 && !closeState[1]) { showToast('🔒 ผู้รับเหมาต้องลงชื่อก่อน', 'error'); return; }
-  if (n === 3 && (!closeState[1] || !closeState[2])) { showToast('🔒 ต้องลงชื่อให้ครบ 2 ขั้นตอนก่อน', 'error'); return; }
+  if (n===2 && !closeState[1]) { showToast('🔒 ผู้รับเหมาต้องลงชื่อก่อน','error'); return; }
+  if (n===3 && (!closeState[1]||!closeState[2])) { showToast('🔒 ต้องลงชื่อให้ครบ 2 ขั้นก่อน','error'); return; }
 
   const name = document.getElementById('name'+n)?.value.trim();
-  if (!name) { showToast('กรุณากรอกชื่อ', 'error'); return; }
-  if (isSigEmpty(n)) { showToast('กรุณาลงลายเซ็น', 'error'); return; }
+  if (!name) { showToast('กรุณากรอกชื่อ','error'); return; }
+  if (isSigEmpty(n)) { showToast('กรุณาลงลายเซ็น','error'); return; }
 
   const btn = document.getElementById('btn'+n);
-  btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
+  if (btn) { btn.disabled=true; btn.textContent='⏳ กำลังบันทึก...'; }
 
   const date = document.getElementById('date'+n)?.value || new Date().toLocaleString('th-TH');
   const savedAt = new Date().toLocaleString('th-TH');
+  const stepNames = {1:'contractor',2:'dept',3:'inspector'};
+  const isAllDone = n===3;
 
-  // อัปเดต local state ทันที
+  // บันทึก local ทันที
   closeState[n] = { name, date, savedAt };
+  saveLocal();
 
-  const isAllDone = !!(closeState[1] && closeState[2] && closeState[3]);
-
+  // ส่ง server (no-cors)
   try {
     await fetch(APPS_SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        type: 'close_work',
-        permitId: permitData.permit_id,
+        type:'close_work',
+        permitId,
         step: n,
-        stepName: ['','contractor','dept','inspector'][n],
+        stepName: stepNames[n],
         name, date, savedAt,
         isAllDone,
       }),
     });
-  } catch(e) { console.warn(e); }
+  } catch(e) { console.warn('Save error:',e); }
 
-  btn.disabled = false;
-  currentStep = n;
-
-  // แสดงผลทันทีโดยไม่เปลี่ยนหน้า — แทนที่ส่วนที่ลงชื่อด้วย badge
-  const content = document.getElementById('content'+n);
-  content.innerHTML = `
-    <div class="signed-badge" style="margin-bottom:0">
-      ✅ บันทึกแล้ว — ${name}
-      <span style="font-size:11px;font-weight:400;margin-left:8px">${date}</span>
-    </div>`;
-
-  // อัปเดต step bar
-  document.getElementById('closeStep'+n).classList.remove('current');
-  document.getElementById('closeStep'+n).classList.add('done');
-
-  // Unlock ขั้นถัดไป
-  updateStep3Lock();
-  if (n < 3 && !closeState[n+1]) {
-    document.getElementById('closeStep'+(n+1)).classList.add('current');
-    initSig(n+1); // re-init canvas ขั้นถัดไป
-  }
+  if (btn) btn.disabled=false;
 
   if (isAllDone) {
-    showToast('🎉 ปิดงานสมบูรณ์! ลงชื่อครบทุกขั้นตอนแล้ว', 'success');
-    setTimeout(() => {
-      document.getElementById('main-content').style.display = 'none';
-      document.getElementById('actionBar').style.display = 'none';
-      document.getElementById('successIcon').textContent = '🎉';
-      document.getElementById('successTitle').textContent = '🔒 ปิดงานเรียบร้อย!';
-      document.getElementById('successSub').textContent = permitData.permit_id + ' — ปิดงานสมบูรณ์แล้ว';
-      document.getElementById('btnContinue').style.display = 'none';
-      document.getElementById('success-screen').style.display = 'block';
-      window.scrollTo({top:0, behavior:'smooth'});
-    }, 1500);
+    // ปิดงานเสร็จ
+    showToast('🎉 ปิดงานสมบูรณ์!','success');
+    setTimeout(()=>{
+      document.getElementById('main-content').style.display='none';
+      document.getElementById('actionBar').style.display='none';
+      document.getElementById('successSub').textContent = permitId + ' — ปิดงานเรียบร้อย เวลา '+savedAt;
+      document.getElementById('success-screen').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }, 1000);
   } else {
-    const stepNames = {1:'ผู้รับเหมา', 2:'แผนกที่ว่าจ้าง', 3:'จป.วิชาชีพ'};
-    showToast(`✅ บันทึก ${stepNames[n]} เรียบร้อย — รอขั้นตอนที่ ${n+1}`, 'success');
+    showToast('✅ บันทึกเรียบร้อย — รอขั้นตอนที่ '+(n+1),'success');
+    // re-render ทั้งหมด
+    renderSteps();
+    renderCards();
+    renderProgress();
     // scroll ไปขั้นถัดไป
-    setTimeout(() => {
-      const nextSection = document.getElementById('section'+(n+1));
-      if (nextSection) nextSection.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 500);
+    setTimeout(()=>{
+      const next = document.getElementById('card'+(n+1));
+      if (next) next.scrollIntoView({behavior:'smooth',block:'start'});
+    }, 400);
   }
 }
 
-function continueSign() {
-  document.getElementById('success-screen').style.display = 'none';
-  document.getElementById('main-content').style.display = 'block';
-  document.getElementById('actionBar').style.display = 'flex';
-
-  // Update UI
-  renderSteps();
-  loadExistingSigns();
-  updateStep3Lock();
-
-  // Re-init canvas for next step
-  const next = currentStep + 1;
-  if (next <= 3) initSig(next);
-
-  window.scrollTo({top:0, behavior:'smooth'});
+// ============ LOCAL STORAGE ============
+function saveLocal() {
+  localStorage.setItem('closeState_'+permitId, JSON.stringify(closeState));
 }
 
+// ============ TOAST ============
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show'+(type?' '+type:'');
-  setTimeout(()=>t.className='', 3000);
+  t.textContent=msg; t.className='show'+(type?' '+type:'');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.className='', 3000);
 }
 </script>
 </body>
