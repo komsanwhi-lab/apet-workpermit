@@ -358,6 +358,15 @@ function buildPhase(ph) {
   // Confined (conditional)
   html += `<div class="cond-section ${hazardTypes.includes('confined')?'show':''}" id="confined_card_${ph}">`;
   html += buildCheckCard('🏠', 'งานในที่อับอากาศ (Confined Spaces)', 'confined', ph, ITEMS.confined);
+  // เพิ่มช่องระบุสารเคมี
+  html += `<div class="card" style="margin-top:-10px;border-top:none;border-radius:0 0 10px 10px;margin-bottom:14px">
+    <div class="card-body"><div class="form-pad" style="padding-top:10px">
+      <div class="form-group">
+        <label class="form-label">ปริมาณสารเคมีอื่นๆ (ระบุชื่อและปริมาณ)</label>
+        <input type="text" id="chemOther_${ph}" placeholder="เช่น CO < 25 ppm, H2S < 10 ppm...">
+      </div>
+    </div></div>
+  </div>`;
   html += `</div>`;
 
   // High work (conditional)
@@ -476,6 +485,8 @@ function switchPhase(ph) {
   currentPhase = ph;
   showPhase(ph);
   updateProgress();
+  // โหลด OT ทุกครั้งที่ไป phase 2
+  if (ph === 2) setTimeout(() => loadOTData(), 200);
 }
 
 function showPhase(ph) {
@@ -600,6 +611,7 @@ async function savePhase() {
         overtime: ot,
         otRejectReason: otReason,
         hotworkFuels: fuels.join(', '),
+        chemOther: document.getElementById(`chemOther_${ph}`)?.value || '',
         savedAt,
       }),
     });
@@ -672,36 +684,63 @@ function addFuel(ph) {
 
 // ===== โหลด OT จาก server (ทั้งจาก permit และ overtime.html) =====
 async function loadOTData() {
-  // ลอง get overtime requests
+  let otData = null;
+
+  // 1. ลองดึงจาก Overtime sheet ก่อน (overtime.html ส่งมา)
   try {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 6000);
     const res = await fetch(`${APPS_SCRIPT_URL}?action=get_overtime&id=${encodeURIComponent(permitId)}`, {
-      redirect:'follow', mode:'cors'
+      signal: controller.signal, redirect:'follow', mode:'cors'
     });
     const json = JSON.parse(await res.text());
-    if (json.success && json.overtime) {
-      const ot = json.overtime;
-      const sub = document.getElementById('otDecisionSub');
-      if (sub) sub.textContent = `ขอต่อเวลา ${ot.otStart||'-'} — ${ot.otEnd||'-'} น. | ผู้ขอ: ${ot.contractorName||'-'}`;
-      // ยกเลิก checked na
-      const naRadio = document.querySelector('input[name="otDecision"][value="na"]');
-      if (naRadio) naRadio.checked = false;
-    } else {
-      // ใช้ข้อมูลจาก permit
-      const otStart = permitData?.overtime_start;
-      const otEnd = permitData?.overtime_end;
-      const sub = document.getElementById('otDecisionSub');
-      if (sub) {
-        sub.textContent = (otStart && otEnd)
-          ? `ขอต่อเวลา ${otStart} — ${otEnd} น. (จากใบอนุญาต)`
-          : 'ไม่มีการขอต่อเวลา';
-      }
+    if (json.success && json.overtime && json.overtime.otStart) {
+      otData = json.overtime;
     }
-  } catch(e) {
-    const sub = document.getElementById('otDecisionSub');
-    if (sub) sub.textContent = (permitData?.overtime_start && permitData?.overtime_end)
-      ? `ขอต่อเวลา ${permitData.overtime_start} — ${permitData.overtime_end} น.`
-      : 'ไม่มีการขอต่อเวลา';
+  } catch(e) { /* fallback below */ }
+
+  // 2. Fallback: ใช้จากข้อมูลใบอนุญาต (index.html กรอก)
+  if (!otData && permitData?.overtime_start && permitData?.overtime_end) {
+    otData = {
+      otStart: permitData.overtime_start,
+      otEnd: permitData.overtime_end,
+      contractorName: permitData.supervisor || '—',
+      requestedAt: '',
+    };
   }
+
+  // แสดง OT alert ด้านบน
+  const alertEl = document.getElementById('otAlert');
+  const detailEl = document.getElementById('otDetail');
+  if (otData) {
+    if (alertEl) alertEl.classList.add('show');
+    if (detailEl) detailEl.innerHTML = `
+      <strong>⏰ ขอต่อเวลา ${otData.otStart} — ${otData.otEnd} น.</strong><br>
+      ผู้ขอ: ${otData.contractorName||'—'}${otData.requestedAt?' | เวลา '+otData.requestedAt:''}
+      ${otData.reason ? '<br>เหตุผล: <em>'+otData.reason+'</em>' : ''}`;
+  } else {
+    if (alertEl) alertEl.classList.remove('show');
+  }
+
+  // อัปเดต OT decision card (phase 2)
+  const sub = document.getElementById('otDecisionSub');
+  if (sub) {
+    sub.innerHTML = otData
+      ? `⚠️ ขอต่อเวลา <strong>${otData.otStart} — ${otData.otEnd} น.</strong> | ผู้ขอ: ${otData.contractorName||'—'}${otData.reason?'<br>เหตุผล: <em>'+otData.reason+'</em>':''}`
+      : '— ไม่มีการขอต่อเวลา';
+  }
+
+  // ถ้ามี OT → ยกเลิก default "na" ให้ต้องเลือกจริง
+  if (otData) {
+    const naRadio = document.querySelector('input[name="otDecision"][value="na"]');
+    if (naRadio) naRadio.checked = false;
+    // highlight card
+    const card = document.getElementById('otDecisionCard');
+    if (card) card.style.borderColor = '#E67E22';
+  }
+
+  // เก็บ otData ไว้ใช้ใน save
+  window._otData = otData;
 }
 
 function saveLocal() {
