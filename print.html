@@ -271,6 +271,34 @@ body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:#202124}
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
 
+// ===== FIX TIME/DATE =====
+function fixTime(val) {
+  if (!val || val === '—' || val === '-') return '—';
+  const s = String(val).trim();
+  if (/^\d{1,2}:\d{2}$/.test(s)) return s;
+  if (s.includes('T') || s.includes('1899')) {
+    try {
+      const d = new Date(s);
+      const h = d.getUTCHours(), m = d.getUTCMinutes();
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    } catch(e) {}
+  }
+  if (/^\d*\.\d+$/.test(s)) {
+    const totalMin = Math.round(parseFloat(s) * 24 * 60);
+    return `${String(Math.floor(totalMin/60)%24).padStart(2,'0')}:${String(totalMin%60).padStart(2,'0')}`;
+  }
+  return s;
+}
+function fixDate(val) {
+  if (!val || val === '—' || val === '-') return '—';
+  const s = String(val).trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const p = s.split('T')[0].split('-');
+    return `${p[2]}/${p[1]}/${parseInt(p[0])+543}`;
+  }
+  return s.includes('/')?s:s;
+}
+
 const RULES = ['ปฏิบัติงานตามกฎระเบียบข้อบังคับ','แลกบัตรและติดบัตรประจำตัวทุกครั้งเมื่อเข้าพื้นที่','เขียนใบขออนุญาตและนำไปติดที่พื้นที่ทำงาน','แต่งกายให้รัดกุม สวมใส่ PPE เหมาะสมกับงาน','ตรวจสอบความปลอดภัยก่อนเริ่มงานทุกครั้ง','ห้ามใช้เครื่องมือหรืออุปกรณ์ไฟฟ้าที่ชำรุด','งานที่มีเปลวไฟต้องใช้วัสดุปิดบัง','ห้ามต่อพ่วงอุปกรณ์ไฟฟ้าเกินกำลัง','งานบนที่สูงต้องใช้อุปกรณ์ป้องกันการตก','งานสารเคมีต้องป้องกันไม่ให้ไหลสู่สิ่งแวดล้อม','หากเกิดอุบัติเหตุต้องรายงานผู้ควบคุมงานทันที','เมื่อแจ้งเหตุฉุกเฉินให้ไปจุดรวมพล','หลังเสร็จงานต้องจัดเก็บอุปกรณ์ให้เรียบร้อย','ห้ามสูบบุหรี่ ยกเว้นพื้นที่ที่กำหนด','ห้ามจุดหรือก่อกองไฟ ยกเว้นพื้นที่ที่จัดให้','ห้ามพกพาอาวุธทุกชนิด','ห้ามดื่มของมึนเมาหรือเสพสารเสพติด','ห้ามก่อเหตุทะเลาะวิวาท','ต้องปฏิบัติตามป้ายความปลอดภัยอย่างเคร่งครัด','เมื่อพบเหตุฉุกเฉินต้องแจ้งผู้เกี่ยวข้องทันที','ห้ามรับประทานอาหารในพื้นที่ปฏิบัติงาน','ห้ามนำเด็กอายุต่ำกว่า 15 ปีเข้าพื้นที่','หากมีฝุ่นต้องจัดหาอุปกรณ์ป้องกันที่เหมาะสม','ใบอนุญาตใช้ได้ 08.00-17.00 น. เท่านั้น'];
 
 const HAZARD_MAP = {construction:'🏗️ ก่อสร้าง',electrical:'⚡ ไฟฟ้า',pressure:'💨 ความดัน',machine:'⚙️ เครื่องจักร',aircon:'❄️ แอร์',hotwork:'🔥 งานร้อน',waterpipe:'🚰 ท่อน้ำ',fireprotect:'🧯 อัคคีภัย',confined:'🏠 ที่อับอากาศ',windsys:'💨 ลม',hoist:'🏗️ รอก/เครน',highrisk:'📏 งานสูง',gas:'🛢️ ก๊าซ',chemical:'☣️ สารเคมี',other:'📝 อื่นๆ'};
@@ -343,14 +371,16 @@ function renderPage(p, approval) {
     </div>`).join('');
 
   // Info
-  document.getElementById('pPermitDate').textContent = p.permit_date || '—';
-  document.getElementById('pWorkDate').textContent = p.work_date || '—';
-  document.getElementById('pWorkDateEnd').textContent = p.work_date_end || '—';
+  document.getElementById('pPermitDate').textContent = fixDate(p.permit_date);
+  document.getElementById('pWorkDate').textContent = fixDate(p.work_date);
+  document.getElementById('pWorkDateEnd').textContent = fixDate(p.work_date_end);
   document.getElementById('pCompany').textContent = p.company_name || '—';
   document.getElementById('pSupervisor').textContent = p.supervisor || '—';
   document.getElementById('pPhone').textContent = p.phone || '—';
-  document.getElementById('pTime').textContent = (p.time_start||'—') + ' — ' + (p.time_end||'—') + ' น.';
-  document.getElementById('pOvertime').textContent = (p.overtime_start && p.overtime_end) ? p.overtime_start+' — '+p.overtime_end+' น.' : 'ไม่มี';
+  document.getElementById('pTime').textContent = fixTime(p.time_start) + ' — ' + fixTime(p.time_end) + ' น.';
+  document.getElementById('pOvertime').textContent = (p.overtime_start && p.overtime_end)
+    ? fixTime(p.overtime_start) + ' — ' + fixTime(p.overtime_end) + ' น.'
+    : 'ไม่มี';
   document.getElementById('pArea').textContent = p.work_area || '—';
   document.getElementById('pWorkDesc').textContent = p.work_description || '—';
 

@@ -423,7 +423,7 @@ function renderTable(permits) {
         <div class="company-name">${p.company_name || '-'}</div>
         <div class="supervisor">${p.supervisor || ''}</div>
       </td>
-      <td>${p.work_date || '-'}</td>
+      <td>${fixDate(p.work_date) || '-'}</td>
       <td class="work-area" title="${p.work_area || ''}">${p.work_area || '-'}</td>
       <td><div class="hazard-tags">${hazardTags || '-'}</div></td>
       <td><span class="workers-count">👥 ${p.worker_count || 0}</span></td>
@@ -442,16 +442,16 @@ function renderTable(permits) {
             <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" style="flex:1" title="จป.วิชาชีพลงชื่อ">🔍 จป.</button>
             <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" style="flex:1" title="ประธาน คปอ.ลงชื่อ">👑 คปอ.</button>
           </div>
-          <!-- แถว 3: Checklist + ปิดงาน -->
+          <!-- แถว 3: Checklist (จป.) -->
           <div style="font-size:9px;color:var(--gray-500);font-weight:600;letter-spacing:.3px;padding:2px 0 1px">🔍 จป.วิชาชีพ</div>
           <div style="display:flex;gap:3px">
             <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" style="flex:1" title="Checklist จป.">📋 Checklist</button>
-            ${p.status === 'อนุมัติ' ? `<button class="btn-sm btn-close-work" onclick="openCloseWork('${p.permit_id}')" style="flex:1" title="ปิดงาน">🔒 ปิดงาน</button>` : '<div style="flex:1"></div>'}
           </div>
           <!-- แถว 4: ผู้รับเหมา - ต่อเวลา -->
           <div style="font-size:9px;color:var(--orange);font-weight:600;letter-spacing:.3px;padding:2px 0 1px">👷 ผู้รับเหมา</div>
           <div style="display:flex;gap:3px">
             <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" style="flex:1" title="ผู้รับเหมาขอต่อเวลา">⏰ ขอต่อเวลา</button>
+            <button class="btn-sm btn-close-work" onclick="openCloseWork('${p.permit_id}')" style="flex:1" title="ปิดงาน (ผู้รับเหมา/แผนก/จป. ลงชื่อ)">🔒 ปิดงาน</button>
           </div>
         </div>
       </td>
@@ -551,8 +551,8 @@ function viewPermit(id) {
     <div class="detail-section">
       <div class="detail-section-title">รายละเอียดงาน</div>
       <div class="detail-grid">
-        <div class="detail-row"><div class="detail-label">วันที่ปฏิบัติงาน</div><div class="detail-value">${p.work_date || '-'}</div></div>
-        <div class="detail-row"><div class="detail-label">เวลา</div><div class="detail-value">${p.time_start || '-'} – ${p.time_end || '-'} น.</div></div>
+        <div class="detail-row"><div class="detail-label">วันที่ปฏิบัติงาน</div><div class="detail-value">${fixDate(p.work_date)||'-'} ${p.work_date_end?'— '+fixDate(p.work_date_end):''}</div></div>
+        <div class="detail-row"><div class="detail-label">เวลา</div><div class="detail-value">${fixTime(p.time_start)||'-'} – ${fixTime(p.time_end)||'-'} น.</div></div>
         <div class="detail-row full"><div class="detail-label">พื้นที่ทำงาน</div><div class="detail-value">${p.work_area || '-'}</div></div>
         <div class="detail-row full"><div class="detail-label">ลักษณะงาน</div><div class="detail-value">${p.work_description || '-'}</div></div>
       </div>
@@ -644,6 +644,46 @@ const PPE_MAP = {
 };
 
 // ===== TOAST =====
+// ===== FIX TIME/DATE (แก้ปัญหา Sheets แปลง time เป็น 1899-12-30) =====
+function fixTime(val) {
+  if (!val || val === '—' || val === '-') return '—';
+  const s = String(val);
+  // ถ้าเป็น HH:MM อยู่แล้ว
+  if (/^\d{1,2}:\d{2}$/.test(s.trim())) return s.trim();
+  // ถ้าเป็น ISO date string (1899-12-30T01:00:00.000Z)
+  if (s.includes('T') || s.includes('1899')) {
+    try {
+      const d = new Date(s);
+      // Google Sheets ใช้ base date 1899-12-30
+      const h = d.getUTCHours();
+      const m = d.getUTCMinutes();
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    } catch(e) {}
+  }
+  // ถ้าเป็น decimal (0.333 = 08:00)
+  if (/^\d*\.\d+$/.test(s)) {
+    const dec = parseFloat(s);
+    const totalMin = Math.round(dec * 24 * 60);
+    const h = Math.floor(totalMin / 60) % 24;
+    const m = totalMin % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }
+  return s;
+}
+
+function fixDate(val) {
+  if (!val || val === '—' || val === '-') return '—';
+  const s = String(val);
+  // ถ้าเป็น YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const parts = s.split('T')[0].split('-');
+    return `${parts[2]}/${parts[1]}/${parseInt(parts[0])+543}`;
+  }
+  // ถ้าเป็น DD/MM/YYYY หรือ DD/MM/YYYY+543 อยู่แล้ว
+  if (s.includes('/')) return s;
+  return s;
+}
+
 function openInspector(permitId, role) {
   const roleParam = role ? '&role=' + role : '';
   window.open('inspector.html?id=' + encodeURIComponent(permitId) + roleParam, '_blank');
@@ -663,18 +703,6 @@ function openPrintPage(permitId) {
 
 function openOvertime(permitId) {
   window.open('overtime.html?id=' + encodeURIComponent(permitId), '_blank');
-}
-
-async function closeWork(permitId) {
-  if (!confirm(`ยืนยันปิดงาน ${permitId}?\nการปิดงานจะไม่สามารถเปลี่ยนแปลงได้`)) return;
-  const p = allPermits.find(x => x.permit_id === permitId);
-  if (p) p.status = 'ปิดงาน';
-  try {
-    await fetch(`${APPS_SCRIPT_URL}?action=close_permit&id=${encodeURIComponent(permitId)}`);
-  } catch(e) {}
-  renderStats();
-  filterTable();
-  showToast('🔒 ปิดงาน ' + permitId + ' เรียบร้อย', 'success');
 }
 
 function showToast(msg, type = '') {
