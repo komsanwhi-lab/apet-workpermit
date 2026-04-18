@@ -227,6 +227,35 @@ body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:#202124}
     </div>
   </div>
 
+  <!-- QR Codes สำหรับผู้รับเหมา -->
+  <div style="border:1px solid var(--border);border-radius:4px;padding:8px 10px;margin-bottom:8px;background:#FAFAFA">
+    <div style="font-size:9px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">
+      📱 QR Code สำหรับผู้รับเหมา — สแกนเมื่อต้องการดำเนินการ
+    </div>
+    <div style="display:flex;gap:16px;align-items:flex-start">
+      <!-- QR ต่อเวลา -->
+      <div style="text-align:center;flex:1">
+        <div id="qrOvertime" style="margin:0 auto 4px;width:70px;height:70px"></div>
+        <div style="font-size:8px;font-weight:700;color:#E67E22">⏰ ขอต่อเวลา</div>
+        <div style="font-size:7px;color:var(--gray)">สแกนเมื่อต้องการ<br>ทำงานหลัง 17.00 น.</div>
+      </div>
+      <!-- QR ปิดงาน -->
+      <div style="text-align:center;flex:1">
+        <div id="qrCloseWork" style="margin:0 auto 4px;width:70px;height:70px"></div>
+        <div style="font-size:8px;font-weight:700;color:#2C3E50">🔒 ปิดงาน</div>
+        <div style="font-size:7px;color:var(--gray)">สแกนเมื่อเสร็จงาน<br>เพื่อลงชื่อปิดงาน</div>
+      </div>
+      <!-- ข้อความเตือน -->
+      <div style="flex:2;font-size:8px;color:var(--gray);line-height:1.6;padding-top:4px">
+        <strong style="color:var(--red)">⚠️ หมายเหตุสำหรับผู้รับเหมา:</strong><br>
+        • ใบอนุญาตใช้ได้ 08.00–17.00 น. เท่านั้น<br>
+        • หากต้องการทำงานต่อ ให้สแกน QR ต่อเวลา<br>
+        • เมื่อเสร็จงานให้สแกน QR ปิดงานทันที<br>
+        • ต้องได้รับอนุมัติก่อนเริ่มงานต่อทุกครั้ง
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <div class="doc-footer">
     <span>ระบบใบอนุญาตออนไลน์ APET Safety Management System</span>
@@ -238,6 +267,7 @@ body{font-family:'Sarabun',sans-serif;background:#F0F2F5;color:#202124}
 </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
 
@@ -279,6 +309,26 @@ function renderPage(p, approval) {
   document.getElementById('pStatus').textContent = p.status || 'รอตรวจสอบ';
   document.getElementById('pSubmittedAt').textContent = 'ส่งเมื่อ: ' + (p.submitted_at || '—');
   document.getElementById('pFooterDate').textContent = 'พิมพ์เมื่อ: ' + new Date().toLocaleString('th-TH');
+
+  // Generate QR Codes
+  const baseUrl = window.location.href.split('/print.html')[0];
+  const pid = p.permit_id;
+
+  try {
+    new QRCode(document.getElementById('qrOvertime'), {
+      text: `${baseUrl}/overtime.html?id=${encodeURIComponent(pid)}`,
+      width: 70, height: 70,
+      colorDark: '#E67E22', colorLight: '#FFFFFF',
+    });
+  } catch(e) { console.warn('QR OT error:', e); }
+
+  try {
+    new QRCode(document.getElementById('qrCloseWork'), {
+      text: `${baseUrl}/closework.html?id=${encodeURIComponent(pid)}`,
+      width: 70, height: 70,
+      colorDark: '#2C3E50', colorLight: '#FFFFFF',
+    });
+  } catch(e) { console.warn('QR Close error:', e); }
 
   // Approval status bar
   const steps = [
@@ -354,6 +404,5 @@ function renderPage(p, approval) {
     </div>`).join('');
 }
 </script>
-<script src="core.js"></script>
 </body>
 </html>

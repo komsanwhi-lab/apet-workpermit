@@ -429,23 +429,29 @@ function renderTable(permits) {
       <td><span class="workers-count">👥 ${p.worker_count || 0}</span></td>
       <td><span class="badge ${badgeClass}">${statusIcon} ${p.status || '-'}</span></td>
       <td>
-        <div style="display:flex;flex-direction:column;gap:4px;min-width:180px">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:200px">
           <!-- แถว 1: ดู + พิมพ์ -->
           <div style="display:flex;gap:3px">
             <button class="btn-sm btn-view" onclick="viewPermit('${p.permit_id}')" style="flex:1">🔎 ดูข้อมูล</button>
             <button class="btn-sm btn-print" onclick="openPrintPage('${p.permit_id}')" title="พิมพ์ใบอนุญาต">🖨️</button>
           </div>
           <!-- แถว 2: ลงชื่ออนุมัติ 3 คน -->
+          <div style="font-size:9px;color:var(--gray-500);font-weight:600;letter-spacing:.3px;padding:2px 0 1px">✍️ ลงชื่ออนุมัติ</div>
           <div style="display:flex;gap:3px">
             <button class="btn-sm btn-dept" onclick="openInspector('${p.permit_id}', 'dept')" style="flex:1" title="แผนกที่ว่าจ้างลงชื่อ">🏢 แผนก</button>
             <button class="btn-sm btn-inspect" onclick="openInspector('${p.permit_id}', 'inspector')" style="flex:1" title="จป.วิชาชีพลงชื่อ">🔍 จป.</button>
             <button class="btn-sm btn-chairman" onclick="openInspector('${p.permit_id}', 'chairman')" style="flex:1" title="ประธาน คปอ.ลงชื่อ">👑 คปอ.</button>
           </div>
-          <!-- แถว 3: Checklist + ต่อเวลา + ปิดงาน -->
+          <!-- แถว 3: Checklist + ปิดงาน -->
+          <div style="font-size:9px;color:var(--gray-500);font-weight:600;letter-spacing:.3px;padding:2px 0 1px">🔍 จป.วิชาชีพ</div>
           <div style="display:flex;gap:3px">
             <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" style="flex:1" title="Checklist จป.">📋 Checklist</button>
-            <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" style="flex:1" title="ขอต่อเวลา">⏰ ต่อเวลา</button>
             ${p.status === 'อนุมัติ' ? `<button class="btn-sm btn-close-work" onclick="openCloseWork('${p.permit_id}')" style="flex:1" title="ปิดงาน">🔒 ปิดงาน</button>` : '<div style="flex:1"></div>'}
+          </div>
+          <!-- แถว 4: ผู้รับเหมา - ต่อเวลา -->
+          <div style="font-size:9px;color:var(--orange);font-weight:600;letter-spacing:.3px;padding:2px 0 1px">👷 ผู้รับเหมา</div>
+          <div style="display:flex;gap:3px">
+            <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" style="flex:1" title="ผู้รับเหมาขอต่อเวลา">⏰ ขอต่อเวลา</button>
           </div>
         </div>
       </td>
