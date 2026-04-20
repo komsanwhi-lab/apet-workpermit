@@ -275,28 +275,45 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypg
 function fixTime(val) {
   if (!val || val === '—' || val === '-') return '—';
   const s = String(val).trim();
+  // HH:MM อยู่แล้ว
   if (/^\d{1,2}:\d{2}$/.test(s)) return s;
-  if (s.includes('T') || s.includes('1899')) {
-    try {
-      const d = new Date(s);
-      const h = d.getUTCHours(), m = d.getUTCMinutes();
-      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-    } catch(e) {}
-  }
+  // Decimal (0.333 = 08:00)
   if (/^\d*\.\d+$/.test(s)) {
     const totalMin = Math.round(parseFloat(s) * 24 * 60);
-    return `${String(Math.floor(totalMin/60)%24).padStart(2,'0')}:${String(totalMin%60).padStart(2,'0')}`;
+    return String(Math.floor(totalMin/60)%24).padStart(2,'0')+':'+String(totalMin%60).padStart(2,'0');
   }
+  // Date string ทุกรูปแบบ — ดึง local time
+  try {
+    const d = new Date(s);
+    if (!isNaN(d)) {
+      const h = d.getHours(), m = d.getMinutes();
+      if (h === 0 && m === 0) return '—'; // วันที่ล้วน ไม่มีเวลา
+      return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    }
+  } catch(e) {}
   return s;
 }
 function fixDate(val) {
   if (!val || val === '—' || val === '-') return '—';
   const s = String(val).trim();
+  // YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
     const p = s.split('T')[0].split('-');
     return `${p[2]}/${p[1]}/${parseInt(p[0])+543}`;
   }
-  return s.includes('/')?s:s;
+  // มี / อยู่แล้ว
+  if (s.includes('/')) return s;
+  // "Wed Apr 22 2026 00:00:00 GMT+0700" หรือ Date string อื่นๆ
+  try {
+    const d = new Date(s);
+    if (!isNaN(d)) {
+      const day = String(d.getDate()).padStart(2,'0');
+      const mon = String(d.getMonth()+1).padStart(2,'0');
+      const yr = d.getFullYear()+543;
+      return `${day}/${mon}/${yr}`;
+    }
+  } catch(e) {}
+  return s;
 }
 
 const RULES = ['ปฏิบัติงานตามกฎระเบียบข้อบังคับ','แลกบัตรและติดบัตรประจำตัวทุกครั้งเมื่อเข้าพื้นที่','เขียนใบขออนุญาตและนำไปติดที่พื้นที่ทำงาน','แต่งกายให้รัดกุม สวมใส่ PPE เหมาะสมกับงาน','ตรวจสอบความปลอดภัยก่อนเริ่มงานทุกครั้ง','ห้ามใช้เครื่องมือหรืออุปกรณ์ไฟฟ้าที่ชำรุด','งานที่มีเปลวไฟต้องใช้วัสดุปิดบัง','ห้ามต่อพ่วงอุปกรณ์ไฟฟ้าเกินกำลัง','งานบนที่สูงต้องใช้อุปกรณ์ป้องกันการตก','งานสารเคมีต้องป้องกันไม่ให้ไหลสู่สิ่งแวดล้อม','หากเกิดอุบัติเหตุต้องรายงานผู้ควบคุมงานทันที','เมื่อแจ้งเหตุฉุกเฉินให้ไปจุดรวมพล','หลังเสร็จงานต้องจัดเก็บอุปกรณ์ให้เรียบร้อย','ห้ามสูบบุหรี่ ยกเว้นพื้นที่ที่กำหนด','ห้ามจุดหรือก่อกองไฟ ยกเว้นพื้นที่ที่จัดให้','ห้ามพกพาอาวุธทุกชนิด','ห้ามดื่มของมึนเมาหรือเสพสารเสพติด','ห้ามก่อเหตุทะเลาะวิวาท','ต้องปฏิบัติตามป้ายความปลอดภัยอย่างเคร่งครัด','เมื่อพบเหตุฉุกเฉินต้องแจ้งผู้เกี่ยวข้องทันที','ห้ามรับประทานอาหารในพื้นที่ปฏิบัติงาน','ห้ามนำเด็กอายุต่ำกว่า 15 ปีเข้าพื้นที่','หากมีฝุ่นต้องจัดหาอุปกรณ์ป้องกันที่เหมาะสม','ใบอนุญาตใช้ได้ 08.00-17.00 น. เท่านั้น'];

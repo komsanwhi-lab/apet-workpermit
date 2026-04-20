@@ -647,40 +647,38 @@ const PPE_MAP = {
 // ===== FIX TIME/DATE (แก้ปัญหา Sheets แปลง time เป็น 1899-12-30) =====
 function fixTime(val) {
   if (!val || val === '—' || val === '-') return '—';
-  const s = String(val);
-  // ถ้าเป็น HH:MM อยู่แล้ว
-  if (/^\d{1,2}:\d{2}$/.test(s.trim())) return s.trim();
-  // ถ้าเป็น ISO date string (1899-12-30T01:00:00.000Z)
-  if (s.includes('T') || s.includes('1899')) {
-    try {
-      const d = new Date(s);
-      // Google Sheets ใช้ base date 1899-12-30
-      const h = d.getUTCHours();
-      const m = d.getUTCMinutes();
-      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-    } catch(e) {}
-  }
-  // ถ้าเป็น decimal (0.333 = 08:00)
+  const s = String(val).trim();
+  if (/^\d{1,2}:\d{2}$/.test(s)) return s;
   if (/^\d*\.\d+$/.test(s)) {
-    const dec = parseFloat(s);
-    const totalMin = Math.round(dec * 24 * 60);
-    const h = Math.floor(totalMin / 60) % 24;
-    const m = totalMin % 60;
-    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    const totalMin = Math.round(parseFloat(s)*24*60);
+    return String(Math.floor(totalMin/60)%24).padStart(2,'0')+':'+String(totalMin%60).padStart(2,'0');
   }
+  try {
+    const d = new Date(s);
+    if (!isNaN(d)) {
+      const h = d.getHours(), m = d.getMinutes();
+      if (h===0 && m===0) return '—';
+      return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    }
+  } catch(e) {}
   return s;
 }
 
 function fixDate(val) {
   if (!val || val === '—' || val === '-') return '—';
-  const s = String(val);
-  // ถ้าเป็น YYYY-MM-DD
+  const s = String(val).trim();
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
-    const parts = s.split('T')[0].split('-');
-    return `${parts[2]}/${parts[1]}/${parseInt(parts[0])+543}`;
+    const p = s.split('T')[0].split('-');
+    return `${p[2]}/${p[1]}/${parseInt(p[0])+543}`;
   }
-  // ถ้าเป็น DD/MM/YYYY หรือ DD/MM/YYYY+543 อยู่แล้ว
   if (s.includes('/')) return s;
+  // "Wed Apr 22 2026 00:00:00 GMT+0700" หรือ Date string
+  try {
+    const d = new Date(s);
+    if (!isNaN(d)) {
+      return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+(d.getFullYear()+543);
+    }
+  } catch(e) {}
   return s;
 }
 

@@ -174,9 +174,17 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:120px}
 
     <!-- Step 2: แผนก -->
     <div class="role-card step2" id="card2">
-      <div class="role-title">🏢 ขั้นตอนที่ 2 — แผนกที่ว่าจ้าง</div>
+      <div class="role-title">🏢 ขั้นตอนที่ 2 — แผนกที่ว่าจ้าง/รับผิดชอบ</div>
       <div id="body2">
-        <div class="lock-msg">🔒 รอผู้รับเหมาลงชื่อก่อน</div>
+        <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;padding:6px 10px;background:var(--gray-50);border-radius:6px">💡 กรอกชื่อและลงลายเซ็น — ระบบจะบันทึกหลังผู้รับเหมาลงชื่อแล้ว</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">ชื่อผู้รับผิดชอบ/แผนก <span class="req">*</span></label><input type="text" id="name2" placeholder="ชื่อ-นามสกุล / แผนก"></div>
+          <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date2"></div>
+        </div>
+        <div class="sig-wrap"><canvas id="sig2"></canvas>
+          <div class="sig-ctrl"><button class="btn-clr" onclick="clearSig(2)">🗑️ ล้าง</button><span class="sig-hint">วาดด้วยนิ้วหรือเมาส์</span></div>
+        </div>
+        <div class="row-right"><button class="btn btn-save" id="btn2" onclick="saveStep(2)">💾 บันทึกลายเซ็นแผนก</button></div>
       </div>
     </div>
 
@@ -184,7 +192,15 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:120px}
     <div class="role-card step3" id="card3">
       <div class="role-title">🔍 ขั้นตอนที่ 3 — จป.วิชาชีพ (ปิดงาน)</div>
       <div id="body3">
-        <div class="lock-msg">🔒 รอลงชื่อให้ครบ 2 ขั้นตอนก่อน</div>
+        <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;padding:6px 10px;background:var(--gray-50);border-radius:6px">💡 ต้องรอผู้รับเหมาและแผนกลงชื่อครบก่อนจึงจะบันทึกได้</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">ชื่อ จป.วิชาชีพ <span class="req">*</span></label><input type="text" id="name3" placeholder="ชื่อ-นามสกุล"></div>
+          <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date3"></div>
+        </div>
+        <div class="sig-wrap"><canvas id="sig3"></canvas>
+          <div class="sig-ctrl"><button class="btn-clr" onclick="clearSig(3)">🗑️ ล้าง</button><span class="sig-hint">วาดด้วยนิ้วหรือเมาส์</span></div>
+        </div>
+        <div class="row-right"><button class="btn btn-save" id="btn3" onclick="saveStep(3)" style="background:#C0392B">🔒 ปิดงาน (รับรองโดย จป.)</button></div>
       </div>
     </div>
   </div><!-- /main-content -->
@@ -310,42 +326,17 @@ function getNextStep() {
 }
 
 function renderCards() {
-  // Step 1
-  if (closeState[1]) {
-    document.getElementById('body1').innerHTML = signedBadge(closeState[1]);
-  }
-  // Step 2
-  if (closeState[2]) {
-    document.getElementById('body2').innerHTML = signedBadge(closeState[2]);
-  } else if (closeState[1]) {
-    // unlock step 2
-    document.getElementById('body2').innerHTML = buildForm(2, '🏢 ชื่อผู้รับผิดชอบ/แผนก', 'บันทึกลายเซ็นแผนก');
-    initSig(2);
-  }
-  // Step 3
-  if (closeState[3]) {
-    document.getElementById('body3').innerHTML = signedBadge(closeState[3]);
-  } else if (closeState[1] && closeState[2]) {
-    // unlock step 3
-    document.getElementById('body3').innerHTML = buildForm(3, '🔍 ชื่อ จป.วิชาชีพ', 'ปิดงาน', true);
-    initSig(3);
-  }
+  [1,2,3].forEach(i => {
+    if (closeState[i]) {
+      // แทน body ด้วย signed badge
+      document.getElementById('body'+i).innerHTML = signedBadge(closeState[i]);
+    }
+  });
+  renderProgress();
 }
 
 function signedBadge(s) {
   return `<div class="signed-badge">✅ ลงชื่อแล้ว — ${s.name}<span class="signed-time">${s.date||''}</span></div>`;
-}
-
-function buildForm(n, nameLabel, btnLabel, isClose=false) {
-  return `
-    <div class="form-grid">
-      <div class="form-group"><label class="form-label">${nameLabel} <span class="req">*</span></label><input type="text" id="name${n}" placeholder="ชื่อ-นามสกุล"></div>
-      <div class="form-group"><label class="form-label">วันที่/เวลา</label><input type="text" id="date${n}" value="${new Date().toLocaleString('th-TH')}"></div>
-    </div>
-    <div class="sig-wrap"><canvas id="sig${n}"></canvas>
-      <div class="sig-ctrl"><button class="btn-clr" onclick="clearSig(${n})">🗑️ ล้าง</button><span class="sig-hint">วาดด้วยนิ้วหรือเมาส์</span></div>
-    </div>
-    <div class="row-right"><button class="btn ${isClose?'btn-close':'btn-save'}" id="btn${n}" onclick="saveStep(${n})">💾 ${btnLabel}</button></div>`;
 }
 
 function renderProgress() {
