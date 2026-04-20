@@ -447,12 +447,16 @@ function renderTable(permits) {
           <div style="display:flex;gap:3px">
             <button class="btn-sm btn-checklist" onclick="openChecklist('${p.permit_id}')" style="flex:1" title="Checklist จป.">📋 Checklist</button>
           </div>
-          <!-- แถว 4: ผู้รับเหมา - ต่อเวลา -->
+          <!-- แถว 4: ผู้รับเหมา -->
+          ${!['ปิดงาน','หมดอายุ','ไม่อนุมัติ'].includes(p.status) ? `
           <div style="font-size:9px;color:var(--orange);font-weight:600;letter-spacing:.3px;padding:2px 0 1px">👷 ผู้รับเหมา</div>
           <div style="display:flex;gap:3px">
             <button class="btn-sm btn-overtime" onclick="openOvertime('${p.permit_id}')" style="flex:1" title="ผู้รับเหมาขอต่อเวลา">⏰ ขอต่อเวลา</button>
-            <button class="btn-sm btn-close-work" onclick="openCloseWork('${p.permit_id}')" style="flex:1" title="ปิดงาน (ผู้รับเหมา/แผนก/จป. ลงชื่อ)">🔒 ปิดงาน</button>
-          </div>
+            <button class="btn-sm btn-close-work" onclick="openCloseWork('${p.permit_id}')" style="flex:1" title="ปิดงาน">🔒 ปิดงาน</button>
+          </div>` : `
+          <div style="font-size:9px;color:var(--gray-500);padding:4px 0">
+            ${p.status === 'ปิดงาน' ? '🔒 ปิดงานแล้ว' : ''}
+          </div>`}
         </div>
       </td>
     </tr>`;
@@ -646,16 +650,20 @@ const PPE_MAP = {
 // ===== TOAST =====
 // ===== FIX TIME/DATE (แก้ปัญหา Sheets แปลง time เป็น 1899-12-30) =====
 function fixTime(val) {
-  if (!val || val === '—' || val === '-') return '—';
+  if (!val || val === '—' || val === '-' || val === 'null') return '—';
   const s = String(val).trim();
+  // HH:MM อยู่แล้ว
   if (/^\d{1,2}:\d{2}$/.test(s)) return s;
-  if (/^\d*\.\d+$/.test(s)) {
+  // Decimal 0.333 = 08:00
+  if (/^\d?\.\d+$/.test(s)) {
     const totalMin = Math.round(parseFloat(s)*24*60);
     return String(Math.floor(totalMin/60)%24).padStart(2,'0')+':'+String(totalMin%60).padStart(2,'0');
   }
+  // Date string — ถ้าเป็นวันที่ล้วน (00:00) ให้คืน '—'
   try {
     const d = new Date(s);
     if (!isNaN(d)) {
+      // ใช้ toLocaleTimeString ตาม TH timezone
       const h = d.getHours(), m = d.getMinutes();
       if (h===0 && m===0) return '—';
       return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
@@ -665,18 +673,26 @@ function fixTime(val) {
 }
 
 function fixDate(val) {
-  if (!val || val === '—' || val === '-') return '—';
+  if (!val || val === '—' || val === '-' || val === 'null') return '—';
   const s = String(val).trim();
+  // YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
     const p = s.split('T')[0].split('-');
     return `${p[2]}/${p[1]}/${parseInt(p[0])+543}`;
   }
+  // มี / แล้ว
   if (s.includes('/')) return s;
-  // "Wed Apr 22 2026 00:00:00 GMT+0700" หรือ Date string
+  // Date string เช่น "Fri Apr 10 2026 00:00:00 GMT+0700"
   try {
     const d = new Date(s);
     if (!isNaN(d)) {
-      return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+(d.getFullYear()+543);
+      // ชดเชย timezone ไทย (+7) เพื่อให้วันที่ถูก
+      const offset = 7 * 60; // TH = UTC+7
+      const local = new Date(d.getTime() + (offset + d.getTimezoneOffset()) * 60000);
+      const day = String(local.getDate()).padStart(2,'0');
+      const mon = String(local.getMonth()+1).padStart(2,'0');
+      const yr = local.getFullYear()+543;
+      return `${day}/${mon}/${yr}`;
     }
   } catch(e) {}
   return s;

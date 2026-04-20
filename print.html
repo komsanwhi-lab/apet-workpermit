@@ -273,44 +273,38 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypg
 
 // ===== FIX TIME/DATE =====
 function fixTime(val) {
-  if (!val || val === '—' || val === '-') return '—';
+  if (!val || val === '—' || val === '-' || val === 'null') return '—';
   const s = String(val).trim();
-  // HH:MM อยู่แล้ว
   if (/^\d{1,2}:\d{2}$/.test(s)) return s;
-  // Decimal (0.333 = 08:00)
-  if (/^\d*\.\d+$/.test(s)) {
-    const totalMin = Math.round(parseFloat(s) * 24 * 60);
+  if (/^\d?\.\d+$/.test(s)) {
+    const totalMin = Math.round(parseFloat(s)*24*60);
     return String(Math.floor(totalMin/60)%24).padStart(2,'0')+':'+String(totalMin%60).padStart(2,'0');
   }
-  // Date string ทุกรูปแบบ — ดึง local time
   try {
     const d = new Date(s);
     if (!isNaN(d)) {
       const h = d.getHours(), m = d.getMinutes();
-      if (h === 0 && m === 0) return '—'; // วันที่ล้วน ไม่มีเวลา
+      if (h===0 && m===0) return '—';
       return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
     }
   } catch(e) {}
   return s;
 }
 function fixDate(val) {
-  if (!val || val === '—' || val === '-') return '—';
+  if (!val || val === '—' || val === '-' || val === 'null') return '—';
   const s = String(val).trim();
-  // YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
     const p = s.split('T')[0].split('-');
     return `${p[2]}/${p[1]}/${parseInt(p[0])+543}`;
   }
-  // มี / อยู่แล้ว
   if (s.includes('/')) return s;
-  // "Wed Apr 22 2026 00:00:00 GMT+0700" หรือ Date string อื่นๆ
   try {
     const d = new Date(s);
     if (!isNaN(d)) {
-      const day = String(d.getDate()).padStart(2,'0');
-      const mon = String(d.getMonth()+1).padStart(2,'0');
-      const yr = d.getFullYear()+543;
-      return `${day}/${mon}/${yr}`;
+      // ชดเชย TH timezone +7
+      const offset = 7*60;
+      const local = new Date(d.getTime()+(offset+d.getTimezoneOffset())*60000);
+      return String(local.getDate()).padStart(2,'0')+'/'+String(local.getMonth()+1).padStart(2,'0')+'/'+(local.getFullYear()+543);
     }
   } catch(e) {}
   return s;
