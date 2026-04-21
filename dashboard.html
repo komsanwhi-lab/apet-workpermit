@@ -650,49 +650,39 @@ const PPE_MAP = {
 // ===== TOAST =====
 // ===== FIX TIME/DATE (แก้ปัญหา Sheets แปลง time เป็น 1899-12-30) =====
 function fixTime(val) {
-  if (!val || val === '—' || val === '-' || val === 'null') return '—';
+  if (!val || val === '—' || String(val).trim() === '' || val === 'null') return '—';
   const s = String(val).trim();
   // HH:MM อยู่แล้ว
   if (/^\d{1,2}:\d{2}$/.test(s)) return s;
-  // Decimal 0.333 = 08:00
+  // decimal 0.333
   if (/^\d?\.\d+$/.test(s)) {
-    const totalMin = Math.round(parseFloat(s)*24*60);
-    return String(Math.floor(totalMin/60)%24).padStart(2,'0')+':'+String(totalMin%60).padStart(2,'0');
+    const m = Math.round(parseFloat(s)*1440);
+    return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
   }
-  // Date string — ถ้าเป็นวันที่ล้วน (00:00) ให้คืน '—'
-  try {
-    const d = new Date(s);
-    if (!isNaN(d)) {
-      // ใช้ toLocaleTimeString ตาม TH timezone
-      const h = d.getHours(), m = d.getMinutes();
-      if (h===0 && m===0) return '—';
-      return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-    }
-  } catch(e) {}
-  return s;
+  // Date string — ไม่แปลงเป็นเวลา (เพราะ Apps Script ใหม่ส่ง HH:MM มาแล้ว)
+  return '—';
 }
-
 function fixDate(val) {
-  if (!val || val === '—' || val === '-' || val === 'null') return '—';
+  if (!val || val === '—' || String(val).trim() === '' || val === 'null') return '—';
   const s = String(val).trim();
-  // YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
-    const p = s.split('T')[0].split('-');
-    return `${p[2]}/${p[1]}/${parseInt(p[0])+543}`;
+  // YYYY-MM-DD (Apps Script ใหม่)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    const [y,m,d] = s.split('-');
+    return `${d}/${m}/${parseInt(y)+543}`;
   }
-  // มี / แล้ว
-  if (s.includes('/')) return s;
-  // Date string เช่น "Fri Apr 10 2026 00:00:00 GMT+0700"
+  // YYYY-MM-DDThh... (ISO)
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+    const [y,m,d] = s.split('T')[0].split('-');
+    return `${d}/${m}/${parseInt(y)+543}`;
+  }
+  // DD/MM/YYYY อยู่แล้ว
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) return s;
+  // "Fri Apr 10 2026..." — parse + TH offset
   try {
-    const d = new Date(s);
-    if (!isNaN(d)) {
-      // ชดเชย timezone ไทย (+7) เพื่อให้วันที่ถูก
-      const offset = 7 * 60; // TH = UTC+7
-      const local = new Date(d.getTime() + (offset + d.getTimezoneOffset()) * 60000);
-      const day = String(local.getDate()).padStart(2,'0');
-      const mon = String(local.getMonth()+1).padStart(2,'0');
-      const yr = local.getFullYear()+543;
-      return `${day}/${mon}/${yr}`;
+    const dt = new Date(s);
+    if (!isNaN(dt)) {
+      const local = new Date(dt.getTime()+(7*60+dt.getTimezoneOffset())*60000);
+      return String(local.getDate()).padStart(2,'0')+'/'+String(local.getMonth()+1).padStart(2,'0')+'/'+(local.getFullYear()+543);
     }
   } catch(e) {}
   return s;

@@ -273,37 +273,31 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypg
 
 // ===== FIX TIME/DATE =====
 function fixTime(val) {
-  if (!val || val === '—' || val === '-' || val === 'null') return '—';
+  if (!val || val === '—' || String(val).trim() === '' || val === 'null') return '—';
   const s = String(val).trim();
   if (/^\d{1,2}:\d{2}$/.test(s)) return s;
   if (/^\d?\.\d+$/.test(s)) {
-    const totalMin = Math.round(parseFloat(s)*24*60);
-    return String(Math.floor(totalMin/60)%24).padStart(2,'0')+':'+String(totalMin%60).padStart(2,'0');
+    const m = Math.round(parseFloat(s)*1440);
+    return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
   }
-  try {
-    const d = new Date(s);
-    if (!isNaN(d)) {
-      const h = d.getHours(), m = d.getMinutes();
-      if (h===0 && m===0) return '—';
-      return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-    }
-  } catch(e) {}
-  return s;
+  return '—';
 }
 function fixDate(val) {
-  if (!val || val === '—' || val === '-' || val === 'null') return '—';
+  if (!val || val === '—' || String(val).trim() === '' || val === 'null') return '—';
   const s = String(val).trim();
-  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
-    const p = s.split('T')[0].split('-');
-    return `${p[2]}/${p[1]}/${parseInt(p[0])+543}`;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    const [y,m,d] = s.split('-');
+    return `${d}/${m}/${parseInt(y)+543}`;
   }
-  if (s.includes('/')) return s;
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+    const [y,m,d] = s.split('T')[0].split('-');
+    return `${d}/${m}/${parseInt(y)+543}`;
+  }
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) return s;
   try {
-    const d = new Date(s);
-    if (!isNaN(d)) {
-      // ชดเชย TH timezone +7
-      const offset = 7*60;
-      const local = new Date(d.getTime()+(offset+d.getTimezoneOffset())*60000);
+    const dt = new Date(s);
+    if (!isNaN(dt)) {
+      const local = new Date(dt.getTime()+(7*60+dt.getTimezoneOffset())*60000);
       return String(local.getDate()).padStart(2,'0')+'/'+String(local.getMonth()+1).padStart(2,'0')+'/'+(local.getFullYear()+543);
     }
   } catch(e) {}
