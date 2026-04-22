@@ -643,22 +643,56 @@ async function submitForm() {
   btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...';
 
   formData = collectFormData();
+  formData.permitId = 'APET-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
 
   try {
-    // ใช้ APET core system
-    const permitId = await APET.createPermit(formData);
-    formData.permitId = permitId;
-    APET.showToast('ส่งใบขออนุญาตเรียบร้อย', 'success');
-  } catch(e) {
-    console.warn('Submit error:', e);
-    // Fallback: ใช้ ID ที่สร้างไว้
-    if (!formData.permitId) {
-      formData.permitId = 'APET-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
-    }
-  }
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(formData)
+    });
+  } catch(e) { console.warn(e); }
+
+  // อัปโหลดไฟล์แนบไป Google Drive
+  btn.textContent = '📁 กำลังอัปโหลดไฟล์...';
+  await uploadAttachments(formData.permitId);
 
   btn.disabled = false; btn.textContent = '📤 ส่งใบขออนุญาต';
   showSuccess();
+}
+
+// ===== UPLOAD FILES TO DRIVE =====
+async function uploadAttachments(permitId) {
+  const files = [
+    { input: document.getElementById('workerFile'), label: 'รายชื่อ' },
+    { input: document.getElementById('riskFile'),   label: 'ประเมินความเสี่ยง' },
+  ];
+
+  for (const f of files) {
+    if (!f.input || !f.input.files || !f.input.files[0]) continue;
+    const file = f.input.files[0];
+    try {
+      // แปลงเป็น base64
+      const base64 = await fileToBase64(file);
+      const url = APPS_SCRIPT_URL +
+        '?action=upload_file' +
+        '&permitId=' + encodeURIComponent(permitId) +
+        '&fileName=' + encodeURIComponent(f.label + '_' + file.name) +
+        '&fileType=' + encodeURIComponent(file.type) +
+        '&fileData=' + encodeURIComponent(base64);
+      await fetch(url, { redirect: 'follow', mode: 'cors' });
+    } catch(e) { console.warn('Upload error:', e); }
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 function showSuccess() {
@@ -719,6 +753,5 @@ function showToast(msg, type='') {
   setTimeout(() => t.className = '', 3000);
 }
 </script>
-<script src="core.js"></script>
 </body>
 </html>

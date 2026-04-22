@@ -586,7 +586,15 @@ function viewPermit(id) {
       <div class="detail-section-title">ความเสี่ยงและมาตรการป้องกัน</div>
       <div style="font-size:12px; line-height:1.7; white-space:pre-line; background:var(--gray-50); padding:10px 14px; border-radius:6px">${p.risks}</div>
     </div>` : ''}
+
+    <div class="detail-section" id="filesSection_${id}">
+      <div class="detail-section-title">📎 เอกสารแนบ</div>
+      <div id="filesList_${id}" style="font-size:13px;color:var(--gray-500)">🔄 กำลังโหลด...</div>
+    </div>
   `;
+
+  // โหลดไฟล์แนบ
+  loadPermitFiles(id);
 
   const isPending = p.status === 'รอตรวจสอบ';
   document.getElementById('modalActions').innerHTML = `
@@ -631,6 +639,50 @@ function revertStatus(id) {
 function closeModal(e) {
   if (e && e.target !== document.getElementById('modal')) return;
   document.getElementById('modal').classList.remove('open');
+}
+
+async function loadPermitFiles(permitId) {
+  const el = document.getElementById('filesList_' + permitId);
+  if (!el) return;
+  try {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=get_files&id=${encodeURIComponent(permitId)}`, {
+      signal: controller.signal, redirect: 'follow', mode: 'cors'
+    });
+    const json = JSON.parse(await res.text());
+    if (json.success && json.files && json.files.length > 0) {
+      el.innerHTML = json.files.map(f => `
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--gray-50);border-radius:6px;margin-bottom:6px;border:1px solid var(--gray-200)">
+          <span style="font-size:18px">${getFileIcon(f.type)}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</div>
+            <div style="font-size:10px;color:var(--gray-500)">${f.date} · ${formatFileSize(f.size)}</div>
+          </div>
+          <a href="${f.url}" target="_blank" style="background:var(--blue);color:#fff;border-radius:5px;padding:4px 10px;font-size:11px;font-weight:600;text-decoration:none;flex-shrink:0">เปิด</a>
+        </div>`).join('');
+    } else {
+      el.innerHTML = '<div style="color:var(--gray-500);font-size:12px">ไม่มีเอกสารแนบ</div>';
+    }
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--gray-500);font-size:12px">ไม่สามารถโหลดไฟล์ได้</div>';
+  }
+}
+
+function getFileIcon(mimeType) {
+  if (!mimeType) return '📄';
+  if (mimeType.includes('pdf')) return '📕';
+  if (mimeType.includes('sheet') || mimeType.includes('excel')) return '📊';
+  if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+  if (mimeType.includes('image')) return '🖼️';
+  return '📄';
+}
+
+function formatFileSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return Math.round(bytes/1024) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
 }
 
 // ===== MAPS =====
