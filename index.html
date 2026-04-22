@@ -673,15 +673,21 @@ async function uploadAttachments(permitId) {
     if (!f.input || !f.input.files || !f.input.files[0]) continue;
     const file = f.input.files[0];
     try {
-      // แปลงเป็น base64
       const base64 = await fileToBase64(file);
-      const url = APPS_SCRIPT_URL +
-        '?action=upload_file' +
-        '&permitId=' + encodeURIComponent(permitId) +
-        '&fileName=' + encodeURIComponent(f.label + '_' + file.name) +
-        '&fileType=' + encodeURIComponent(file.type) +
-        '&fileData=' + encodeURIComponent(base64);
-      await fetch(url, { redirect: 'follow', mode: 'cors' });
+      // ส่งเป็น POST JSON (no-cors) — Apps Script รับใน doPost
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'upload_file',
+          permitId: permitId,
+          fileName: f.label + '_' + file.name,
+          fileType: file.type || 'application/octet-stream',
+          fileData: base64,
+        }),
+      });
+      console.log('Uploaded:', file.name);
     } catch(e) { console.warn('Upload error:', e); }
   }
 }
