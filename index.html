@@ -662,7 +662,7 @@ async function submitForm() {
   showSuccess();
 }
 
-// ===== UPLOAD FILES TO DRIVE =====
+// ===== UPLOAD FILES TO DRIVE (FIXED VERSION) =====
 async function uploadAttachments(permitId) {
   const files = [
     { input: document.getElementById('workerFile'), label: 'รายชื่อ' },
@@ -672,34 +672,36 @@ async function uploadAttachments(permitId) {
   for (const f of files) {
     if (!f.input || !f.input.files || !f.input.files[0]) continue;
     const file = f.input.files[0];
+    
     try {
+      console.log('Starting upload for:', file.name);
       const base64Full = await fileToBase64(file);
-      const base64Data = base64Full.split(',')[1]; // ตัด data:xxx;base64, ออก
       const fileName = f.label + '_' + file.name;
       const fileType = file.type || 'application/octet-stream';
 
-      // ส่งเป็น chunk ทีละ 50KB เพื่อไม่เกิน URL limit
-      const CHUNK_SIZE = 50000;
-      const totalChunks = Math.ceil(base64Data.length / CHUNK_SIZE);
-      const uploadId = permitId + '_' + Date.now();
+      // ใช้ google.script.run แทน fetch เพื่อความเสถียรและรองรับไฟล์ขนาดใหญ่ได้ดีกว่า
+      await new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (res && res.success) {
+              console.log('Uploaded successfully:', fileName, res.fileUrl);
+              resolve(res);
+            } else {
+              console.error('Upload failed on server:', res ? res.error : 'Unknown error');
+              reject(res ? res.error : 'Unknown error');
+            }
+          })
+          .withFailureHandler((err) => {
+            console.error('Script error:', err);
+            reject(err);
+          })
+          .uploadFileDirect(permitId, fileName, fileType, base64Full);
+      });
 
-      for (let i = 0; i < totalChunks; i++) {
-        const chunk = base64Data.slice(i * CHUNK_SIZE, (i+1) * CHUNK_SIZE);
-        const params = new URLSearchParams({
-          action: 'upload_chunk',
-          uploadId,
-          permitId,
-          fileName,
-          fileType,
-          chunkIndex: i,
-          totalChunks,
-          chunk,
-        });
-        const url = APPS_SCRIPT_URL + '?' + params.toString();
-        await fetch(url, { redirect: 'follow', mode: 'cors' });
-      }
-      console.log('Uploaded:', fileName);
-    } catch(e) { console.warn('Upload error:', e); }
+    } catch(e) { 
+      console.warn('Upload error for ' + file.name + ':', e);
+      showToast('ไม่สามารถอัปโหลดไฟล์ ' + f.label + ' ได้: ' + e, 'error');
+    }
   }
 }
 
