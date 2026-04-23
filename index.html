@@ -673,61 +673,34 @@ async function uploadAttachments(permitId) {
     if (!f.input || !f.input.files || !f.input.files[0]) continue;
     const file = f.input.files[0];
     try {
-      const base64 = await fileToBase64(file);
-      await uploadViaIframe({
-        type: 'upload_file',
-        permitId: permitId,
-        fileName: f.label + '_' + file.name,
-        fileType: file.type || 'application/octet-stream',
-        fileData: base64,
-      });
-      console.log('Uploaded:', file.name);
+      const base64Full = await fileToBase64(file);
+      const base64Data = base64Full.split(',')[1]; // ตัด data:xxx;base64, ออก
+      const fileName = f.label + '_' + file.name;
+      const fileType = file.type || 'application/octet-stream';
+
+      // ส่งเป็น chunk ทีละ 50KB เพื่อไม่เกิน URL limit
+      const CHUNK_SIZE = 50000;
+      const totalChunks = Math.ceil(base64Data.length / CHUNK_SIZE);
+      const uploadId = permitId + '_' + Date.now();
+
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = base64Data.slice(i * CHUNK_SIZE, (i+1) * CHUNK_SIZE);
+        const params = new URLSearchParams({
+          action: 'upload_chunk',
+          uploadId,
+          permitId,
+          fileName,
+          fileType,
+          chunkIndex: i,
+          totalChunks,
+          chunk,
+        });
+        const url = APPS_SCRIPT_URL + '?' + params.toString();
+        await fetch(url, { redirect: 'follow', mode: 'cors' });
+      }
+      console.log('Uploaded:', fileName);
     } catch(e) { console.warn('Upload error:', e); }
   }
-}
-
-// ส่งข้อมูลผ่าน hidden form → iframe (ทำงานได้กับ Apps Script cross-origin)
-function uploadViaIframe(payload) {
-  return new Promise((resolve) => {
-    // สร้าง iframe ชั่วคราว
-    const iframe = document.createElement('iframe');
-    iframe.name = 'upload_' + Date.now();
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    // สร้าง form ชั่วคราว
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = APPS_SCRIPT_URL;
-    form.target = iframe.name;
-    form.style.display = 'none';
-
-    // ใส่ข้อมูลเป็น hidden input (JSON string)
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify(payload);
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-
-    // รอ iframe โหลดเสร็จ หรือ timeout 15 วิ
-    const timeout = setTimeout(() => {
-      cleanup(); resolve();
-    }, 15000);
-
-    iframe.onload = () => {
-      clearTimeout(timeout);
-      setTimeout(() => { cleanup(); resolve(); }, 500);
-    };
-
-    function cleanup() {
-      try { document.body.removeChild(form); } catch(e) {}
-      try { document.body.removeChild(iframe); } catch(e) {}
-    }
-
-    form.submit();
-  });
 }
 
 function fileToBase64(file) {
