@@ -672,36 +672,43 @@ async function uploadAttachments(permitId) {
   for (const f of files) {
     if (!f.input || !f.input.files || !f.input.files[0]) continue;
     const file = f.input.files[0];
-    
     try {
-      console.log('Starting upload for:', file.name);
+      console.log('Uploading:', file.name, file.size, 'bytes');
       const base64Full = await fileToBase64(file);
+      const base64Data = base64Full.split(',')[1]; // ตัด "data:xxx;base64," ออก
       const fileName = f.label + '_' + file.name;
       const fileType = file.type || 'application/octet-stream';
+      const uploadId = permitId + '_' + Date.now();
 
-      // ใช้ google.script.run แทน fetch เพื่อความเสถียรและรองรับไฟล์ขนาดใหญ่ได้ดีกว่า
-      await new Promise((resolve, reject) => {
-        google.script.run
-          .withSuccessHandler((res) => {
-            if (res && res.success) {
-              console.log('Uploaded successfully:', fileName, res.fileUrl);
-              resolve(res);
-            } else {
-              console.error('Upload failed on server:', res ? res.error : 'Unknown error');
-              reject(res ? res.error : 'Unknown error');
-            }
-          })
-          .withFailureHandler((err) => {
-            console.error('Script error:', err);
-            reject(err);
-          })
-          .uploadFileDirect(permitId, fileName, fileType, base64Full);
-      });
+      // chunk ละ 800 chars — safe สำหรับ GET URL parameter
+      const CHUNK = 800;
+      const totalChunks = Math.ceil(base64Data.length / CHUNK);
+      console.log('Chunks:', totalChunks);
 
-    } catch(e) { 
-      console.warn('Upload error for ' + file.name + ':', e);
-      showToast('ไม่สามารถอัปโหลดไฟล์ ' + f.label + ' ได้: ' + e, 'error');
-    }
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = base64Data.slice(i * CHUNK, (i+1) * CHUNK);
+        // ส่งผ่าน GET — Apps Script อ่านได้ผ่าน e.parameter โดยตรง
+        const url = APPS_SCRIPT_URL
+          + '?action=upload_chunk'
+          + '&uploadId=' + encodeURIComponent(uploadId)
+          + '&permitId=' + encodeURIComponent(permitId)
+          + '&fileName=' + encodeURIComponent(fileName)
+          + '&fileType=' + encodeURIComponent(fileType)
+          + '&chunkIndex=' + i
+          + '&totalChunks=' + totalChunks
+          + '&chunk=' + encodeURIComponent(chunk);
+
+        try {
+          const res = await fetch(url, { redirect: 'follow', mode: 'cors' });
+          const json = JSON.parse(await res.text());
+          if (!json.success) console.warn('Chunk', i, 'error:', json.error);
+          if (json.done) console.log('File saved to Drive:', fileName);
+        } catch(fe) { console.warn('Chunk', i, 'fetch error:', fe); }
+
+        // พัก 200ms ทุก 10 chunks ป้องกัน rate limit
+        if (i % 10 === 9) await new Promise(r => setTimeout(r, 200));
+      }
+    } catch(e) { console.warn('Upload error:', e); }
   }
 }
 
