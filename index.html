@@ -310,7 +310,7 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:160px}
 
 <script>
 // ===== CONFIG =====
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX0n-NyHAbhNqVlUBr4GpoqY9sQTHSvX0jAbPtZT_t0Fnrp5oDpnF4IJLzRZgZXGaASQ/exec';
 
 // ===== DATA =====
 const HAZARDS = [
@@ -645,6 +645,11 @@ async function submitForm() {
   formData = collectFormData();
   formData.permitId = 'APET-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
 
+  // เก็บ base64 ของไฟล์แนบไว้ในข้อมูล
+  btn.textContent = '📎 กำลังเตรียมไฟล์แนบ...';
+  formData.attachments = await collectAttachments();
+
+  btn.textContent = '📤 กำลังส่ง...';
   try {
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -654,62 +659,37 @@ async function submitForm() {
     });
   } catch(e) { console.warn(e); }
 
-  // อัปโหลดไฟล์แนบไป Google Drive
-  btn.textContent = '📁 กำลังอัปโหลดไฟล์...';
-  await uploadAttachments(formData.permitId);
-
   btn.disabled = false; btn.textContent = '📤 ส่งใบขออนุญาต';
   showSuccess();
 }
 
-// ===== UPLOAD FILES TO DRIVE (FIXED VERSION) =====
-async function uploadAttachments(permitId) {
+// เก็บไฟล์แนบเป็น base64 ส่งไปกับฟอร์ม
+async function collectAttachments() {
+  const attachments = [];
   const files = [
-    { input: document.getElementById('workerFile'), label: 'รายชื่อ' },
+    { input: document.getElementById('workerFile'), label: 'รายชื่อผู้ปฏิบัติงาน' },
     { input: document.getElementById('riskFile'),   label: 'ประเมินความเสี่ยง' },
   ];
-
   for (const f of files) {
     if (!f.input || !f.input.files || !f.input.files[0]) continue;
     const file = f.input.files[0];
+    // จำกัด 10MB ต่อไฟล์
+    if (file.size > 10 * 1024 * 1024) {
+      showToast(`ไฟล์ "${f.label}" ใหญ่เกิน 10MB — ข้ามไฟล์นี้`, 'error');
+      continue;
+    }
     try {
-      console.log('Uploading:', file.name, file.size, 'bytes');
       const base64Full = await fileToBase64(file);
-      const base64Data = base64Full.split(',')[1]; // ตัด "data:xxx;base64," ออก
-      const fileName = f.label + '_' + file.name;
-      const fileType = file.type || 'application/octet-stream';
-      const uploadId = permitId + '_' + Date.now();
-
-      // chunk ละ 800 chars — safe สำหรับ GET URL parameter
-      const CHUNK = 800;
-      const totalChunks = Math.ceil(base64Data.length / CHUNK);
-      console.log('Chunks:', totalChunks);
-
-      for (let i = 0; i < totalChunks; i++) {
-        const chunk = base64Data.slice(i * CHUNK, (i+1) * CHUNK);
-        // ส่งผ่าน GET — Apps Script อ่านได้ผ่าน e.parameter โดยตรง
-        const url = APPS_SCRIPT_URL
-          + '?action=upload_chunk'
-          + '&uploadId=' + encodeURIComponent(uploadId)
-          + '&permitId=' + encodeURIComponent(permitId)
-          + '&fileName=' + encodeURIComponent(fileName)
-          + '&fileType=' + encodeURIComponent(fileType)
-          + '&chunkIndex=' + i
-          + '&totalChunks=' + totalChunks
-          + '&chunk=' + encodeURIComponent(chunk);
-
-        try {
-          const res = await fetch(url, { redirect: 'follow', mode: 'cors' });
-          const json = JSON.parse(await res.text());
-          if (!json.success) console.warn('Chunk', i, 'error:', json.error);
-          if (json.done) console.log('File saved to Drive:', fileName);
-        } catch(fe) { console.warn('Chunk', i, 'fetch error:', fe); }
-
-        // พัก 200ms ทุก 10 chunks ป้องกัน rate limit
-        if (i % 10 === 9) await new Promise(r => setTimeout(r, 200));
-      }
-    } catch(e) { console.warn('Upload error:', e); }
+      attachments.push({
+        label: f.label,
+        fileName: file.name,
+        fileType: file.type || 'application/octet-stream',
+        fileData: base64Full, // data:xxx;base64,yyy
+        fileSize: file.size,
+      });
+    } catch(e) { console.warn('File read error:', e); }
   }
+  return attachments;
 }
 
 function fileToBase64(file) {

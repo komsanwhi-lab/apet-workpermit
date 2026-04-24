@@ -271,7 +271,7 @@ body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; color: var(--gra
 
 <script>
 // ===== CONFIG =====
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec'; // << ใส่ URL เดียวกับ index.html
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX0n-NyHAbhNqVlUBr4GpoqY9sQTHSvX0jAbPtZT_t0Fnrp5oDpnF4IJLzRZgZXGaASQ/exec'; // << ใส่ URL เดียวกับ index.html
 
 // ===== DATA =====
 let allPermits = [];
@@ -587,14 +587,21 @@ function viewPermit(id) {
       <div style="font-size:12px; line-height:1.7; white-space:pre-line; background:var(--gray-50); padding:10px 14px; border-radius:6px">${p.risks}</div>
     </div>` : ''}
 
-    <div class="detail-section" id="filesSection_${id}">
+    <div class="detail-section">
       <div class="detail-section-title">📎 เอกสารแนบ</div>
-      <div id="filesList_${id}" style="font-size:13px;color:var(--gray-500)">🔄 กำลังโหลด...</div>
+      <div id="filesList_${id}" style="font-size:13px;color:var(--gray-500)">
+        ${p.attachments
+          ? p.attachments.split(',').map(a => a.trim()).filter(a => a).map(a =>
+              `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--gray-50);border-radius:6px;margin-bottom:5px;border:1px solid var(--gray-200)">
+                <span style="font-size:16px">📄</span>
+                <span style="font-size:12px;flex:1">${a}</span>
+                <span style="font-size:10px;color:var(--gray-500)">ส่งทางอีเมลแล้ว</span>
+              </div>`).join('')
+          : '<div style="color:var(--gray-500);font-size:12px">ไม่มีเอกสารแนบ</div>'
+        }
+      </div>
     </div>
   `;
-
-  // โหลดไฟล์แนบ
-  loadPermitFiles(id);
 
   const isPending = p.status === 'รอตรวจสอบ';
   document.getElementById('modalActions').innerHTML = `
