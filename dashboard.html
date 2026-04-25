@@ -271,7 +271,7 @@ body { font-family: 'Sarabun', sans-serif; background: #F0F2F5; color: var(--gra
 
 <script>
 // ===== CONFIG =====
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX0n-NyHAbhNqVlUBr4GpoqY9sQTHSvX0jAbPtZT_t0Fnrp5oDpnF4IJLzRZgZXGaASQ/exec'; // << ใส่ URL เดียวกับ index.html
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX0n-NyHAbhNqVlUBr4GpoqY9sQTHSvX0jAbPtZT_t0Fnrp5oDpnF4IJLzRZgZXGaASQ/exec';
 
 // ===== DATA =====
 let allPermits = [];
@@ -345,20 +345,18 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadData() {
   try {
     const res = await fetch(APPS_SCRIPT_URL + '?action=list', {
-      method: 'GET',
       redirect: 'follow',
+      mode: 'cors',
     });
-    const text = await res.text();
-    const json = JSON.parse(text);
+    const json = await res.json();
     if (json.success && json.permits && json.permits.length > 0) {
       allPermits = json.permits;
-      console.log('Loaded ' + allPermits.length + ' permits from server');
+      console.log('Loaded ' + allPermits.length + ' permits');
     } else {
       throw new Error('No data');
     }
   } catch (err) {
     console.warn('Load error:', err);
-    console.log('Using demo data');
     allPermits = DEMO_DATA;
   }
   renderStats();
@@ -781,6 +779,6 @@ function showToast(msg, type = '') {
   setTimeout(() => t.className = '', 3500);
 }
 </script>
-<script src="core.js"></script>
+
 </body>
 </html>
