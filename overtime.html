@@ -122,7 +122,7 @@ textarea{resize:vertical;min-height:60px}
 <div id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX0n-NyHAbhNqVlUBr4GpoqY9sQTHSvX0jAbPtZT_t0Fnrp5oDpnF4IJLzRZgZXGaASQ/exec';
 let permitData = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -179,11 +179,7 @@ async function submitOvertime() {
   });
 
   try {
-    await APET.requestOvertime(permitData.permit_id, {
-      otStart, otEnd,
-      contractorName: name,
-      reason,
-    });
+    await fetch(APPS_SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:payload});
   } catch(e) { console.warn(e); }
 
   btn.disabled = false;
@@ -199,6 +195,5 @@ function showToast(msg, type='') {
   setTimeout(()=>t.className='', 3000);
 }
 </script>
-<script src="core.js"></script>
 </body>
 </html>

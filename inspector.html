@@ -232,7 +232,7 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:130px}
 <div id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX0n-NyHAbhNqVlUBr4GpoqY9sQTHSvX0jAbPtZT_t0Fnrp5oDpnF4IJLzRZgZXGaASQ/exec';
 
 let permitData = null;
 let approvalState = { dept: null, inspector: null, chairman: null };
@@ -423,38 +423,45 @@ function scrollToRole(role) {
 // ===== SAVE =====
 async function saveSig(role) {
   const config = {
-    dept:      { nameId:'deptName',      dateId:'deptDate',      canvasId:'sigDept',      btnId:'btnDept' },
+    dept: { nameId:'deptName', dateId:'deptDate', canvasId:'sigDept', btnId:'btnDept' },
     inspector: { nameId:'inspectorName', dateId:'inspectorDate', canvasId:'sigInspector', btnId:'btnInspector' },
-    chairman:  { nameId:'chairmanName',  dateId:'chairmanDate',  canvasId:'sigChairman',  btnId:'btnChairman' },
+    chairman: { nameId:'chairmanName', dateId:'chairmanDate', canvasId:'sigChairman', btnId:'btnChairman' },
   };
   const c = config[role];
   const name = document.getElementById(c.nameId)?.value.trim();
-  if (!name) { APET.showToast('กรุณากรอกชื่อ', 'error'); return; }
-  if (isSigEmpty(c.canvasId)) { APET.showToast('กรุณาลงลายเซ็น', 'error'); return; }
-
-  // 🔒 Lock check ก่อน
-  const lockCheck = APET.canApprove(role, approvalState);
-  if (!lockCheck.ok) {
-    APET.showToast('🔒 ' + lockCheck.msg, 'error');
-    return;
-  }
+  if (!name) { showToast('กรุณากรอกชื่อ', 'error'); return; }
+  if (isSigEmpty(c.canvasId)) { showToast('กรุณาลงลายเซ็น', 'error'); return; }
 
   const btn = document.getElementById(c.btnId);
   btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
 
-  const date = document.getElementById(c.dateId)?.value || new Date().toLocaleString('th-TH');
+  const sigData = document.getElementById(c.canvasId).toDataURL('image/png');
+  const date = document.getElementById(c.dateId)?.value || new Date().toLocaleDateString('th-TH');
   const note = role==='inspector' ? (document.getElementById('inspectorNote')?.value||'') : '';
+  const savedAt = new Date().toLocaleString('th-TH');
+
+  // Update local state
+  approvalState[role] = { name, date, savedAt, note };
+
+  // Check if all 3 signed
+  const allSigned = approvalState.dept && approvalState.inspector && approvalState.chairman;
+  const finalStatus = allSigned ? 'อนุมัติ' : 'รอตรวจสอบ';
 
   try {
-    await APET.approvePermit(permitData.permit_id, role, { name, date, note });
-    // Update local state
-    approvalState[role] = { name, date, savedAt: new Date().toLocaleString('th-TH'), note };
-    APET.showToast(`✅ บันทึกลายเซ็น ${APET.ROLES[role].label} เรียบร้อย`, 'success');
-  } catch(e) {
-    console.warn('Save error:', e);
-    // Fallback — save anyway
-    approvalState[role] = { name, date, savedAt: new Date().toLocaleString('th-TH'), note };
-  }
+    const payload = JSON.stringify({
+      permitId: permitData.permit_id,
+      role, name, date, note, savedAt, finalStatus,
+      allApprovals: approvalState,
+    });
+    // ใช้ no-cors POST เพื่อหลีกเลี่ยง URL ยาวเกิน
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+    });
+    console.log('Saved OK');
+  } catch(e) { console.warn('Save error:', e); }
 
   btn.disabled = false;
 
@@ -501,6 +508,5 @@ function showToast(msg, type='') {
   setTimeout(()=>t.className='', 3000);
 }
 </script>
-<script src="core.js"></script>
 </body>
 </html>

@@ -645,11 +645,8 @@ async function submitForm() {
   formData = collectFormData();
   formData.permitId = 'APET-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
 
-  // เก็บ base64 ของไฟล์แนบไว้ในข้อมูล
-  btn.textContent = '📎 กำลังเตรียมไฟล์แนบ...';
-  formData.attachments = await collectAttachments();
-
-  btn.textContent = '📤 กำลังส่ง...';
+  // ส่งข้อมูลฟอร์มหลักก่อน (ไม่มีไฟล์)
+  btn.textContent = '📤 กำลังส่งข้อมูล...';
   try {
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -659,8 +656,44 @@ async function submitForm() {
     });
   } catch(e) { console.warn(e); }
 
+  // ส่งอีเมลพร้อมไฟล์แนบแยก (ถ้ามีไฟล์)
+  const hasFiles = (document.getElementById('workerFile')?.files?.length > 0) ||
+                   (document.getElementById('riskFile')?.files?.length > 0);
+  if (hasFiles) {
+    btn.textContent = '📎 กำลังส่งไฟล์แนบ...';
+    await sendAttachmentEmail(formData);
+  }
+
   btn.disabled = false; btn.textContent = '📤 ส่งใบขออนุญาต';
   showSuccess();
+}
+
+// ส่งอีเมลพร้อมไฟล์แนบแยกต่างหาก
+async function sendAttachmentEmail(formData) {
+  const attachments = await collectAttachments();
+  if (!attachments.length) return;
+
+  // ส่งผ่าน GET ทีละไฟล์ (Apps Script อ่านได้)
+  for (const att of attachments) {
+    try {
+      // ส่งเป็น POST แยก เฉพาะ attachment
+      const payload = {
+        type: 'send_attachment_email',
+        permitId: formData.permitId,
+        companyName: formData.companyName,
+        fileName: att.label + '_' + att.fileName,
+        fileType: att.fileType,
+        fileData: att.fileData,
+      };
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      console.log('Attachment sent:', att.fileName);
+    } catch(e) { console.warn('Attachment email error:', e); }
+  }
 }
 
 // เก็บไฟล์แนบเป็น base64 ส่งไปกับฟอร์ม
