@@ -344,14 +344,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===== LOAD DATA =====
 async function loadData() {
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=list', { mode: 'cors' });
-    const json = await res.json();
-    if (json.success && json.permits.length > 0) {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=list', {
+      method: 'GET',
+      redirect: 'follow',
+    });
+    const text = await res.text();
+    const json = JSON.parse(text);
+    if (json.success && json.permits && json.permits.length > 0) {
       allPermits = json.permits;
+      console.log('Loaded ' + allPermits.length + ' permits from server');
     } else {
       throw new Error('No data');
     }
   } catch (err) {
+    console.warn('Load error:', err);
     console.log('Using demo data');
     allPermits = DEMO_DATA;
   }
