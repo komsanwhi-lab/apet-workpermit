@@ -174,12 +174,13 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:160px}
         <div class="workers-list" id="workerList"></div>
         <button class="btn-add-row" onclick="addWorker()">+ เพิ่มผู้ปฏิบัติงาน</button>
         <div style="margin-top:16px;padding:14px 16px;background:var(--gray-50);border-radius:8px;border:1.5px dashed var(--gray-300)">
-          <div style="font-size:13px;color:var(--gray-700);margin-bottom:10px">📎 <strong>กรณีเกิน 10 คน</strong> — แนบเอกสารรายชื่อเพิ่มเติมได้ที่นี่ (PDF, Excel, Word, รูปภาพ)</div>
+          <div style="font-size:13px;color:var(--gray-700);margin-bottom:6px">📎 <strong>กรณีเกิน 10 คน</strong> — แนบไฟล์รายชื่อเพิ่มเติม</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px">รองรับ JPG, PNG, PDF, Word, Excel • ขนาดไม่เกิน 2MB</div>
           <label style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--gray-300);border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px;color:var(--gray-700)">
             📄 เลือกไฟล์รายชื่อ
-            <input type="file" id="workerFile" accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.png" style="display:none" onchange="showFileName(this)">
+            <input type="file" id="workerFile" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="handleFileSelect(this,'workerFileName')">
           </label>
-          <span id="fileNameLabel" style="font-size:12px;color:var(--gray-500);margin-left:10px">ยังไม่ได้เลือกไฟล์</span>
+          <span id="workerFileName" style="font-size:12px;color:var(--gray-500);margin-left:8px">ยังไม่ได้เลือกไฟล์</span>
         </div>
       </div>
     </div>
@@ -201,12 +202,13 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:160px}
         </div>
         <button class="btn-add-row" onclick="addRiskRow()">+ เพิ่มแถว</button>
         <div style="margin-top:14px;padding:14px 16px;background:var(--gray-50);border-radius:8px;border:1.5px dashed var(--gray-300)">
-          <div style="font-size:13px;color:var(--gray-700);margin-bottom:8px">📎 <strong>กรณีพื้นที่ไม่พอ</strong> — แนบเอกสารประเมินความเสี่ยงเพิ่มเติม (PDF, Word, Excel, รูปภาพ)</div>
+          <div style="font-size:13px;color:var(--gray-700);margin-bottom:6px">📎 <strong>กรณีพื้นที่ไม่พอ</strong> — แนบไฟล์ประเมินความเสี่ยงเพิ่มเติม</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px">รองรับ JPG, PNG, PDF, Word, Excel • ขนาดไม่เกิน 2MB</div>
           <label style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--gray-300);border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px;color:var(--gray-700)">
-            📄 เลือกไฟล์
-            <input type="file" id="riskFile" accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.png" style="display:none" onchange="showRiskFileName(this)">
+            📄 เลือกไฟล์ประเมินความเสี่ยง
+            <input type="file" id="riskFile" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="handleFileSelect(this,'riskFileName')">
           </label>
-          <span id="riskFileLabel" style="font-size:12px;color:var(--gray-500);margin-left:10px">ยังไม่ได้เลือกไฟล์</span>
+          <span id="riskFileName" style="font-size:12px;color:var(--gray-500);margin-left:8px">ยังไม่ได้เลือกไฟล์</span>
         </div>
       </div>
     </div>
@@ -310,7 +312,7 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%;height:160px}
 
 <script>
 // ===== CONFIG =====
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGzsisnsQRVypgSwQP6XnjBqteucMgXD-k1cRT3mQEuWCY-XNrWZ49HcNtnEdr0aY3Sw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxHbxP0hhkjJvBnQE_MGseGTijLlJlVkNSTZEqrByD5yZxcCtiu7AWm6eCowH8iWQoyA/exec';
 
 // ===== DATA =====
 const HAZARDS = [
@@ -636,6 +638,74 @@ function collectFormData() {
   };
 }
 
+// ===== FILE HANDLING =====
+function handleFileSelect(input, labelId) {
+  const label = document.getElementById(labelId);
+  if (!input.files || !input.files[0]) { label.textContent = 'ยังไม่ได้เลือกไฟล์'; return; }
+  const file = input.files[0];
+  const maxSize = 2 * 1024 * 1024;
+  if (file.size > maxSize) {
+    showToast('ไฟล์ใหญ่เกิน 2MB กรุณาลดขนาด', 'error');
+    input.value = '';
+    label.textContent = 'ยังไม่ได้เลือกไฟล์';
+    return;
+  }
+  label.textContent = '✅ ' + file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+  label.style.color = 'var(--green)';
+}
+
+async function compressImage(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => { img.src = e.target.result; };
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxW = 1200;
+      const scale = img.width > maxW ? maxW / img.width : 1;
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.75);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function prepareAttachments() {
+  const inputs = [
+    { el: document.getElementById('workerFile'), label: 'รายชื่อผู้ปฏิบัติงาน' },
+    { el: document.getElementById('riskFile'),   label: 'ประเมินความเสี่ยง' },
+  ];
+  const result = [];
+  for (const item of inputs) {
+    if (!item.el || !item.el.files || !item.el.files[0]) continue;
+    let file = item.el.files[0];
+    // compress รูปภาพ
+    if (file.type.startsWith('image/')) {
+      file = await compressImage(file);
+    }
+    const base64 = await fileToBase64(file);
+    result.push({
+      fileName: item.label + '_' + item.el.files[0].name,
+      mimeType: file.type || 'application/octet-stream',
+      data: base64,
+    });
+  }
+  return result;
+}
+
 // ===== SUBMIT =====
 async function submitForm() {
   if (!validateStep(5)) return;
@@ -645,24 +715,22 @@ async function submitForm() {
   formData = collectFormData();
   formData.permitId = 'APET-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
 
-  // ส่งข้อมูลฟอร์มหลักก่อน (ไม่มีไฟล์)
-  btn.textContent = '📤 กำลังส่งข้อมูล...';
+  // เตรียมไฟล์แนบ (ถ้ามี)
+  btn.textContent = '📎 กำลังเตรียมไฟล์...';
+  const attachments = await prepareAttachments();
+  if (attachments.length > 0) {
+    formData.attachments = attachments;
+  }
+
+  // ส่งข้อมูลทั้งหมด — ใช้ text/plain เพื่อเลี่ยง CORS preflight
+  btn.textContent = '📤 กำลังส่ง...';
   try {
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(formData)
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(formData),
     });
-  } catch(e) { console.warn(e); }
-
-  // ส่งอีเมลพร้อมไฟล์แนบแยก (ถ้ามีไฟล์)
-  const hasFiles = (document.getElementById('workerFile')?.files?.length > 0) ||
-                   (document.getElementById('riskFile')?.files?.length > 0);
-  if (hasFiles) {
-    btn.textContent = '📎 กำลังส่งไฟล์แนบ...';
-    await sendAttachmentEmail(formData);
-  }
+  } catch(e) { console.warn('Submit error:', e); }
 
   btn.disabled = false; btn.textContent = '📤 ส่งใบขออนุญาต';
   showSuccess();
